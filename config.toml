@@ -1,5 +1,5 @@
 # Site settings
-baseurl = "http://https://mattrossman.github.io/energize-andover-blog"
+baseURL = "http://https://mattrossman.github.io/energize-andover-blog"
 # HTML Language Code Reference, such as en, zh-cn
 languageCode = "en"
 title = "Blog Title"
