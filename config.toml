@@ -71,4 +71,4 @@ hasCJKLanguage = true
 # [social]
 	facebook-square = "your_facebook_link"
   twitter-square = "your_twitter_link"
-  github-square = "your_github_link"
+  github-square = "https://github.com/mattrossman/energize-andover-blog"
