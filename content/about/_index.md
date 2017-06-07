@@ -4,12 +4,10 @@ title = "About"
 hidden = true
 +++
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa ullam earum dolorum! Sed, perspiciatis.
+This blog is hosted on GitHub Pages. It is managed through the [Hugo](https://gohugo.io/) static site tool, based off the [Cactus Plus](https://github.com/nodejh/hugo-theme-cactus-plus) theme.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit.
 
-***
+[Energize Andover](http://www.energizeandover.com/) is an effort through the town of Andover to find ways to improve energy efficiency of its public buildings. In the Summer of 2017, I am working on software to analyze Metasys data for ways to decrease unnecessary energy usage.
 
-### Lorem ipsum dolor.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea dicta corporis ad inventore itaque impedit dolor atque amet exercitationem! Veniam qui voluptas maiores vel laudantium necessitatibus, velit ducimus! Iste hic facere, accusamus fugiat enim facilis.
+This will be accomplished by using the Anaconda distribution of the Python programming language.

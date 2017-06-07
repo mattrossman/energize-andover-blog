@@ -1,19 +1,19 @@
 # Site settings
-baseURL = "http://https://mattrossman.github.io/energize-andover-blog"
+baseURL = "https://mattrossman.github.io/energize-andover-blog/"
 # HTML Language Code Reference, such as en, zh-cn
 languageCode = "en"
-title = "Blog Title"
+title = "Energize Andover Summer 2017 Blog"
 theme = "hugo-theme-cactus-plus"
 # Enter your tracking code to enable Google Analytics
 googleAnalytics = "your_google_analytics_code"
 hasCJKLanguage = true
 
 [params]
-	name = "Hugo"
+	name = "Energize Andover Summer 2017 Blog"
 	description = "Blog Description"
-	bio = "Blog biology"
+	bio = "Matt Rossman"
 	# Enter optionally your twitter account
-	twitter = "your_twotter"
+	# twitter = "your_twotter"
 	enableRSS = false
 
 	# Disqus comment
@@ -68,7 +68,7 @@ hasCJKLanguage = true
 
 
 # Add additional social link entries underneath
-[social]
+# [social]
 	facebook-square = "your_facebook_link"
   twitter-square = "your_twitter_link"
   github-square = "your_github_link"
