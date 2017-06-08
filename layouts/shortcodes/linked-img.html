@@ -1,6 +1,34 @@
-<span class="linked-img-wrapper">
-   <a href="{{ .Get 0 }}">
-      <img src="{{ .Get 0 }}" alt="img_failed_to_load">
-   </a>
-</span>
+<!---- linked-img
 
+This lets you place an image that:
+1. Links to its own source
+2. Builds a path by /images/month/day/param to make image placement easier.
+
+Example:
+
+For a post with the date set to 09/14/17 :
+
+{ { < linked-img "my-img.png" > } }
+
+will display the image located at /images/09/14/my-img.png
+which you can click to display the full image.
+
+Note to remove the extra spaces between brackets, they are placed so this comment works properly.
+------>
+<a href='{{ .Site.BaseURL }}images/{{ .Page.Date.Format "01" }}/{{ .Page.Date.Format "02" }}/{{ .Get 0 }}'>
+
+	<img src='{{ .Site.BaseURL }}images/{{ .Page.Date.Format "01" }}/{{ .Page.Date.Format "02" }}/{{ .Get 0 }}'
+	alt="{{ .Get 0 }} not found"/>
+</a>
+
+<!-- FOR THE CURIOUS
+
+The way to get a YYYY-MM-DD date is calling { { .Date.Format "2006-01-02" } }
+
+As such, MM aligns with "01" and DD aligns with "02"
+
+Calling these formats independently lets you pull the month and day values.
+
+This helps me organize my image files by post date.
+
+-->
