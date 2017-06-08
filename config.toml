@@ -1,5 +1,6 @@
 # Site settings
 baseURL = "https://mattrossman.github.io/energize-andover-blog/"
+relativeurls = true
 # HTML Language Code Reference, such as en, zh-cn
 languageCode = "en"
 title = "Energize Andover Summer 2017 Blog"
