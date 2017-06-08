@@ -6,7 +6,7 @@ languageCode = "en"
 title = "Energize Andover Summer 2017 Blog"
 theme = "hugo-theme-cactus-plus"
 # Enter your tracking code to enable Google Analytics
-googleAnalytics = "your_google_analytics_code"
+googleAnalytics = "86883080"
 hasCJKLanguage = true
 
 [params]
