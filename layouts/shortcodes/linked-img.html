@@ -1,4 +1,4 @@
-<!---- linked-img
+<!-- linked-img
 
 This lets you place an image that:
 1. Links to its own source
@@ -14,11 +14,14 @@ will display the image located at /images/09/14/my-img.png
 which you can click to display the full image.
 
 Note to remove the extra spaces between brackets, they are placed so this comment works properly.
------->
-<a href='{{ .Site.BaseURL }}images/{{ .Page.Date.Format "01" }}/{{ .Page.Date.Format "02" }}/{{ .Get 0 }}'>
+-->
 
-	<img src='{{ .Site.BaseURL }}images/{{ .Page.Date.Format "01" }}/{{ .Page.Date.Format "02" }}/{{ .Get 0 }}'
-	alt="{{ .Get 0 }} not found"/>
+{{ $month := .Page.Date.Format "01" }}
+{{ $day   := .Page.Date.Format "02" }}
+{{ $src   := printf "%simages/%s/%s/%s" .Site.BaseURL $month $day (.Get 0) }}
+
+<a href={{ $src }}>
+   <img src={{ $src }} alt="{{ .Get 0 }} not found" title = {{ .Get 0 }} />
 </a>
 
 <!-- FOR THE CURIOUS
