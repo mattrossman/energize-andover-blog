@@ -20,9 +20,11 @@ Note to remove the extra spaces between brackets, they are placed so this commen
 {{ $day   := .Page.Date.Format "02" }}
 {{ $src   := printf "%simages/%s/%s/%s" .Site.BaseURL $month $day (.Get 0) }}
 
-<a href={{ $src }}>
-   <img src={{ $src }} alt="{{ .Get 0 }} not found" title = {{ .Get 0 }} />
-</a>
+<div align="center">
+	<a href={{ $src }}>
+	   <img src={{ $src }} alt="{{ .Get 0 }} not found" title = {{ .Get 0 }} />
+	</a>
+</div>
 
 <!-- FOR THE CURIOUS
 
