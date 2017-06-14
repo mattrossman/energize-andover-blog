@@ -5,8 +5,8 @@
             <li>
                 <a href='{{ .Permalink }}'><aside class="dates">{{ .Date.Format "Jan 2" }}</aside></a>
                 <a href='{{ .Permalink }}'>
-                    {{ .Title }} <h2>{{ .Description | markdownify }} </h2> 
-			<h4><font color="#505050">. . . (read more)</font></h4>
+                    {{ .Title }} <h2>{{ .Description | markdownify }} </h2>
+		    <h6><font color="#505050">. . . (read more)</font></h6>
                 </a>
             </li>
         {{ end }}
