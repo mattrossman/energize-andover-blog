@@ -1,6 +1,6 @@
 # Site settings
 baseURL = "https://mattrossman.github.io/energize-andover-blog/"
-relativeurls = true
+relativeurls = false
 # HTML Language Code Reference, such as en, zh-cn
 languageCode = "en"
 title = "Energize Andover Summer 2017 Blog"
@@ -47,7 +47,7 @@ hasCJKLanguage = true
 	# Navigation links
 	home = ""
 	about = ""
-	archive = ""
+	archive = "All Posts"
 	subscribe = ""
 	# Pagination links
 	olderPosts = ""
