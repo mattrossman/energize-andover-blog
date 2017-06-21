@@ -6,9 +6,15 @@
                 <a href='{{ .Permalink }}'><aside class="dates">{{ .Date.Format "Jan 2" }}</aside></a>
                 <a href='{{ .Permalink }}'>
                     {{ .Title }} <h2>{{ .Description | markdownify }} </h2>
-		    <h6><font color="#505050">. . . (read more)</font></h6>
+		    <font color="#505050">
+			<h6>. . . (read more)</h6>
+			<h6 class="disqus-comment-count" data-disqus-url="https://mattrossman.github.io/energize-andover-blog/post/10/"></h6>
+		    </font>
                 </a>
             </li>
         {{ end }}
     {{ end }}
 </ul>
+
+<h1 class="disqus-comment-count" data-disqus-url="https://mattrossman.github.io/energize-andover-blog/post/10/"> loading... </h1>
+<script id="dsq-count-scr" src="//energize-andover-blog.disqus.com/count.js" async></script>
