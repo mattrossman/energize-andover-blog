@@ -7,8 +7,8 @@
                 <a href='{{ .Permalink }}'>
                     {{ .Title }} <h2>{{ .Description | markdownify }} </h2>
 		    <font color="#505050">
-			<h6>. . . (read more) </h6>
-			<h6 class="disqus-comment-count" data-disqus-url="{{ .Permalink }}"> <br> </h6>
+			<h6 float=left>. . . (read more) </h6>
+			<h6 class="disqus-comment-count" data-disqus-url="{{ .Permalink }}" float=right> <br> </h6>
 		    </font>
                 </a>
             </li>
