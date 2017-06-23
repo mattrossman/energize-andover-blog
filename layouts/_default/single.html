@@ -42,7 +42,8 @@
             {{ end }}
 
             {{ if .Site.Params.enableDisqus }}
-                {{ partial "disqus.html" . }}
+                <!--{{ partial "disqus.html" . }}-->
+		{{ template "_internal/disqus.html" . }}
             {{ end }}
 
             {{ if .Site.Params.enableDuoshuo }}

@@ -8,6 +8,7 @@ theme = "hugo-theme-cactus-plus"
 # Enter your tracking code to enable Google Analytics
 googleAnalytics = "UA-86883080-2"
 hasCJKLanguage = true
+disqusShortname = "energize-andover-blog"
 
 [params]
 	name = "Energize Andover Summer 2017 Blog"
@@ -20,7 +21,7 @@ hasCJKLanguage = true
 	# Disqus comment
 	disqusShortname = "energize-andover-blog"
 	# Disable disqus comments by set `enableDisqus = "false"`
-	enableDisqus = false
+	enableDisqus = true
 
 	# Duoshuo comment
 	duoshuoShortname = "your_duoshuo_short_name"
