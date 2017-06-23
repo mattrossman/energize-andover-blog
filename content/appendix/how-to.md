@@ -61,7 +61,7 @@ Now navigate to your site themes folder and clone the theme repository
 	cd my-site-name/themes
 	git clone https://github.com/example-user/example-theme-name
 
-At this point I recommend you change the permissions on this folder. You can do with with a `chmod` command if you want, but in Ubuntu it's easier to just right click on the folder you just clone, click "Permissions", and change everything to "Access files". Then click "Change Permissions for Enclosed Files" and once again set it all to "Access files".
+At this point I recommend you change the permissions on this folder. You can do with with a `chmod` command if you want, but in Ubuntu it's easier to just right click on the folder you just cloned, click "Permissions", and change everything to "Access files". Then click "Change Permissions for Enclosed Files" and once again set it all to "Access files".
 
 The reason for this is that this is recognized as an existing Git repository, and if you make changes inside it Git won't detect changes but won't let you commit or push them.
 
