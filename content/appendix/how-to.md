@@ -19,9 +19,9 @@ At the time of this posting, I am running 64-bit Ubuntu 16.04 LTS on an HP Elite
 # Hugo
 
 ### Description
-There are many ways to host a website. Most popular content management systems (CMS) like Wordpress or Weebly process your web requests on a server, which builds the static content and sends it to your computer's browser. This makes it conveinent to manage, but it requires a server to be available to process these requests. It is slower because the page has to be built before it is received by your browser. Most websites can only function this way because their content is never fixed (think Facebook, Google, Youtube, etc)
+There are many ways to host a website. Most popular content management systems (CMS) like Wordpress or Weebly process your web requests on a server, which builds the static content and sends it to your computer's browser. This makes it convenient to manage, but it requires a server to be available to process these requests. It is slower because the page has to be built before it is received by your browser. Most websites can only function this way because their content is never fixed (think Facebook, Google, Youtube, etc)
 
-However, for a blog, the only content would exist there is the content you put there. Enter static site generators. These programs let you easily create site content without manually writing the code for it. When it's time to publish, the static site tool will build the appropriate HTML, CSS, and JavaScript into the appropriate file structure. This lets you host the site on a static server like GitHub.
+However, for a blog, the content doesn't change from session to session. Enter static site generators. These programs let you easily create site content without manually writing the code for it. When it's time to publish, the static site tool will build the HTML, CSS, and JavaScript into the appropriate file structure. This lets you host the site on a static server like GitHub.
 
 The most popular static site generator is probably Jekyll. It even is [built-into GitHub pages](https://help.github.com/articles/using-jekyll-as-a-static-site-generator-with-github-pages/) if you don't want to install it on your computer, however this method only supports a [very limited set of themes](https://pages.github.com/themes/). This would be the easiest way to quickly get set up on GitHub Pages but it would severly limit your ability to customize your site layout.
 
@@ -41,16 +41,16 @@ Now, navigate to a location where you would like to store your site files. I sto
 
 	cd path/to/site/location
 
-To start your Hugo project, run
+To initialize your Hugo project, run
 
 	hugo new site my-site-name
 
 with the site name you desire.
 
 ### Picking a Theme
-Next, [pick a theme from Hugo's website](https://themes.gohugo.io/). You can find themes anywhere and even make your own, but this site has a nice catalog. Click the **Blog** tag on the right side of the page to get themes optimized for blogs.
+Next, [pick a theme from Hugo's website](https://themes.gohugo.io/). You can find themes anywhere and even make your own, but this resource has a nice catalog. Click the **Blog** tag on the right side of the page to get themes optimized for blogs.
 
-Most of these themes should include a demo so you can get a feel for the site layout. You can customize everything later, but it helps to get a nice simple foundation to work off of. Click download once you find one you like. It will probably direct you to a GitHub page for the theme with installation instructions.
+Most of these themes should include a demo so you can get a feel for the site layout. You can customize everything later, but it helps to get a simple foundation to work off of. Click download once you find one you like. It will probably direct you to a GitHub page for the theme with installation instructions.
 
 You will need Git installed to clone the theme files. Get it with
 
@@ -63,12 +63,14 @@ Now navigate to your site themes folder and clone the theme repository
 
 At this point I recommend you change the permissions on this folder. You can do with with a `chmod` command if you want, but in Ubuntu it's easier to just right click on the folder you just cloned, click "Permissions", and change everything to "Access files". Then click "Change Permissions for Enclosed Files" and once again set it all to "Access files".
 
-The reason for this is that this is recognized as an existing Git repository, and if you make changes inside it Git won't detect changes but won't let you commit or push them.
+The reason for this is that this is recognized as an existing Git repository, and if you make changes inside it Git will alert you of changes but won't let you commit or push them. If that happens you can run `git reset --hard` to undo uncommited changes.
 
 Another option is to include the themes path in your site's `.gitignore` file later on, but I personally wanted to include my theme files in my site's repository.
 
+If you only plan on uploading your public site files and not your Hugo source files, then you don't need to worry about locking the permission.
+
 ### Adding content
-Hugo content is written in the Markdown language. You can read about [Hugo's Markdown syntax here](https://sourceforge.net/p/hugo-generator/wiki/markdown_syntax/).
+Hugo content is written in the Markdown language. You can read about [Hugo's Markdown flavor syntax here](https://sourceforge.net/p/hugo-generator/wiki/markdown_syntax/).
 
 My theme came with a sample site, and I hope yours does too. If not, check out the quickstart guide and read about adding content. I copied my example site files into my main site directory. To view the site locally, run
 
@@ -80,7 +82,7 @@ in a terminal from your site directory. It will build the static content and hos
 #### Content
 Go to your site's `content` folder. This is where the Markdown files are stored; these serve as your blog posts. At the start of each file is some meta data about the post like title and date. I recommend you use one of the example posts as a starting point. Get rid of parameters you don't need and replace the post content with some of your own. Make sure that none of your changes break the site.
 
-The other important file you will need to change is your site's `config.toml` file. You will most likely need to change the `baseURL` variable here, since it is used all throughout your site to make links to posts and resources. You can also change your site's title and other meta data. Read the ReadMe on your theme's GitHub page for more information about the parameters here.
+The other important file you will need to change is your site's `config.toml` file. You will most likely need to change the `baseURL` variable here, since it is used all throughout your site to make links to posts and resources. You can also change your site's title and other meta data. Read the README on your theme's GitHub page for more information about the parameters here.
 
 The last step is to simply run
 
@@ -135,6 +137,9 @@ Also, you may want to host your Hugo source files on GitHub like I did. GitHub P
 ## Further Customization
 There's too much information for me to go over, but if you know how to use HTML, CSS, and JavaScript you can completely customize your site. Earlier I told you to lock your theme files, so if you want to make changes just copy to file you want to change and add it to you site directory. The copied file will override the theme file. This also makes it easy to revert changes if something goes wrong.
 
+Your browser's inspect element feature is a great way to pinpoint the code behind the layout you're seeing. It helps for debugging links and styling.
+
 Hugo uses its own "Go" language to template the HTML files that make your site structured how it is. These files are located in the theme's `layouts` folder. Play around with these and [read about how the templates work](https://gohugo.io/templates/go-templates/). Also [read about shortcodes](https://gohugo.io/extras/shortcodes/) to add custom elements to your posts. Lastly, Hugo has a great [help forum](https://discourse.gohugo.io/) for any other questions.
+
 
 Good luck!
