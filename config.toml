@@ -21,7 +21,7 @@ disqusShortname = "energize-andover-blog"
 	# Disqus comment
 	disqusShortname = "energize-andover-blog"
 	# Disable disqus comments by set `enableDisqus = "false"`
-	enableDisqus = false
+	enableDisqus = true
 
 	# Duoshuo comment
 	duoshuoShortname = "your_duoshuo_short_name"
