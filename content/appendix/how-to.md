@@ -19,9 +19,13 @@ At the time of this posting, I am running 64-bit Ubuntu 16.04 LTS on an HP Elite
 # Hugo
 
 ### Description
-There are many ways to host a website. Most popular content management systems (CMS) like Wordpress or Weebly process your web requests on a server, which builds the static content and sends it to your computer's browser. This makes it conveinent to manage, but it requires a server to be available to process these requests. It also is slower because the page has to be built before it is received by your browser. Most websites can only function this way because their content is never fixed (think Facebook, Google, Youtube, etc)
+There are many ways to host a website. Most popular content management systems (CMS) like Wordpress or Weebly process your web requests on a server, which builds the static content and sends it to your computer's browser. This makes it conveinent to manage, but it requires a server to be available to process these requests. It is slower because the page has to be built before it is received by your browser. Most websites can only function this way because their content is never fixed (think Facebook, Google, Youtube, etc)
 
 However, for a blog, the only content would exist there is the content you put there. Enter static site generators. These programs let you easily create site content without manually writing the code for it. When it's time to publish, the static site tool will build the appropriate HTML, CSS, and JavaScript into the appropriate file structure. This lets you host the site on a static server like GitHub.
+
+The most popular static site generator is probably Jekyll. It even is [built-into GitHub pages](https://help.github.com/articles/using-jekyll-as-a-static-site-generator-with-github-pages/) if you don't want to install it on your computer, however this method only supports a [very limited set of themes](https://pages.github.com/themes/). This would be the easiest way to quickly get set up on GitHub Pages but it would severly limit your ability to customize your site layout.
+
+Instead, I picked Hugo as my static site generator. I found it easier to set up because I do not have experience with Ruby (which Jekyll relies on).
 
 ### Setup
 
