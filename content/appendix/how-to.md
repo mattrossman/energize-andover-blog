@@ -111,7 +111,7 @@ Now run
 
 	git commit -m "My first commit!"
 
-This confirms your changed files that were staged.
+This confirms your changed files that were staged. 
 
 ### Pushing your changes
 Up until this point, everything is still happening locally on your computer. To sync your local master copy with the remote one, run
@@ -121,6 +121,12 @@ Up until this point, everything is still happening locally on your computer. To 
 You'll have to enter your login credentials to push these remote changes. If you want to avoid logging in every time, [follow this guide](https://stackoverflow.com/questions/8588768/git-push-username-password-how-to-avoid) to set up an RSA SSH key.
 
 Refresh your GitHub repo page and see if the files were pushed correctly. When you see that they've appeared, click "Settings" and scroll down to "GitHub Pages". Set the source to "master branch" and refresh until you get a green publish confirmation above it. It should provide a URL that looks like `https://username.github.io/repo-name/`. Click it and you should see your site hosted online! If your styling is messed up, it's prbably because your `baseURL` is not configured properly in your `config.toml` file. Copy your site's url and paste it into the config file. Pay attention to the trailing backslash! Now rebuild it, add the changes to the stage, commit them, and push to the remote again. After a few moments you can refresh and see if your styling is working properly.
+
+## More to Consider
+
+I recommend making a shell script that runs all the necessary commands to build and publish your site. My script builds the site, displays the changes, and asks confirmation if I want to commit and publish those changes. That way I can quickly publish my local changes in one step.
+
+Also, you may want to host your Hugo source files on GitHub like I did. GitHub Pages can read static site content from a few different sources. You can host all your static content on a "gh-pages" branch and keep just your Hugo content on the "master" branch (this is what I did). I won't go into all of the details for that here.
 
 ## Further Customization
 There's too much information for me to go over, but if you know how to use HTML, CSS, and JavaScript you can completely customize your site. Earlier I told you to lock your theme files, so if you want to make changes just copy to file you want to change and add it to you site directory. The copied file will override the theme file. This also makes it easy to revert changes if something goes wrong.
