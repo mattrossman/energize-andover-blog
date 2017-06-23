@@ -943,3 +943,14 @@ a.symbol:hover {
 .page-tags .tags:hover a {
     color: #5694f1;
 }
+
+.read-more-handle {
+    float:left
+}
+
+/* COMMENT COUNT */
+
+.disqus-comment-count {
+    float:right
+}
+

@@ -1,5 +1,5 @@
 <ul id="post-list">
-    {{ range where (.Paginator 5).Pages "Params.hidden" "ne" "true" }}
+    {{ range where .Paginator.Pages "Params.hidden" "ne" "true" }}
     {{ $url := replace .Permalink .Site.BaseURL "" }}
         {{ if ne $url "about/" }}
             <li>
@@ -7,8 +7,8 @@
                 <a href='{{ .Permalink }}'>
                     {{ .Title }} <h2>{{ .Description | markdownify }} </h2>
 		    <font color="#505050">
-			<h6 float=left>. . . (read more) </h6>
-			<h6 class="disqus-comment-count" data-disqus-url="{{ .Permalink }}" float=right> <br> </h6>
+			<h6 class="read-more-handle">. . . (read more) </h6>
+			<h6 class="disqus-comment-count" data-disqus-url="{{ .Permalink }}"> <br> </h6>
 		    </font>
                 </a>
             </li>
