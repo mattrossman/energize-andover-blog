@@ -14,7 +14,7 @@ weight: 10
 # Introduction
 This guide explains how I went about hosting this blog.
 
-At the time of this posting, I am running 64-bit Ubuntu 16.04 LTS on an HP EliteBok 8460p.
+At the time of this posting, I am running 64-bit Ubuntu 16.04 LTS on an HP EliteBook 8460p.
 
 # Hugo
 
