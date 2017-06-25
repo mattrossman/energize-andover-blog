@@ -70,7 +70,7 @@ Another option is to include the themes path in your site's `.gitignore` file la
 If you only plan on uploading your public site files and not your Hugo source files, then you don't need to worry about locking the permission.
 
 ### Adding content
-Hugo content is written in the Markdown language. You can read about [Hugo's Markdown flavor syntax here](https://sourceforge.net/p/hugo-generator/wiki/markdown_syntax/).
+Hugo content is written in the Markdown language. You can read about [Hugo's flavor of Markdown syntax here](https://sourceforge.net/p/hugo-generator/wiki/markdown_syntax/).
 
 My theme came with a sample site, and I hope yours does too. If not, check out the quickstart guide and read about adding content. I copied my example site files into my main site directory. To view the site locally, run
 
@@ -78,13 +78,13 @@ My theme came with a sample site, and I hope yours does too. If not, check out t
 
 in a terminal from your site directory. It will build the static content and host it locally on your computer. Ctrl+Click the link in terminal to open it in a browser and see how your site looks. As you make changes to your Hugo files, the server will automatically rebuild your site.
 
-### Customizing it
-#### Content
 Go to your site's `content` folder. This is where the Markdown files are stored; these serve as your blog posts. At the start of each file is some meta data about the post like title and date. I recommend you use one of the example posts as a starting point. Get rid of parameters you don't need and replace the post content with some of your own. Make sure that none of your changes break the site.
 
 The other important file you will need to change is your site's `config.toml` file. You will most likely need to change the `baseURL` variable here, since it is used all throughout your site to make links to posts and resources. You can also change your site's title and other meta data. Read the README on your theme's GitHub page for more information about the parameters here.
 
-The last step is to simply run
+### Generating the Static Files
+
+To turn your templates and content files into static web files, just run
 
 	hugo
 
