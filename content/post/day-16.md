@@ -58,7 +58,9 @@ Here are a few Kernel Density Estimate plots of subsets of the data with a dotte
 Far from perfect. The night and summer plots look pretty good but the weekend plot is quite off. Currently I'm making these judgements off intuition. It feels like the estimation plots should wrap more tightly around the left side, especially since our goal is reducing power usage.
 
 #### Log-Normal Distributions
-Oftentimes when a parameter has a lower bound it follows a [log-normal distribution](https://en.wikipedia.org/wiki/Log-normal_distribution). This is when the natural log of the values follow a normal distribution. This creates a right skew in the expected model.
+Oftentimes when a parameter has a lower bound it follows a [log-normal distribution](https://en.wikipedia.org/wiki/Log-normal_distribution). This is when the natural log of the values follow a normal distribution. This creates a right skew in the expected models:
+
+{{< linked-img "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png" >}}
 
 For example, here is the natural log adjusted distribution of the weekend data:
 

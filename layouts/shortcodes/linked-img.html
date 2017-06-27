@@ -2,7 +2,9 @@
 
 This lets you place an image that:
 1. Links to its own source
-2. Builds a path by /images/month/day/param to make image placement easier.
+2. Can build a path by /images/month/day/param to make image placement easier.
+
+The latter option applies when the URL does not begin with "http"
 
 Example:
 
@@ -18,11 +20,14 @@ Note to remove the extra spaces between brackets, they are placed so this commen
 
 {{ $month := .Page.Date.Format "01" }}
 {{ $day   := .Page.Date.Format "02" }}
-{{ $src   := printf "%simages/%s/%s/%s" .Site.BaseURL $month $day (.Get 0) }}
+{{ $.Scratch.Add "src" (.Get 0) }}
+{{ if ne (substr (.Get 0) 0 4) "http" }}
+    {{ $.Scratch.Set "src" (printf "%simages/%s/%s/%s" .Site.BaseURL $month $day (.Get 0)) }}
+{{ end }}
 
 <div align="center">
-	<a href={{ $src }}>
-	   <img src={{ $src }} alt="{{ .Get 0 }} not found" title = {{ .Get 0 }} />
+	<a href={{ $.Scratch.Get "src" }}>
+	   <img src={{ $.Scratch.Get "src" }} alt="{{ .Get 0 }} not found" title = {{ .Get 0 }} />
 	</a>
 </div>
 
