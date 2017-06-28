@@ -1,0 +1,318 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Making Your Own GitHub Pages Blog &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Making Your Own GitHub Pages Blog
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 23, 2017
+                    · 1627 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p><strong>Guide Contents:</strong>
+<nav id="TableOfContents">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#hugo">Hugo</a>
+<ul>
+<li>
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#setup">Setup</a></li>
+<li><a href="#picking-a-theme">Picking a Theme</a></li>
+<li><a href="#adding-content">Adding content</a></li>
+<li><a href="#generating-the-static-files">Generating the Static Files</a></li>
+</ul></li>
+<li><a href="#github-pages">GitHub Pages</a>
+<ul>
+<li><a href="#setting-up-your-git-repo">Setting up your Git Repo</a></li>
+<li><a href="#pushing-your-changes">Pushing your changes</a></li>
+</ul></li>
+<li><a href="#more-to-consider">More to Consider</a></li>
+<li><a href="#further-customization">Further Customization</a></li>
+</ul></li>
+</ul>
+</nav>
+</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>This guide explains how I went about hosting this blog.</p>
+
+<p>At the time of this posting, I am running 64-bit Ubuntu 16.04 LTS on an HP EliteBook 8460p.</p>
+
+<h1 id="hugo">Hugo</h1>
+
+<h3 id="description">Description</h3>
+
+<p>There are many ways to host a website. Most popular content management systems (CMS) like Wordpress or Weebly process your web requests on a server, which builds the static content and sends it to your computer&rsquo;s browser. This makes it convenient to manage, but it requires a server to be available to process these requests. It is slower because the page has to be built before it is received by your browser. Most websites can only function this way because their content is never fixed (think Facebook, Google, Youtube, etc)</p>
+
+<p>However, for a blog, the content doesn&rsquo;t change from session to session. Enter static site generators. These programs let you easily create site content without manually writing the code for it. When it&rsquo;s time to publish, the static site tool will build the HTML, CSS, and JavaScript into the appropriate file structure. This lets you host the site on a static server like GitHub.</p>
+
+<p>The most popular static site generator is probably Jekyll. It even is <a href="https://help.github.com/articles/using-jekyll-as-a-static-site-generator-with-github-pages/">built-into GitHub pages</a> if you don&rsquo;t want to install it on your computer, however this method only supports a <a href="https://pages.github.com/themes/">very limited set of themes</a>. This would be the easiest way to quickly get set up on GitHub Pages but it would severly limit your ability to customize your site layout.</p>
+
+<p>Instead, I picked Hugo as my static site generator. I found it easier to set up because I do not have experience with Ruby (which Jekyll relies on).</p>
+
+<h3 id="setup">Setup</h3>
+
+<p>I recommend you read the <a href="https://gohugo.io/overview/quickstart/">Hugo Quickstart Guide</a> if you get stuck, but I&rsquo;ll be going over the essentials.</p>
+
+<p>To get Hugo, either <a href="https://gohugo.io/">download and install it from their site</a> or run</p>
+
+<pre><code>sudo apt-get install hugo
+</code></pre>
+
+<p>in the terminal.</p>
+
+<p>Now, navigate to a location where you would like to store your site files. I stored mine in my <code>Documents</code> folder.</p>
+
+<pre><code>cd path/to/site/location
+</code></pre>
+
+<p>To initialize your Hugo project, run</p>
+
+<pre><code>hugo new site my-site-name
+</code></pre>
+
+<p>with the site name you desire.</p>
+
+<h3 id="picking-a-theme">Picking a Theme</h3>
+
+<p>Next, <a href="https://themes.gohugo.io/">pick a theme from Hugo&rsquo;s website</a>. You can find themes anywhere and even make your own, but this resource has a nice catalog. Click the <strong>Blog</strong> tag on the right side of the page to get themes optimized for blogs.</p>
+
+<p>Most of these themes should include a demo so you can get a feel for the site layout. You can customize everything later, but it helps to get a simple foundation to work off of. Click download once you find one you like. It will probably direct you to a GitHub page for the theme with installation instructions.</p>
+
+<p>You will need Git installed to clone the theme files. Get it with</p>
+
+<pre><code>sudo apt-get install git
+</code></pre>
+
+<p>Now navigate to your site themes folder and clone the theme repository</p>
+
+<pre><code>cd my-site-name/themes
+git clone https://github.com/example-user/example-theme-name
+</code></pre>
+
+<p>At this point I recommend you change the permissions on this folder. You can do with with a <code>chmod</code> command if you want, but in Ubuntu it&rsquo;s easier to just right click on the folder you just cloned, click &ldquo;Permissions&rdquo;, and change everything to &ldquo;Access files&rdquo;. Then click &ldquo;Change Permissions for Enclosed Files&rdquo; and once again set it all to &ldquo;Access files&rdquo;.</p>
+
+<p>The reason for this is that this is recognized as an existing Git repository, and if you make changes inside it Git will alert you of changes but won&rsquo;t let you commit or push them. If that happens you can run <code>git reset --hard</code> to undo uncommited changes.</p>
+
+<p>Another option is to include the themes path in your site&rsquo;s <code>.gitignore</code> file later on, but I personally wanted to include my theme files in my site&rsquo;s repository.</p>
+
+<p>If you only plan on uploading your public site files and not your Hugo source files, then you don&rsquo;t need to worry about locking the permission.</p>
+
+<h3 id="adding-content">Adding content</h3>
+
+<p>Hugo content is written in the Markdown language. You can read about <a href="https://sourceforge.net/p/hugo-generator/wiki/markdown_syntax/">Hugo&rsquo;s flavor of Markdown syntax here</a>.</p>
+
+<p>My theme came with a sample site, and I hope yours does too. If not, check out the quickstart guide and read about adding content. I copied my example site files into my main site directory. To view the site locally, run</p>
+
+<pre><code>hugo server
+</code></pre>
+
+<p>in a terminal from your site directory. It will build the static content and host it locally on your computer. Ctrl+Click the link in terminal to open it in a browser and see how your site looks. As you make changes to your Hugo files, the server will automatically rebuild your site.</p>
+
+<p>Go to your site&rsquo;s <code>content</code> folder. This is where the Markdown files are stored; these serve as your blog posts. At the start of each file is some meta data about the post like title and date. I recommend you use one of the example posts as a starting point. Get rid of parameters you don&rsquo;t need and replace the post content with some of your own. Make sure that none of your changes break the site.</p>
+
+<p>The other important file you will need to change is your site&rsquo;s <code>config.toml</code> file. You will most likely need to change the <code>baseURL</code> variable here, since it is used all throughout your site to make links to posts and resources. You can also change your site&rsquo;s title and other meta data. Read the README on your theme&rsquo;s GitHub page for more information about the parameters here.</p>
+
+<h3 id="generating-the-static-files">Generating the Static Files</h3>
+
+<p>To turn your templates and content files into static web files, just run</p>
+
+<pre><code>hugo
+</code></pre>
+
+<p>This builds all the files for your site and places them in a <code>public</code> folder in your site directory.</p>
+
+<h2 id="github-pages">GitHub Pages</h2>
+
+<h3 id="setting-up-your-git-repo">Setting up your Git Repo</h3>
+
+<p>By now you already have Git installed on your computer. Go to <a href="https://github.com">GitHub&rsquo;s website</a> and make an account if you don&rsquo;t already have one.</p>
+
+<p>Now make a new repository and give it a simple name. You don&rsquo;t need to initialize the repository with a README.</p>
+
+<p>Now in your terminal navigate to that <code>public</code> folder your built. We&rsquo;re going to make this folder our Git repository. Run</p>
+
+<pre><code>git init
+</code></pre>
+
+<p>This makes a hidden <code>.git</code> file that holds all the Git magic. Now you need to connect your local repository with the remote one you made on GitHub.</p>
+
+<pre><code>git remote add origin https://github.com/username/repo-name.git
+</code></pre>
+
+<p>This sets the destination URL when you want to push changes later on. Now run</p>
+
+<pre><code>git add --all
+</code></pre>
+
+<p>This adds the changes you made in your repository to the &ldquo;stage&rdquo; to be &ldquo;committed&rdquo; later on. You can see the changes that are stages by running</p>
+
+<pre><code>git status
+</code></pre>
+
+<p>Now run</p>
+
+<pre><code>git commit -m &quot;My first commit!&quot;
+</code></pre>
+
+<p>This confirms your changed files that were staged.</p>
+
+<h3 id="pushing-your-changes">Pushing your changes</h3>
+
+<p>Up until this point, everything is still happening locally on your computer. To sync your local master copy with the remote one, run</p>
+
+<pre><code>git push origin master
+</code></pre>
+
+<p>You&rsquo;ll have to enter your login credentials to push these remote changes. If you want to avoid logging in every time, <a href="https://stackoverflow.com/questions/8588768/git-push-username-password-how-to-avoid">follow this guide</a> to set up an RSA SSH key.</p>
+
+<p>Refresh your GitHub repo page and see if the files were pushed correctly. When you see that they&rsquo;ve appeared, click &ldquo;Settings&rdquo; and scroll down to &ldquo;GitHub Pages&rdquo;. Set the source to &ldquo;master branch&rdquo; and refresh until you get a green publish confirmation above it. It should provide a URL that looks like <code>https://username.github.io/repo-name/</code>. Click it and you should see your site hosted online! If your styling is messed up, it&rsquo;s probably because your <code>baseURL</code> is not configured properly in your <code>config.toml</code> file. Copy your site&rsquo;s url and paste it into the config file. Pay attention to the trailing backslash! Now rebuild it, add the changes to the stage, commit them, and push to the remote again. After a few moments you can refresh and see if your styling is working properly.</p>
+
+<h2 id="more-to-consider">More to Consider</h2>
+
+<p>I recommend making a shell script that runs all the necessary commands to build and publish your site. My script builds the site, displays the changes, and asks confirmation if I want to commit and publish those changes. That way I can quickly publish my local changes in one step.</p>
+
+<p>Also, you may want to host your Hugo source files on GitHub like I did. GitHub Pages can read static site content from a few different sources. You can host all your static content on a &ldquo;gh-pages&rdquo; branch and keep just your Hugo content on the &ldquo;master&rdquo; branch (this is what I did). I won&rsquo;t go into all of the details for that here.</p>
+
+<h2 id="further-customization">Further Customization</h2>
+
+<p>There&rsquo;s too much information for me to go over, but if you know how to use HTML, CSS, and JavaScript you can completely customize your site. Earlier I told you to lock your theme files, so if you want to make changes just copy to file you want to change and add it to you site directory. The copied file will override the theme file. This also makes it easy to revert changes if something goes wrong.</p>
+
+<p>Your browser&rsquo;s inspect element feature is a great way to pinpoint the code behind the layout you&rsquo;re seeing. It helps for debugging links and styling.</p>
+
+<p>Hugo uses its own &ldquo;Go&rdquo; language to template the HTML files that make your site structured how it is. These files are located in the theme&rsquo;s <code>layouts</code> folder. Play around with these and <a href="https://gohugo.io/templates/go-templates/">read about how the templates work</a>. Also <a href="https://gohugo.io/extras/shortcodes/">read about shortcodes</a> to add custom elements to your posts. Lastly, Hugo has a great <a href="https://discourse.gohugo.io/">help forum</a> for any other questions.</p>
+
+<p>Good luck!</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

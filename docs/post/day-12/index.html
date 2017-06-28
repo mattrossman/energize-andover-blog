@@ -1,0 +1,333 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 12 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 12
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 21, 2017
+                    · 710 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>While I wait on the temeprature data report, I&rsquo;ll transition back to the night data. Before I was just looking at distributions, now I want to see the plots and look for any patterns.</p>
+
+<p>As a reminder, I&rsquo;m saying &lsquo;night&rsquo; data lies between 11:00PM and 4:00AM</p>
+
+<h2 id="downsampling-the-night-data">Downsampling the Night Data</h2>
+
+<p>The plots thusfar have been pretty cluttered because I&rsquo;m looking at every timestamp entry from every day of the sample region. At the moment I&rsquo;m mostly looking for outlier days, so I can clean up the plots by first downsampling my data to broader time entries.</p>
+
+<p>I can say</p>
+
+<p><code>night_main.resample('D').mean()</code></p>
+
+<p>to break my night series into chunks by the day on their timestamp, and then find the average of each chunk. This replaces a day&rsquo;s worth of variation with a single data point representing the mean value of that day. I pick the mean here rather than the median because if there is an outlier in that day, I want to be able to detect it. The mean will be more affected by outliers than the median.</p>
+
+<p>Here&rsquo;s the plot with every single entry:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/21/cluttered.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/21/cluttered.png alt="cluttered.png not found" title = cluttered.png />
+	</a>
+</div>
+
+
+
+
+<p>And here&rsquo;s the mean downsampled plot:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/21/uncluttered.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/21/uncluttered.png alt="uncluttered.png not found" title = uncluttered.png />
+	</a>
+</div>
+
+
+
+
+<p>You can see how much cleaner it is when just looking at one point per day.</p>
+
+<p>There is a lot of weird variation going on here. The average power values range from 72 to 230 kW. If this was the daytime, the variation would make sense. But between 11 and 4 the school should be empty.</p>
+
+<p>Weirder still is the fact that there&rsquo;s a surge of night power usage midway through July 2016 when school isn&rsquo;t even in session. I&rsquo;m going to focus in on that Jul-Oct period and narrow down what&rsquo;s causing the increase.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/21/jun-oct_no-main.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/21/jun-oct_no-main.png alt="jun-oct_no-main.png not found" title = jun-oct_no-main.png />
+	</a>
+</div>
+
+
+
+
+<p>It looks like the gym is the biggest culprit here, along with the Collins Center. Anil mentioned I should ignore the Collins Center as it is rented out for various events throughout the year.</p>
+
+<h2 id="temperature-update">Temperature update</h2>
+
+<p>I just got an email with my finished temperature data order. Time to see what kind of data I&rsquo;m dealing with.</p>
+
+<p>It&rsquo;s a CSV file with timestamps, station name, min, max, and observed temperatures. I can ignore the station name column, it has the same value for every entry. There are some values entered as <code>-9999</code> which are presumably errors. In the <code>read_csv</code> function I can set <code>na_values=-9999</code> to avoid having ridiculous outliers.</p>
+
+<pre><code>df_temp = pd.read_csv('resources/temperature.csv',
+                  index_col=1,
+                  na_values=-9999).drop('STATION',axis=1)
+
+df_temp.index = pd.to_datetime(df_temp.index,format='%Y%m%d')
+</code></pre>
+
+<p>This gives me a nice dataframe of time indexed temperature data. Here&rsquo;s a plot of all the data I got:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/21/temp.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/21/temp.png alt="temp.png not found" title = temp.png />
+	</a>
+</div>
+
+
+
+
+<p>It follows a pretty smooth seasonal wave. To look for a relationship between mean power usage (using my downsampled nighttime data) and temperature, I plotted one against the other:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/21/main_v_temp_night.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/21/main_v_temp_night.png alt="main_v_temp_night.png not found" title = main_v_temp_night.png />
+	</a>
+</div>
+
+
+
+
+<p>It&rsquo;s an interesting tilted U-shape. Nighttime power usage sinks on days that are 50°F, but rises on hotter or colder days. In the hot seasons, the gym and lighting usage contribute to the rise, while on the colder days it&rsquo;s the kitchen and emergency power mains that see a noticable increase:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/21/ke_v_temp_night.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/21/ke_v_temp_night.png alt="ke_v_temp_night.png not found" title = ke_v_temp_night.png />
+	</a>
+</div>
+
+
+
+
+<p>Switching over to a time plot of the kitchen and emergency power usage:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/21/ke_night.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/21/ke_night.png alt="ke_night.png not found" title = ke_night.png />
+	</a>
+</div>
+
+
+
+
+<p>This is not what I would have expected. I would imagine emergency power only gets used in case the power gets knocked out, and the kitchen should be using a constant amount of power at night year-round.</p>
+
+<p>In 2016 alone, there were exactly 100 days when the average nighttime kitchen/emergency power usage was above 40 kW. It would help if I had a better understanding of the sources of this column&rsquo;s data. Maybe it actually is used for charging an emergency power bank, so in the colder months it is used in preperation of power issues? Or maybe the lunch staff has been cooking up some midnight snacks&hellip;</p>
+
+<h2 id="detecting-data-disjointedness">Detecting data disjointedness</h2>
+
+<p>Rather than me manually finding things like the odd split in the kitchen/emergency data, I want to make code that will find patterns like this for me. This code could then be run on any dataset that is supposed to be constant (e.g. nighttime data) but probably not on data with expected variation.</p>
+
+<p>Some patterns it could look for:</p>
+
+<ul>
+<li>Day of the week</li>
+<li>Week of the month</li>
+<li>Month of the year</li>
+<li>Time of day</li>
+<li>Outside temperature
+<br><br>
+I will begin work on this next time.</li>
+</ul>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

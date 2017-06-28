@@ -1,0 +1,204 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 3 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 3
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 8, 2017
+                    · 652 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="quick-blog-update">Quick blog update</h2>
+
+<p>Just wanted to share, I was playing around with Hugo today and learned about <a href="http://gohugo.io/extras/shortcodes/">shortcodes</a>. I was looking for a better way to handle images. Previously I would have to type <code>![[alt](/path/to/img)](/path/to/img)</code> to have self-linking images. Instead, I made a shortcode that just needs the path once to create the linked image. Furthermore, I was manually typing the image paths, which were organized as <code>/month/day/file.png</code>. Now the shortcode reads the post&rsquo;s date and inserts the month and day straight into the path, so all I need are file names. So I just need to say:</p>
+
+<pre><code>{{&lt; linked-img file.png &gt;}}
+</code></pre>
+
+<p>The code is available <a href="https://github.com/mattrossman/energize-andover-blog/blob/master/layouts/shortcodes/linked-img.html">here.</a></p>
+
+<h2 id="back-to-the-analysis">Back to the analysis</h2>
+
+<p>Yesterday I got a feel for the sample data distribution. For now I will continue to focus on the night data since it&rsquo;s reasonable to assume that there should be little power usage or variation going on during these hours.</p>
+
+<p>With a normal distribution, the two constants we would want to consider are the mean ( $\mu$ ) and the standard deviation ( $\sigma$ ). However, as we saw yesterday, our data set does not follow a normal distrubution. I am not certain that it even <em>should</em> follow a normal distribution. For example, suppose a building uses very minimal (close to zero) power at night. There will naturally be some variation extending to the right, but it&rsquo;s not possible to use negative power so there will not be much room for variation on the left. This is not likely to happen, but it still demonstrates how its easy for data points to pile up on the lower end of the scale, causing a tail to emerge off the right. The goal therefore is to reduce the presence of this tail.</p>
+
+<p>Since we are not dealing with a normal distribution, it would be more appropriate to consider the data&rsquo;s median ( $\eta$ ) and median absolute deviation, or MAD. The median is less subject to the influence of outliers or a tail because it is concerned with the midpoint according to count rather than by value. The same benefit applies to the MAD, which otherwise is comparable to the standard deviation.</p>
+
+<p>The MAD is calculated as follows:
+$$ MAD = median( | x_{i} - x | )$$</p>
+
+<p>This can then be used as an estimation of the population&rsquo;s true standard deviation using the following equation:</p>
+
+<p>$$ \hat{\sigma}=1.4826 \cdot MAD $$</p>
+
+<p>This specific equation assumes that the population is actually normal. A full explaination of the <code>1.4826</code> constant can be found <a href="https://en.wikipedia.org/wiki/Median_absolute_deviation#Relation_to_standard_deviation">here.</a></p>
+
+<p>This isn&rsquo;t quite right though. We don&rsquo;t really know if the population (where the &lsquo;population&rsquo; refers to the power usage of all similar buildings) is normally distributed or not. Our sample shows a skew, and as I explained above, it&rsquo;s not unreasonable to expect some skew.</p>
+
+<p>Also, in our case we don&rsquo;t really care about the left half of the data, at least for this calculation. All we&rsquo;re looking for is abnormally high data points, so a &lsquo;low&rsquo; outlier is just a pleasant surprise. I&rsquo;ll worry about the data spread at a later time. Splitting the data into two halves is the same strategy described in <a href="https://eurekastatistics.com/using-the-median-absolute-deviation-to-find-outliers/">this guide.</a></p>
+
+<p>Working with the code I started yesterday, I can perform the split with this:</p>
+
+<pre><code># extract the main series from night dataframe
+s_night = df_night['Main (kW)']
+
+# calculate its median
+night_med = s_night.median()
+
+# locate the values which are greater than the median
+s_night_right = s_night.loc[s_night&gt;night_med]
+</code></pre>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/08/main_night_right.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/08/main_night_right.png alt="main_night_right.png not found" title = main_night_right.png />
+	</a>
+</div>
+
+
+
+
+<p>Here&rsquo;s the plot of the selected data. It&rsquo;s roughly a slice from the right side of the peak. This is the part of the data that I&rsquo;m going to want to analyze for values that have an abnormal variation.</p>
+
+<p>Unfortunately, pandas is sneaky and provides a <code>Pandas.Series.mad()</code> function, but it&rsquo;s actually for the <strong>mean</strong> absolute deviation, not the <strong>median</strong> absolute deviation. Tomorrow I&rsquo;ll see if there&rsquo;s already one in existence, otherwise I&rsquo;ll just make the function myself.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

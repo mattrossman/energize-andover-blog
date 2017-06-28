@@ -1,0 +1,256 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 10 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 10
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 19, 2017
+                    · 1048 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>The pandas <code>rolling</code> object has a few built in commands that I have already made use of, like <code>.median()</code>. But for broader scenarios, you can use the <code>.apply()</code> function to, as the name suggests, apply your own function across the windows.</p>
+
+<p>The function must accept a Numpy array (I wish it was just a Series instead) and return a single number. For the time being I made a temporary function to handle Numpy median absolute deviations.</p>
+
+<pre><code>def np_mad(nda):
+    ser = pd.Series(nda)
+    return abs(ser-ser.median()).median()
+</code></pre>
+
+<p>I&rsquo;m more familiar with Pandas than Numpy so for convenience I simply converted the input Numpy array into a Pandas series, then performed the usual MAD calculation on it. If I become more comfortable with Numpy I can change the function but for now Pandas is my easiest option for item-wise calculations.</p>
+
+<p>I then used Matplotlib&rsquo;s <code>.fill_between()</code> feature to highlight the regions above and below the rolling median. I will set the bounds as $median \pm 2.5\hat{\sigma}$. The result looks like this:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/19/rolling_mad.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/19/rolling_mad.png alt="rolling_mad.png not found" title = rolling_mad.png />
+	</a>
+</div>
+
+
+
+
+<p>The shaded region encloses values deemed acceptable. The points where the power plot moves past the shaded bounds signify problem areas.</p>
+
+<p>Compared to the basic horizontal line I started with last time, this is a much more dynamic indicator of abnormality because the acceptable region changes is value and range according to the trend and volatility of that time period.</p>
+
+<h2 id="variables">Variables</h2>
+
+<p>The qualification for abnormality is determined by a couple of factors that are not set in stone. First is the window size. I explained yesterday my reasoning for selecting 533, but if you are looking at a shorter sample you would want a smaller window. The smaller your window, the more your medians and MADs are affected by sudden changes.</p>
+
+<p>There&rsquo;s also the factors that I am applying to the MADs. I&rsquo;m pretty sure the normal scaling factor is good to keep, but I&rsquo;m not set on the 2.5 value. Perhaps 2 or 3 would be better. I played around with this value on my own and found 2.5 to be a happy medium that didn&rsquo;t flag too many points but didn&rsquo;t ignore too many.</p>
+
+<p>One thing to consider would be getting rid of this variable altogether. Instead of specifying a threshold value, we could calculate the ratio of each value&rsquo;s distance from the median over the MAD, and rank them from most abnormal to least abnormal. That would let the adminstrator simply take care of the worst offendors as they please.</p>
+
+<h2 id="abstracting-it">Abstracting it</h2>
+
+<p>Given a Series of power usage with datetime indexes and a window size, I want to be returned a Series with datetime indexes of the ratio $\frac{e_{med}}{MAD}$ where $e_{med}$ represents the residual (deviation) from the median.</p>
+
+<p>I thought this was going to be an annoying process, because when plotting I had to keep stripping indexes and performing data interpolation to avoid errors. But I didn&rsquo;t have to do any of that. Note that I am storing my generic functions in an <code>energize.py</code> module which I am importanting as <code>egz</code>. My sample calculations and plots are performed in a seperate temporary script.</p>
+
+<pre><code>def mad(series):
+    return abs(series-series.median()).median()
+
+&quot;&quot;&quot; mad_rankings: Series, int --&gt; Series
+Returns Series with ratios of median residual / MAD
+uses rolling window of desired size (data point count)
+&quot;&quot;&quot;
+def mad_rankings(series, w_size):
+    roll = series.rolling(window=w_size, center=True, min_periods=1)
+    meds = roll.median()
+    # convert numpy nd-array into pandas series before calculation
+    mads = roll.apply(lambda nda: mad(pd.Series(nda)))
+    return (series-meds)/mads
+</code></pre>
+
+<p>Now if I say</p>
+
+<pre><code>school_main[egz.mad_rankings(school_main, 533)/1.4826 &gt; 2.5]
+</code></pre>
+
+<p>I am handed a series of main power usage entries while school is in session that are more than 2.5 estimated population standard deviations from the month-wide median trend. Isn&rsquo;t that a mouthful!</p>
+
+<h2 id="a-more-intuitive-window">A more intuitive window</h2>
+
+<p>I don&rsquo;t think my current window implementation is ideal because data point count is not user-friendly. Also, jumping over gaps disrupts seasonal shift scale (e.g. the &lsquo;month&rsquo; that includes winter break spans more than a month of actual time)</p>
+
+<p>I should at least try switching to a strictly time-based approach and see how disjointed the result looks.</p>
+
+<p>It&rsquo;s not as simple as just changing the <code>window</code> argument to one of the predefined pandas offset string values. If I say <code>window='M'</code> I get the error:</p>
+
+<pre><code>ValueError: &lt;MonthEnd&gt; is a non-fixed frequency
+</code></pre>
+
+<p>Pandas doesn&rsquo;t like the fact that not all months contain the same amount of data. From what I&rsquo;ve found online, the easiest way to remedy this is to resample the data at a fixed frequency. All of the entries that don&rsquo;t have any actual data will be marked null or <code>Nan</code>. To make this more complicated, the sample data isn&rsquo;t really taken at a fixed frequency. A majority of it is at 15 minute intervals, but I see some values at odd times. I don&rsquo;t know how inefficient this would be, but perhaps I could resample at a high detail, like every minute.</p>
+
+<p>I tried this with <code>school_main.reindex(pd.date_range(school_main.index.min(),school_main.index.max(),freq='1min'))</code> but still got the same non-fixed frequency error.</p>
+
+<p>Oddly enough when I use days instead of months, I don&rsquo;t get an error. I assumed the error was because some months are longer than others, but every week is the same duration of time. Oh well. I will just stick with days for now. I can simulate a month by just saying 30 days.</p>
+
+<blockquote>
+<p>Note: time index based rolling windows don&rsquo;t let you use the <code>center</code> feature.</p>
+</blockquote>
+
+<p>Once I change to a time-based window I will have to redo my plotting code, since it is all based on count rather than time index. Here&rsquo;s the new plot:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/19/rolling_mad_timeindex.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/19/rolling_mad_timeindex.png alt="rolling_mad_timeindex.png not found" title = rolling_mad_timeindex.png />
+	</a>
+</div>
+
+
+
+
+<p>You can see the gaps where the plot line jumps suddenly. Those are the gaps in the data. Unfortunately there&rsquo;s no easy way to hide those interpolated lines. Pandas will only show a gap if there&rsquo;s a value marked <code>Nan</code> there. If my data were at a constant requency, I could resample and all the areas with gaps would default to <code>Nan</code>, but since the data is recorded at varying rates I can&rsquo;t do this.</p>
+
+<p>This definitely doesn&rsquo;t look as pretty as the last chart, but the data it represents is a little more useful. It doesn&rsquo;t seem to wrap around the power plot quite as nicely because of the lack of a <code>center</code> option. I&rsquo;m going to have to revise my ranking function to take this into account too. More tomorrow.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

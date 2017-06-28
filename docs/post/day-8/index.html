@@ -1,0 +1,233 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 8 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 8
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 15, 2017
+                    · 666 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>I printed the <a href="http://www.aps1.net/DocumentCenter/View/6795">2016-17 Andover District Calendar</a> and got to work entering the data. Ultimately I organized it into two calendars, one for days with no school entirely (which I inputted as &lsquo;all-day&rsquo; events) and one for half days (to ensure sufficient overlap I entered the events starting from 10:50AM when school gets out and ran until 11:59PM at night).</p>
+
+<p>I exported these <code>.ics</code> files, then imported them into python with my <code>.ical</code> range processor:</p>
+
+<pre><code>no_school = egz.ical_ranges('resources/no_school_2016-17.ics')
+half_day = egz.ical_ranges('resources/half_days_2016-17.ics')
+</code></pre>
+
+<p>The filtering process seemed really smooth:</p>
+
+<pre><code>df_school = egz.time_filter(df_energy,
+                        include = ('9/2/16','6/16/17'),
+                        blacklist = no_school + half_day,
+                        daysofweek=[0,1,2,3,4],
+                        times=('07:40','14:20'))
+</code></pre>
+
+<p>Except that when I looked at the data I was getting, it wasn&rsquo;t completely right.
+First, all of the vacation days were still included because I accidentally exclude <code>exclude</code> instead of <code>blacklist</code>, but I got that sorted out eventually.</p>
+
+<p>Then, I noticed that my half days were not filtering out. Instead of filtering <em>out</em> the half days, I tried solely included the half day ranges to see what was going wrong. The events that should have been starting at 10:50AM were starting at
+2:50PM when school would have already been out, hence why they seemed to be missing.</p>
+
+<h2 id="time-zones">Time zones</h2>
+
+<p>Ultimately, I determined the problem to be a timezone conflict. The ranges that my ical function was outputting were in UTC time, which is 4 hours ahead. Based on how smooth things had been going so far, I assumed it would be easy to convert this object to a different timezone, right?</p>
+
+<p>Not quite. This was an incredibly convoluted and time intensive debugging process. I followed a few tutorials online but none were doing what I wanted. I ended up getting it to work, but the result isn&rsquo;t pretty. I had to overhaul the <code>ical_ranges</code> function and make a helper function that handles the timezone conversion. I also had to add a check to see whether the item was a <code>datetime.datetime</code> object (in which case I would perform the conversion) or just a <code>datetime.date</code> object (in which case there&rsquo;s no time to perform any conversions on. Otherwise the program would throw an error.</p>
+
+<pre><code>&quot;&quot;&quot;
+convert_range_tz : DataRange(datetime.datetime), timezone --&gt; DataRange
+converts the ical default UTC timezone to the desired timezone
+&quot;&quot;&quot;
+def convert_range_tz(range_utc, local_tz):
+    convert = lambda time: pytz.utc.localize(
+        time.replace(tzinfo=None)).astimezone(
+                local_tz).replace(tzinfo=None)
+    return tuple(map(convert,range_utc))
+
+
+&quot;&quot;&quot;
+ical_ranges: File Path --&gt; ListOf DataRanges
+reads the ics file at the given path, and turns the event start and end times
+into data ranges that can be read by the time_filter function
+&quot;&quot;&quot;
+def ical_ranges(file):
+    cal = Calendar.from_ical(open(file,'rb').read())
+    ranges = []
+    cal_tz = pytz.timezone(cal['X-WR-TIMEZONE'])
+    for event in cal.subcomponents:
+        event_range=(event['dtstart'].dt,event['dtend'].dt)
+        if isinstance(event_range[0],datetime.datetime):
+            event_range = convert_range_tz(event_range, cal_tz)
+        ranges.append(event_range)
+    return ranges
+</code></pre>
+
+<p>The conversion process is pretty ugly. It seems like there shouldn&rsquo;t be repetition of that <code>tzinfo=None</code> statement, but that was the only was I could get it to work. The first time it occurs is because the <code>localize</code> function requires that <code>tzinfo</code> is not already set, and the second time is because the resultsing datetime objects gets another timezone attribute tacked on that messes up the pandas indexing. You&rsquo;d think that I could just set <code>tzinfo</code> to the <code>local_tz</code> and it would just work properly, but I can assure you that I tried all the simpler possibilities first and none of them worked.</p>
+
+<p>Anyways, I went back to that filter from the beginning of the post, and now it filters the half days properly. There are 4 remaining low-outlier days, and I cross checked these with online sources to verify that they were snow days. I added these days as a seperate list to the blacklist.</p>
+
+<p>The filter currently runs as:</p>
+
+<pre><code>df_school = egz.time_filter(df_energy,
+                        include = ('9/2/16','6/16/17'),
+                        blacklist = no_school + half_day
+                        + ['2/9/17','2/13/17','3/14/17','3/15/17'],
+                        daysofweek=[0,1,2,3,4],
+                        times=('07:40','14:20'))
+</code></pre>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/15/school_main_16-17.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/15/school_main_16-17.png alt="school_main_16-17.png not found" title = school_main_16-17.png />
+	</a>
+</div>
+
+
+
+
+<p>Now I have a nice unimodal distribution of the main power usage <em>just</em> during school hours. You can visually see that blob sticking off to the right which probably is a sign of power waste.</p>
+
+<p>Tomorrow I will start working on the functional implemetation of anomaly detection.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

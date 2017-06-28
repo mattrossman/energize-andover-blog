@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Energize Andover Summer 2017 Blog</title>
+    <link>https://mattrossman.github.io/energize-andover-blog/post/</link>
+    <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 28 Jun 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Day 17</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-17/</link>
+      <pubDate>Wed, 28 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-17/</guid>
+      <description>Before I get sidetracked, here&amp;rsquo;s a nice resource of statistical tests and their use cases. I also really like this site which goes into great detail on not only how to perform various statistical measures, but also situations when you should (and more importantly shouldn&amp;rsquo;t) use them.
+Daily power models I don&amp;rsquo;t want to ignore the fact that we&amp;rsquo;re dealing with time series data. Most statistical tests are based around random samples with no inherent ordering, but our data has the added factor of ordered time stamps.</description>
+    </item>
+    
+    <item>
+      <title>Day 16</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-16/</link>
+      <pubDate>Tue, 27 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-16/</guid>
+      <description>Sample Data Makeup So far I&amp;rsquo;ve not been very particular about what kind of data sample I&amp;rsquo;m getting. I&amp;rsquo;ve mentioned that the sampling rate is not consistent and there&amp;rsquo;s lots of empty entries but it hasn&amp;rsquo;t been a concern yet.
+Now I need to pay attention to these details. I&amp;rsquo;m going to set the record straight on what the sample data looks like by asking myself two questions:
+1. Where are the null entries occuring?</description>
+    </item>
+    
+    <item>
+      <title>Day 15</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-15/</link>
+      <pubDate>Mon, 26 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-15/</guid>
+      <description>Today we got to hold our first real team meeting. Frank and Ajay joined me at the library, and I spent time explaining some of the work I had done and sharing the basics of how to use Pandas. For now I&amp;rsquo;m suggesting they spend time setting up Anaconda and Pandas and get a feel for how to use DataFrame and Series objects.
+In the meantime I&amp;rsquo;ll continue working with probability distribution functions.</description>
+    </item>
+    
+    <item>
+      <title>Day 14 (Summary)</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-14/</link>
+      <pubDate>Fri, 23 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-14/</guid>
+      <description>Blog Guide A good chunk of today was spent writing a guide on how to host your own blog just like the one you&amp;rsquo;re reading. Feel free to comment on it if there&amp;rsquo;s areas that need clarification. There&amp;rsquo;s also a link to it on the &amp;ldquo;About&amp;rdquo; page so you can find the guide later.
+Now I&amp;rsquo;d like to summarize the main ideas of my first couple of weeks of work.</description>
+    </item>
+    
+    <item>
+      <title>Day 13</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-13/</link>
+      <pubDate>Thu, 22 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-13/</guid>
+      <description>I&amp;rsquo;m going to hold off on pattern detection right now. I spent some time thinking about it today and it would be a pretty extensive problem, and I don&amp;rsquo;t have solid sample data to even test it on.
+Instead I&amp;rsquo;ll play around with one of Anil&amp;rsquo;s suggestions which focuses on percentages of data count in a certain value region.
+Percentage bounds Pandas has a quantile() function that returns the data value at a given percentile.</description>
+    </item>
+    
+    <item>
+      <title>Day 12</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-12/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-12/</guid>
+      <description>While I wait on the temeprature data report, I&amp;rsquo;ll transition back to the night data. Before I was just looking at distributions, now I want to see the plots and look for any patterns.
+As a reminder, I&amp;rsquo;m saying &amp;lsquo;night&amp;rsquo; data lies between 11:00PM and 4:00AM
+Downsampling the Night Data The plots thusfar have been pretty cluttered because I&amp;rsquo;m looking at every timestamp entry from every day of the sample region.</description>
+    </item>
+    
+    <item>
+      <title>Day 11</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-11/</link>
+      <pubDate>Tue, 20 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-11/</guid>
+      <description>To start off, I&amp;rsquo;m enabling comments on the blog. Even though the site is static, it can connect to Disqus for third-party comment handling. This theme even has Disqus built in so it should be a simple matter of changing some lines in the config file.
+Centering the data It irks me is how I can&amp;rsquo;t center my rolling window when I use a time offset. One workaround (I think I mentioned this yesterday) is reindexing my data at higher detail.</description>
+    </item>
+    
+    <item>
+      <title>Day 10</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-10/</link>
+      <pubDate>Mon, 19 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-10/</guid>
+      <description>The pandas rolling object has a few built in commands that I have already made use of, like .median(). But for broader scenarios, you can use the .apply() function to, as the name suggests, apply your own function across the windows.
+The function must accept a Numpy array (I wish it was just a Series instead) and return a single number. For the time being I made a temporary function to handle Numpy median absolute deviations.</description>
+    </item>
+    
+    <item>
+      <title>Day 9</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-9/</link>
+      <pubDate>Fri, 16 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-9/</guid>
+      <description>In Day 4&amp;rsquo;s post I talked about median absolute deviations and their relationship to estimate population standard deviation. It&amp;rsquo;s a start, but its not a great way to detect anomalies. It&amp;rsquo;s a bit too static.
+To illustrate this, here&amp;rsquo;s a plot of the Main power entries from yesterday&amp;rsquo;s filter. I ran the calculations of median, MAD and $\hat{\sigma}$.
+  The black line is at the sample median, and the red line is $3\hat{\sigma}$ above that.</description>
+    </item>
+    
+    <item>
+      <title>Day 8</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-8/</link>
+      <pubDate>Thu, 15 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-8/</guid>
+      <description>I printed the 2016-17 Andover District Calendar and got to work entering the data. Ultimately I organized it into two calendars, one for days with no school entirely (which I inputted as &amp;lsquo;all-day&amp;rsquo; events) and one for half days (to ensure sufficient overlap I entered the events starting from 10:50AM when school gets out and ran until 11:59PM at night).
+I exported these .ics files, then imported them into python with my .</description>
+    </item>
+    
+    <item>
+      <title>Day 7</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-7/</link>
+      <pubDate>Wed, 14 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-7/</guid>
+      <description>For institutions with very complex schedules, the basic filtering I created yesterday probably won&amp;rsquo;t suffice. Instead, it may be nicer to let the user set their desired schedules in a graphical environment and use that as a time filter in the application.
+Rather than making my own graphical solution, I&amp;rsquo;ll let the user do so in their environment of choice and simply import that data in the popular .ical format, which consists of .</description>
+    </item>
+    
+    <item>
+      <title>Day 6</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-6/</link>
+      <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-6/</guid>
+      <description>Today I&amp;rsquo;ll be implementing the time_filter function that I outlined yesterday. Since then, I made some slight adjustments to the signature that you can see in the final version below.
+Packing and Unpacking First thing I had to look up was how to handle optional parameters. It seems that you can use an asterisk * before an argument to get a Tuple of optional positional parameters, while a double asterisk ** is for a Dictionary of optional keyword parameters.</description>
+    </item>
+    
+    <item>
+      <title>Day 5</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-5/</link>
+      <pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-5/</guid>
+      <description>Daytime usage I haven&amp;rsquo;t really addressed the daytime power usage yet. To be consistent with the EnergizeApps parser, I&amp;rsquo;ll define &amp;lsquo;day&amp;rsquo; as 5AM - 8PM (inclusive, exclusive). Likewise going forward I should define &amp;lsquo;night&amp;rsquo; as 11PM - 4AM.
+I will not only want to look at the overall daytime usage, but isolate the weekday and weekend usage since I&amp;rsquo;d expect the building to be unoccupied on weekends. Once again I get to leverage the handy DatetimeIndex structure which holds a weekday component.</description>
+    </item>
+    
+    <item>
+      <title>Day 4</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-4/</link>
+      <pubDate>Fri, 09 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-4/</guid>
+      <description>I did some searching about median absolute deviation in pandas and found this post. The devoper mentioned that they were considering adding a center parameter to the built in Pandas.Series.mad() function, but advocates against using the function altogether and instead just implementing median absolute deviation manually like this:
+abs(x - x.median()).median()  In my case, I&amp;rsquo;ll be using x_right - x.median() since I&amp;rsquo;m only looking at the upper values.</description>
+    </item>
+    
+    <item>
+      <title>Day 3</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-3/</link>
+      <pubDate>Thu, 08 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-3/</guid>
+      <description>Quick blog update Just wanted to share, I was playing around with Hugo today and learned about shortcodes. I was looking for a better way to handle images. Previously I would have to type ![[alt](/path/to/img)](/path/to/img) to have self-linking images. Instead, I made a shortcode that just needs the path once to create the linked image. Furthermore, I was manually typing the image paths, which were organized as /month/day/file.png. Now the shortcode reads the post&amp;rsquo;s date and inserts the month and day straight into the path, so all I need are file names.</description>
+    </item>
+    
+    <item>
+      <title>Day 2</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-2/</link>
+      <pubDate>Wed, 07 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-2/</guid>
+      <description>Now that the blog is running relatively smoothly I&amp;rsquo;m able to focus on the actual problem at hand. I started by installing the latest release of Anaconda, which I then used to install the pandas library.
+Pandas in a Nutshell The pandas library is centered around DataFrame structures and their child Series structures. A dataframe functions like an excel spreadsheed, with various columns of data matched by each row&amp;rsquo;s index.</description>
+    </item>
+    
+    <item>
+      <title>Day 1</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-1/</link>
+      <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-1/</guid>
+      <description>Today marks the start of my work on the Energize Andover project. I met with Anil at the library and went over the main goals of my team&amp;rsquo;s project.
+Basically, given an arbitrary data set of timestamped energy measures, we want to be able to perform various analytics and use those to identify key areas where there is potential for energy savings. How we will accomplish that is to be decided, though I was given some places to start.</description>
+    </item>
+    
+  </channel>
+</rss>

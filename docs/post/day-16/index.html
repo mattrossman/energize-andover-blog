@@ -1,0 +1,288 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 16 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 16
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 27, 2017
+                    · 846 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="sample-data-makeup">Sample Data Makeup</h2>
+
+<p>So far I&rsquo;ve not been very particular about what kind of data sample I&rsquo;m getting. I&rsquo;ve mentioned that the sampling rate is not consistent and there&rsquo;s lots of empty entries but it hasn&rsquo;t been a concern yet.</p>
+
+<p>Now I need to pay attention to these details. I&rsquo;m going to set the record straight on what the sample data looks like by asking myself two questions:</p>
+
+<h3 id="1-where-are-the-null-entries-occuring">1. Where are the null entries occuring?</h3>
+
+<p>I know already that there are lots of blank entries in my raw energy dataframe. If entire rows are empty in a consistent pattern then this is not an issue. I can find how many entries are null in the rows by saying</p>
+
+<pre><code>num_null = df_energy.isnull().sum(axis=1)
+</code></pre>
+
+<p>I don&rsquo;t quite understand why <code>axis=1</code> is correct here, since even in the documentation is states that an axis of 1 refers to columns when it actually sums up the row values. Perhaps the logic was that for each row entry, it sums the value in every column.</p>
+
+<p>From here I can see that <code>num_null.unique()</code> returns <code>[6, 5, 3, 7, 1, 0]</code>. That may be a problem, because it means that some rows are partially filled. I can understand the 6&rsquo;s (at first only the &lsquo;Main (kW)&rsquo; column has entries), and the 0&rsquo;s represent full rows while the 7&rsquo;s are empty columns. The other entries I was not expecting.</p>
+
+<p>I can use this existing logic to index the dataframe by the number of empty values each row contains and see what timestamp is associated with the null counts. Just to be thorough I should check anything that&rsquo;s not a 0 or a 7, since there could be more 6&rsquo;s than I was already aware of.</p>
+
+<pre><code>df_energy[num_null.apply(lambda n: n not in [0,7]]
+</code></pre>
+
+<p>That gives me a dataframe of partially filled rows. The good news is, this array only has entries up until 08/04/15. That&rsquo;s great because I was going to drop those first couple of days anyways (those are the days when only the Main column has entries). It&rsquo;s a relief that all of the rest of the data is clear.</p>
+
+<p><strong>From now on I&rsquo;ll run <code>dropna()</code> on my energy dataframe when I first define it.</strong></p>
+
+<pre><code>df_energy = df_energy.dropna()
+</code></pre>
+
+<p>This removes all partially filled rows.</p>
+
+<h3 id="2-what-are-the-time-differences-between-entries">2. What are the time differences between entries?</h3>
+
+<p>There&rsquo;s not a very clean way to do this. I can put my datetime index into a series, then use the <code>shift()</code> function to compare the difference between entries.</p>
+
+<pre><code>times = pd.Series(df_energy.index, index=df_energy.index )
+time_diffs = times - times.shift()
+</code></pre>
+
+<p>Now I have a series of <code>timedelta64</code> objects. An overwhelming majority of these entries are just 15 minute intervals.</p>
+
+<p>It&rsquo;s not convenient to work with this type of data; Pandas isn&rsquo;t as forgiving with it as it is with regular datetime objects. I can&rsquo;t just pull out the number of minutes for each entry. However, <code>time_diffs.min()</code> corresponds to a 15-minute time difference object. All I want are entries that differ from this, and since this is already the minimum time difference that means all that&rsquo;s left is values higher than 15 minutes.</p>
+
+<p>I can say <code>time_diffs[time_diffs &gt; time_diffs.min()]</code> to get the entries that have larger gaps than 15 minutes. This comes out to only 7 entries, and they&rsquo;re spread out thoughout the whole data set. Compared to the tens of thousands of overall entries, these shouldn&rsquo;t be of concern. The largest gap that occured was on June 7th, when the system didn&rsquo;t record for 1d 9hr 15min. Besides that, there were a couple of 1hr 15min gaps then four 30min gaps. I don&rsquo;t see these gaps having a significant effect on the analysis results. If there was a greater presence of gaps I would have to consider weighing each data point accoring to the timespan it represents.</p>
+
+<h2 id="getting-more-familiar-with-the-distributions">Getting more familiar with the distributions</h2>
+
+<p>In order to determine which statistical test is best suited for our power data, I think I need to spend some more time looking at the distributions of different breakdowns of our sample data. On <a href="https://mattrossman.github.io/energize-andover-blog/post/day-13">Day 13</a>
+ I found a nearly normal distribution when looking at the intra-day data filtered during school hours. I will now look at the density functions of other strata.</p>
+
+<p>Here are a few Kernel Density Estimate plots of subsets of the data with a dotted estimated normal curve overlay (using the median and scaled MAD value):</p>
+
+<p>
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/night_main_kde.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/night_main_kde.png alt="night_main_kde.png not found" title = night_main_kde.png />
+	</a>
+</div>
+
+
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_kde.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_kde.png alt="weekend_main_kde.png not found" title = weekend_main_kde.png />
+	</a>
+</div>
+
+
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/summer_main_kde.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/summer_main_kde.png alt="summer_main_kde.png not found" title = summer_main_kde.png />
+	</a>
+</div>
+
+
+</p>
+
+<p>Far from perfect. The night and summer plots look pretty good but the weekend plot is quite off. Currently I&rsquo;m making these judgements off intuition. It feels like the estimation plots should wrap more tightly around the left side, especially since our goal is reducing power usage.</p>
+
+<h4 id="log-normal-distributions">Log-Normal Distributions</h4>
+
+<p>Oftentimes when a parameter has a lower bound it follows a <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">log-normal distribution</a>. This is when the natural log of the values follow a normal distribution. This creates a right skew in the expected models:</p>
+
+
+
+
+
+
+
+
+<div align="center">
+	<a href=https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png>
+	   <img src=https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png alt="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png not found" title = https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png />
+	</a>
+</div>
+
+
+
+
+<p>For example, here is the natural log adjusted distribution of the weekend data:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_log_kde.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_log_kde.png alt="weekend_main_log_kde.png not found" title = weekend_main_log_kde.png />
+	</a>
+</div>
+
+
+
+
+<p>It&rsquo;s looks more symmetric than the original plot, and this could be a viable model because of our inherent lower bound of zero.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

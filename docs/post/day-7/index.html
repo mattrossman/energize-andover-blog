@@ -1,0 +1,314 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 7 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 7
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 14, 2017
+                    · 1185 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>For institutions with very complex schedules, the basic filtering I created yesterday probably won&rsquo;t suffice. Instead, it may be nicer to let the user set their desired schedules in a graphical environment and use that as a time filter in the application.</p>
+
+<p>Rather than making my own graphical solution, I&rsquo;ll let the user do so in their environment of choice and simply import that data in the popular <code>.ical</code> format, which consists of <code>.ics</code> calendar files. Applications like <a href="https://calendar.google.com">Google Calendar</a> let you export this type of data.</p>
+
+<p>I will have to write some code to parse these <code>.ics</code> files and generate lists of time ranges. I&rsquo;m thinking I&rsquo;ll generate these as lists of timestamp tuples, which can then simply be passed to the <code>daterange</code> parameter of my <code>time_filter</code> function. I won&rsquo;t care about any features of the calendar events besides their start and end timestamps. It will be up to the user to properly seperate their calendars into desired categories.</p>
+
+<h2 id="ics-format">ICS Format</h2>
+
+<p>I started by making a fresh calendar with a single event and exporting it. This is the contents of the <code>.ics</code> file generated:</p>
+
+<pre><code>BEGIN:VCALENDAR
+PRODID:-//Google Inc//Google Calendar 70.9054//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Energize Andover Test
+X-WR-TIMEZONE:America/New_York
+X-WR-CALDESC:
+BEGIN:VEVENT
+DTSTART:20160307T130000Z
+DTEND:20160311T220000Z
+DTSTAMP:20170614T160347Z
+UID:lbinms85k7rmr6et5a1m19h854@google.com
+CREATED:20170614T160336Z
+DESCRIPTION:
+LAST-MODIFIED:20170614T160336Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Test Event
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR
+</code></pre>
+
+<p>Events are stored in <code>VEVENT</code> blocks, all within a main <code>VCALENDAR</code> block. Rather than trying to parse this data myself, I&rsquo;m going to see if there&rsquo;s an existing way to do it.</p>
+
+<p>Someone made an <a href="http://icalendar.readthedocs.io/en/latest/">iCalendar library</a> that can probably help me. Documentation is <em>awful</em>, but all I need are <code>datetime</code> objects from my events so I should be able to scrap together a solution from forum posts.</p>
+
+<p>Since the library is not included with the Anaconda installer, I first updated the pip package installer with <code>conda install pip</code> and then used pip to install the package with <code>pip install icalendar</code>.</p>
+
+<h2 id="object-format">Object format</h2>
+
+<p>Components in <code>icalendar</code> function kind of like Dictionaries. They can have key-access values like <code>'DTSTART'</code> (case not sensitive) which you could access like a normal Dictionary. They also can function as bundles of components, which you can access with <code>component.subcomponents</code>.</p>
+
+<p>First I read in my test file with</p>
+
+<pre><code>from icalendar import Calendar
+cal = Calendar.from_ical(open('test_cal.ics','rb').read())
+</code></pre>
+
+<p>Now I can get a list of my calendar events with <code>cal.subcomponents</code>, iterate through them, and index their <code>dtstart</code> and <code>dtend</code> values. These values must be followed by <code>.dt</code> to turn them into a standard <code>datetime</code> or <code>date</code> object, otherwise they&rsquo;re in a propietary format for the module.</p>
+
+<h2 id="up-and-running">Up and running</h2>
+
+<p>Much to my surprise, the implementation was remarkably straightforward.</p>
+
+<pre><code>def ical_daterange(file):
+    cal = Calendar.from_ical(open(file,'rb').read())
+    timeranges = []
+    for event in cal.subcomponents:
+        timeranges.append((event['dtstart'].dt,event['dtend'].dt))
+    return timeranges
+</code></pre>
+
+<p>Just like that, I have a list of daterange tuples. The real test was whether this would play nicely with my filter function. Python confuses me with its vast interweaving of very similar object types, and I was doubting that the generic datetime objects created by the <code>icalendar</code> library would translate over to the Pandas datetime indexes.</p>
+
+<p>It turns out, they do translate over. I ran a test with</p>
+
+<pre><code>test_range = ical_daterange('test_cal.ics')
+test_filtered = time_filter(df_energy,daterange=test_range)
+</code></pre>
+
+<p>and got a dataframe filtered by exactly the times I specified in my calendar.</p>
+
+<h2 id="edge-behavior">Edge behavior</h2>
+
+<p>In my test calendar I included a normal event with a start and end time, as well as an &lsquo;all-day&rsquo; event that only holds a date, no time. The date/time event filters inclusively by the timespan specified (an event from 3PM-5PM will include 3PM and 5PM entries).</p>
+
+<p>The &lsquo;all-day&rsquo; event spans from midnight to midnight. So an event on 3/20/16 will span from 00:00:00 on 3/20/17 to 00:00:00 on 3/21/17. So it&rsquo;s just a hair over 24 hours, not a problem.</p>
+
+<h2 id="modifying-the-time-filter-method">Modifying the time filter method</h2>
+
+<p>Now that I know what kind of data I might be feeding it, I think I should change how the <code>time_filter</code> function operates. Right now I have <code>daterange</code> and <code>inclusions</code> parameters which perform similar tasks. Also, you can only exclude specific days, you can&rsquo;t specify a range. The whole date selection process could be make more robust if the process for including and excluding dates functioned the same way, and if the date inclusion feature was just an extension of the daterange parameter. Furthermore, the label <code>daterange</code> is misleading because it can also include timestamps</p>
+
+<p>I&rsquo;m going to get rid of the <code>inclusions</code>, <code>exclusions</code>, and <code>daterange</code> parameters. They will be replaced by <code>include</code> and <code>blacklist</code>. The <code>timerange</code> will be renamed to <code>times</code> for simplicity.</p>
+
+<p>The <code>include</code> parameter will accept either a single time range tuple, a single date, or a list of any combination of the two. I wanted to call it <code>range</code> but that is already a Python keyword.</p>
+
+<p>The <code>blacklist</code> will function the same way, but it will override the <code>include</code> parameter. If it becomes necessary in the future, I may also add a whitelist that overrides both.</p>
+
+<p>I&rsquo;ll also take this opportunity to add the <code>months</code> filter I mentioned yesterday.</p>
+
+<h2 id="the-updated-code">The updated code</h2>
+
+<p>I added a couple of helper functions to reduce the amount of duplicate code. Their signatures are provided.</p>
+
+<pre><code>&quot;&quot;&quot;
+range_token_df: DataFrame, RangeToken --&gt; DataFrame
+Returns a dataframe filtered by the range token provided.
+
+A RangeToken is either a datetime index (parial or formal)
+or a tuple of start/end datetime indexes
+&quot;&quot;&quot;
+def range_token_df(data, token):
+    if (type(token)==str):
+        return data[token]
+    else: # token is a start/end tuple
+        return data[slice(*token)]
+
+&quot;&quot;&quot;
+data_in_range : DataFrame/Series, Data range --&gt; DataFrame/Series
+filters the input data by the date range provided
+&quot;&quot;&quot;
+
+def data_in_range(data, d_range):
+    if (type(d_range[0])==tuple):
+        return pd.concat(list(map(
+            lambda token: range_token_df(data,token),
+            d_range))).sort_index()
+    else:
+        return range_token_df(data,d_range)
+</code></pre>
+
+<p>And here&rsquo;s the updated <code>time_filter</code> code and signature:</p>
+
+<pre><code>&quot;&quot;&quot;
+time_filter: DataFrame/Series, ... --&gt; DataFrame/Series
+filters data by properties like date and time
+
+PARAMETERS:
+data : DataFrame or Series with DateTimeIndex
+*times: Tuple with start and end time strings as 'HH:MM'
+        or list of such tuples
+*include: Accepts:
+    1) A datetime index (partial or formal)
+    2) A tuple of start and end datetime indexes (See 1)
+            Enter None to set to range min or max
+    3) A list that contains any combination of types 1 and 2
+*blacklist: range of dates to be excluded.
+    See include parameter for acceptable format
+    Overrides include parameter
+*daysofweek: List of integers for days to be included
+        0 = Mon, 6 = Sun
+*months: List of integers for months to be included
+    1 = Jan, 12 = Dec
+
+starred parameters are optional
+ranges are all inclusive
+&quot;&quot;&quot;
+
+def time_filter(data, **kwds):
+    out = data
+    if ('include' in kwds):
+        out = data_in_range(out,kwds['include'])
+    if ('times' in kwds):
+        timerange = kwds['times']
+        if type(timerange[0]) is tuple:
+            out = pd.concat(list(map(
+                lambda subrange: out.between_time(*subrange),
+                timerange))).sort_index()
+        else:
+            out = out.between_time(*timerange)
+    if ('daysofweek' in kwds):
+        out = out[[day in kwds['daysofweek'] for day in out.index.weekday]]
+    if ('months' in kwds):
+        out = out[[month in kwds['months'] for month in out.index.month]]
+    if ('blacklist' in kwds):
+        out = out.drop(data_in_range(data, kwds['blacklist']).index, errors='ignore')
+    return out
+</code></pre>
+
+<p>I think it&rsquo;s looking much cleaner. Based on my testing so far, everything should work out nicely. Tomorrow I will work on entering the Andover District Calendar data into Google Calendar, then running that calendar output through my range converter and time filterer.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

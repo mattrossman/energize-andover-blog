@@ -1,0 +1,353 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 5 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 5
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 12, 2017
+                    · 912 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="daytime-usage">Daytime usage</h2>
+
+<p>I haven&rsquo;t really addressed the daytime power usage yet. To be consistent with the EnergizeApps parser, I&rsquo;ll define &lsquo;day&rsquo; as 5AM - 8PM (inclusive, exclusive). Likewise going forward I should define &lsquo;night&rsquo; as 11PM - 4AM.</p>
+
+<p>I will not only want to look at the overall daytime usage, but isolate the weekday and weekend usage since I&rsquo;d expect the building to be unoccupied on weekends. Once again I get to leverage the handy <code>DatetimeIndex</code> structure which holds a <code>weekday</code> component. This component is an integer which reads as follows:</p>
+
+<table>
+<thead>
+<tr>
+<th>Mon</th>
+<th>Tue</th>
+<th>Wed</th>
+<th>Thu</th>
+<th>Fri</th>
+<th>Sat</th>
+<th>Sun</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+
+<p>So the weekdays correspond to days 0-4 while weekends are days 5-6.</p>
+
+<pre><code>day_bools = (df_energy.index.hour &gt;= 5) &amp; (df_energy.index.hour &lt; 20)
+df_day = df_energy[day_bools]
+
+df_weekday = df_day[df_day.index.weekday &lt;= 4]
+df_weekend = df_day[df_day.index.weekday  &gt; 4]
+</code></pre>
+
+<p>You can not simply join the conditionals with the <code>and</code> keyword that Python would normally understand. If you did, it would try to evaluate the entire array to either just a <code>true</code> or <code>false</code> value. Instead you use the <code>&amp;</code> operator to perform an item-wise comparison of all individual element pairs within the boolean arrays.</p>
+
+<blockquote>
+<p><strong>EDIT:</strong> In hindsight, it would be simpler to use the <code>pandas.DataFrame.between_time</code> function here</p>
+</blockquote>
+
+<p>Now to look at the plots. For overall daytime power distribution we get:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_day.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_day.png alt="main_day.png not found" title = main_day.png />
+	</a>
+</div>
+
+
+
+
+<p>Another bimodal distribution. At first I assumed this was just because of the distinction between weekday and weekend usage. But the weekend is only 2 days, you would assume that the low-power peak would be much smaller than the high-power peak.</p>
+
+<p>When we look at just the weekend usage we get:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_weekend.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_weekend.png alt="main_weekend.png not found" title = main_weekend.png />
+	</a>
+</div>
+
+
+
+
+<p>It&rsquo;s a weird shape, but at least it&rsquo;s unimodal. Looking at the weekday usage, things get weirder.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_weekday.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_weekday.png alt="main_weekday.png not found" title = main_weekday.png />
+	</a>
+</div>
+
+
+
+
+<p>The shape is still bimodal. That means there&rsquo;s some factor here that&rsquo;s still causing a split in the data. Then I remembered, this includes the whole year&rsquo;s worth of data. That includes the 180 days of school time, but also holidays, breaks, and summer vacation. So the heap of low power usage must be primarily from vacation.</p>
+
+<p>To test this, I can look at two charts: one with a month from the summer, and one with a month during the school year. July is a good summer midpoint, and after looking at the Andover academic calendar it looks like the month of March doesn&rsquo;t have many days off from school. I can extract these with the <code>pandas.DatetimeIndex.month</code> property. In this case the index starts at 1 for Jan and extends to 12 for Jan.</p>
+
+<p>The weekday-daytime power distribution for July:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_july.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_july.png alt="main_july.png not found" title = main_july.png />
+	</a>
+</div>
+
+
+
+
+<p>And for March:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_march.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_march.png alt="main_march.png not found" title = main_march.png />
+	</a>
+</div>
+
+
+
+
+<p>At first I was baffled, but then once again I realized an oversight. I am defining day as the hours from 5AM-8PM. This isn&rsquo;t a good index to use for a school because school doesn&rsquo;t run the entire day. To put this issue to rest, I&rsquo;m going to isolate March&rsquo;s data between 7:40 and 2:20. I found a <code>pandas.Series.between_time()</code> method in the documentation, I&rsquo;ll use that here and probably change my use of the <code>.hour</code> attribute from earlier. If this doesn&rsquo;t give me a unimodal shape I don&rsquo;t know what will.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_march_school.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/12/main_march_school.png alt="main_march_school.png not found" title = main_march_school.png />
+	</a>
+</div>
+
+
+
+
+<p>I&rsquo;m satisfied with this result. In the console I printed the dataset that was registering under 250 kW which consisted of 4 days, 2 of which had no school in 2016 and the other 2 I&rsquo;m guessing didn&rsquo;t have school in 2015. The rest of the distribution looks nice and symmetric.</p>
+
+<h2 id="filters">Filters</h2>
+
+<p>All of this work has just made it very clear how necessary it is to implement a robust filtering system to let administrators choose which days to include and exclude to isolate days that follow similar power usage models.</p>
+
+<p>The program won&rsquo;t know what kind of data is being fed to it, and without that info it can&rsquo;t do any useful analysis. It&rsquo;s up to the person running the program to be able to seperate groups of similar data to individually perform analysis upon.</p>
+
+<p>To make this easier, I may implement some feature that detects multiple peaks and looks for patterns within them to suggest how to make further isolations.</p>
+
+<p>Up until this point, most of the programming work has been temporary scripting, but I need to start putting code into usable functions. Filters would be very helpful, so that will be my next task.</p>
+
+<h2 id="templating-the-code">Templating the code</h2>
+
+<p>In my semester at Northeastern I learned about the &ldquo;design recipe&rdquo; which takes a very systematic approach to programming. It&rsquo;s a good habit to have, and I&rsquo;ll loosely follow it here.</p>
+
+<pre><code>&quot;&quot;&quot;
+time_filter: filters data by properties like date and time
+
+ARGS:
+data : DataFrame or Series with DateTimeIndex
+*timerange: Tuple with start and end time strings as HH:MM
+    or list of such tuples
+*daterange: Tuple with start and end dates as YYYY-MM-DD
+    or list of such tuples.
+    Blank Tuple element will default to MIN or MAX
+*exclusions: List of dates to be excluded as YYYY-MM-DD
+*inclusions: List of dates to be explicity included as YYYY-MM-DD
+    This will override the daterange property
+*weekdays: List of integers for days to be included
+    0 = Mon, 6 = Sun
+
+*starred parameters are optional
+&quot;&quot;&quot;
+</code></pre>
+
+<p>So I don&rsquo;t forget it later, I recently found out that I can easily implement the <code>daterange</code> and <code>excludions</code> properties with the <code>.loc</code> function. E.g. I can simply type <code>data['2016-03-01':'2016-03-20']</code> to filter between those dates.</p>
+
+<p>This method signature seems to cover all the filtering features that I&rsquo;ve needed so far. Tomorrow I&rsquo;ll start making the code for it.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

@@ -1,0 +1,253 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 11 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 11
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 20, 2017
+                    · 562 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>To start off, I&rsquo;m enabling comments on the blog. Even though the site is static, it can connect to <a href="https://disqus.com/">Disqus</a> for third-party comment handling. This theme even has Disqus built in so it should be a simple matter of changing some lines in the config file.</p>
+
+<h2 id="centering-the-data">Centering the data</h2>
+
+<p>It irks me is how I can&rsquo;t center my rolling window when I use a time offset. One workaround (I think I mentioned this yesterday) is reindexing my data at higher detail. All of the data is at least 5 minutes apart, so I can reindex at a daterange with a frequency of <code>'5min'</code> and get a series at a constant frequency. Now if I want a window of 30 days I can set <code>window=12*24*30</code> since there are 12 5-min intervals in an hour, 24 hours in a day, and 30 days in my window. Now that I&rsquo;m using an integer based window I can set <code>center=True</code>.</p>
+
+<p>Only problem: it is really slow. I timed it at 33 seconds to run the calculations. Before this, my calculations only took a second or so to run. Alternatively, later I can try using a time offset and then manually shifting the indexes by half the window size. Here&rsquo;s the output:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/20/reindexed_centered.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/20/reindexed_centered.png alt="reindexed_centered.png not found" title = reindexed_centered.png />
+	</a>
+</div>
+
+
+
+
+<p>This shifts the shaded accepted region to be better fit to the power plot. What are the effects of this? Centering the window considers an equal range of data to the right and left of a sample data point. If a sudden uptrend occurs, the centered rolling median will catch on quicker to this uptrend, making the trend less likely to be flagged as abnormal.</p>
+
+<p>When a positive or negative trend occurs, the uncentered MADs will be high all the way up until the end of the trend. The centered MADs will decrease as the trend approaches the end. This makes the uncentered method less likely to catch anomalies after a trend occurs. You can see this mid-way through October 2016, where the centered chart easily rejects the spike, whereas the uncentered one almost lets it slide.</p>
+
+<p>I exported a few larger plots to compare the effects of centering as well as using a 14 day vs 30 day window size. Pick your favorite:</p>
+
+<p>
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/20/centered_30d.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/20/centered_30d.png alt="centered_30d.png not found" title = centered_30d.png />
+	</a>
+</div>
+
+
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/20/uncentered_30d.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/20/uncentered_30d.png alt="uncentered_30d.png not found" title = uncentered_30d.png />
+	</a>
+</div>
+
+
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/20/centered_14d.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/20/centered_14d.png alt="centered_14d.png not found" title = centered_14d.png />
+	</a>
+</div>
+
+
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/20/uncentered_14d.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/20/uncentered_14d.png alt="uncentered_14d.png not found" title = uncentered_14d.png />
+	</a>
+</div>
+
+
+</p>
+
+<p>I haven&rsquo;t decided yet which is the best option. If centering is best, I&rsquo;ll want to work on a more efficient way to do the calculation. In the meantime I&rsquo;ll work on something else to clear my mind.</p>
+
+<h2 id="temperature-data">Temperature Data</h2>
+
+<p>Besides building occupancy, another factor that can affect power usage is temperature. It would be handy to be able to fill our dataframe with outside temperature data and see if the correlates to the power usage.</p>
+
+<p>Many of the popular weather providers have an API, however their services are limited at the free tier. You can make a limited number of requests, and you can&rsquo;t really pull historical data (which is exclusively what I need).</p>
+
+<p>The NOAA website has a bulky tool for downloading historical weather data, but for Andover it only seemed to have precipitation data, not temperature. The closest station with air temperature data is in Lawrence just North of Andover, so that will have to do.</p>
+
+<p>I submitted a data request for the same dates as the sample power data (7/30/15 - 3/20/17). Now I just have to wait to get an email response with the output file.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

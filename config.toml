@@ -9,6 +9,7 @@ theme = "hugo-theme-cactus-plus"
 googleAnalytics = "UA-86883080-2"
 hasCJKLanguage = true
 disqusShortname = "energize-andover-blog"
+publishDir = "docs"
 
 [params]
 	name = "Energize Andover Summer 2017 Blog"

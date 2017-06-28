@@ -1,0 +1,212 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 9 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 9
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 16, 2017
+                    · 854 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>In Day 4&rsquo;s post I talked about median absolute deviations and their relationship to estimate population standard deviation. It&rsquo;s a start, but its not a great way to detect anomalies. It&rsquo;s a bit too static.</p>
+
+<p>To illustrate this, here&rsquo;s a plot of the Main power entries from yesterday&rsquo;s filter. I ran the calculations of median, MAD and $\hat{\sigma}$.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/16/main_sd.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/16/main_sd.png alt="main_sd.png not found" title = main_sd.png />
+	</a>
+</div>
+
+
+
+
+<p>The black line is at the sample median, and the red line is $3\hat{\sigma}$ above that. Previously, I stated that those values that surpass $median+3\hat{\sigma}$ should be flagged as anomalies.</p>
+
+<p>If you look at the graph however, it seems like this is ignoring a lot of details. A horizontal line is too broad for a pool of data this large. The sample plot doesn&rsquo;t naturally stay flat; it has patterns of bumps and dips throughout the months.</p>
+
+<h2 id="rolling-windows">Rolling windows</h2>
+
+<p>In the stock market, a common indicator of the changing trend of data is the moving average. This measures the average value of something over a set window size. Whereas a regular average looks at the entire sample, a moving average might look at only the past 20 values in the sample. If you take this windowed average at each point, you get a plot that follows the overall trend of the data but with less volatility. The smoothness of the plot increases as the window size increases (approaching a flat line when the window size equals the sample size).</p>
+
+<p>Because we are assuming that there are anomalies in our data, I&rsquo;m going to stick with using the median instead of the mean. So instead of moving averages, I&rsquo;m looking at moving medians. Likewise, I can calculate a rolling MAD value and use that to detect local anomalies.</p>
+
+<h2 id="return-of-the-gaps">Return of the gaps</h2>
+
+<p>Now&rsquo;s the time where I&rsquo;m starting to feel the downside of having gaps in the data. There&rsquo;s two ways I can approach the rolling window.</p>
+
+<p>First, I could set my window by timespan. Pandas calls this the <a href="http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases">offset</a>. The problem with this is I&rsquo;m looking at filtered data. When I tell pandas to look at windows that are &lsquo;1-day&rsquo; sized, it will start from the start date and move forward by one day until it reaches the end date. It doesn&rsquo;t care what filters I may have on the data. Thus it will include windows during weekends, vacation, etc. This makes the rolling plot appear disjointed and jittery.</p>
+
+<p>The other option is to set the window by data count. For example, telling pandas to look at the last 30 data points. For this method I could take two approaches:</p>
+
+<p>I could remove all missing entries and go from there, however the data density is not consistent. Depending on where you are in the data, 30 points could represent 7 hours or it could mean 15 hours. That would make the rolling window inconsistent.</p>
+
+<p>Alternatively, you could use the past 30 points included the blank entries. This would dilute the median calculation in some areas, but would keep the window interval consistent. This assumes data is being recorded consistently. As I understand, the data is being written at 15 minute intervals (regardless of whether that records a real value or <code>Nan</code>). This sounds like the best option to me.</p>
+
+<p>The other problem with gaps is that they can&rsquo;t be plotted properly, and they make pandas throw a fit with window calculations. One solution is to use the <code>interpolate()</code> function to let pandas fill in the gaps with a midpoint value. That&rsquo;s perfect for plotting since visually I&rsquo;m happy with a midpoint placeholder.</p>
+
+<p>I can&rsquo;t use that strategy for the calculations though. Interpolated values don&rsquo;t appear to affect the median of a sample, but they do affect the MAD. Instead, I can use the rolling <code>min_periods</code> parameter to set the minimum number of non-Nan values that are acceptable in my window. I don&rsquo;t think there&rsquo;s any harm in just setting this value to 1 since I&rsquo;m not aware of any massive gaps in the data. The median and MAD are not affected by adding in random <code>Nan</code> values so I think this is valid.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/16/rolling_median.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/16/rolling_median.png alt="rolling_median.png not found" title = rolling_median.png />
+	</a>
+</div>
+
+
+
+
+<p>I&rsquo;ll take a break from babbling to show you a picture. I interpolated the missing values to show you the plot of the sample data points (I did that on the first image too). Then I took a rolling median with <code>min_periods=1</code> and <code>window=533</code>.</p>
+
+<p>I got 533 because there are 4 data points per hour. There are 6 hours, 40 minutes in a standard school day, or $\frac{20}{3}$ hours. There are 5 school days in a week and 4 weeks in a month. That comes out to $4 \cdot \frac{20}{3} \cdot 5 \cdot 4 \approx 533$ data points in a month. So the red line should follow a month-wide trend. The x-axis is set to data count rather than date because otherwise pandas makes large gaps during vacation times. I&rsquo;m working on figuring out how to keep the plot as it is but change the axis label to show the dates, even if the spacing isn&rsquo;t consistent.</p>
+
+<p>Next week I will work on the rolling MAD and using that to track local anomalies.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

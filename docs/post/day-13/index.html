@@ -1,0 +1,306 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 13 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 13
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 22, 2017
+                    · 871 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>I&rsquo;m going to hold off on pattern detection right now. I spent some time thinking about it today and it would be a pretty extensive problem, and I don&rsquo;t have solid sample data to even test it on.</p>
+
+<p>Instead I&rsquo;ll play around with one of Anil&rsquo;s suggestions which focuses on percentages of data count in a certain value region.</p>
+
+<h2 id="percentage-bounds">Percentage bounds</h2>
+
+<p>Pandas has a <code>quantile()</code> function that returns the data value at a given percentile. For instance,</p>
+
+<pre><code>my_series.quantile(0.5) == my_series.median()
+</code></pre>
+
+<p>That means that <code>df_school['Main (kW)'][df_school['Main (kW)'] &lt; df_school['Main (kW)'].quantile(0.9)]</code> represents the bottom 90% of the data points (by count).</p>
+
+<p>We can use this to highlight days where there could be energy savings. Variation is to be expected, but if we tell a user that 90% of the time during school days it can get along just fine using less than $x$ kW of power, then it shouldn&rsquo;t be a problem to reduce the power usage of days that used more.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/22/main_school_90p.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/22/main_school_90p.png alt="main_school_90p.png not found" title = main_school_90p.png />
+	</a>
+</div>
+
+
+
+
+<p>From this it would be pretty simple to figure out what percent of the data value range lies in this count percentile, but I don&rsquo;t know how relevant this information would be. The range of a sample is so arbitrary, and just 1 outlier could drastically change the range of a data set.</p>
+
+<p>With a normal distribution, there&rsquo;s no golden rule that 50% of the data should lie within $x\%$ of the population range, becuase the population range is $\infty$. The only standards you can apply with a normal distribution are how the percentiles compare to the mean. For example, you can say that 50% of the data should lie within $0.6745\sigma$ from the mean. But this doesn&rsquo;t translate in any way to the data range.</p>
+
+<p>For this reason, there&rsquo;s not much more I can do on this front. Pandas already has the quantile function built in so there&rsquo;s no more coding for me to do. You give it a percentage, and it tells you the corresponding value.</p>
+
+<h2 id="back-to-normal-distributions">Back to normal distributions</h2>
+
+<p>I was playing around with pandas visualization tools and came across the density plot (more specifically it is called <strong>K</strong>ernel <strong>D</strong>ensity <strong>E</strong>stimate). It looks very similar to the histograms I&rsquo;ve been using, but instead of measuring counts of frequency it measures proportional density, and it smooths out the results into a nice curve.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_school_main.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_school_main.png alt="kde_school_main.png not found" title = kde_school_main.png />
+	</a>
+</div>
+
+
+
+
+<p>It&rsquo;s easier to see the shape of this distribution this way, and I think it would interesting to see if I could plot a true normal distribution against this shape. That would be a good way to refine whether my MAD calculations are actually valid.</p>
+
+<h2 id="numpy">Numpy</h2>
+
+<p>Pandas doesn&rsquo;t have a built in way to do this, but Numpy has some tools for generating statistical data sets. I used <a href="https://stackoverflow.com/questions/10138085/python-pylab-plot-normal-distribution">this guide</a> to graph a normal distribution with a custom $\mu$ and $\sigma$ value.</p>
+
+<p>I just wanted to see how normal I could get the KDE plot to look, so through trial and error I narrowed down the values until the graphs were close to overlapping:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_normal.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_normal.png alt="kde_normal.png not found" title = kde_normal.png />
+	</a>
+</div>
+
+
+
+
+<p>The larger your variance, the smaller the values of &lsquo;density&rsquo; became, which makes sense since the data is getting spread out. The total area under the probability curve should always equal 1. I eventually set $\mu=419$ and I set the variance to 890, which translated to $\sigma \approx 29.83$</p>
+
+<p>You can see on the right side how the blue KDE plot has a bulge that contrasts with the normal plot. My goal is to highlight the data that is causing that bulge.</p>
+
+<p>This is a chance to see if my median and MAD calculations are working like I want them to. I manually found a pretty good estimate of the population normal distribution, so I can use those values of $\mu$ and $\sigma$ to test against.</p>
+
+<h4 id="median">Median</h4>
+
+<p>I used the median as an estimator for $\mu$.</p>
+
+<pre><code>In[173]: df_school['Main (kW)'].median()
+Out[173]: 423.0857
+</code></pre>
+
+<p>Pretty close. Compare that to using the mean:</p>
+
+<pre><code>In[174]: df_school['Main (kW)'].mean()
+Out[174]: 430.74404519261896
+</code></pre>
+
+<p>You can see that the median (423) is closer to my accepted value of $\mu$ (419). It&rsquo;s not perfect though. The median doesn&rsquo;t line up with the peak of the KDE, and I&rsquo;d like to fix that later.</p>
+
+<h4 id="m-a-d">M.A.D.</h4>
+
+<p>Next, I used an adjusted MAD to estimate the value of $\sigma$.</p>
+
+<pre><code>In[175]: egz.mad(df_school['Main (kW)'])
+Out[175]: 20.762
+
+In[177]: egz.mad(df_school['Main (kW)'])*1.4826
+Out[177]: 30.7817412
+</code></pre>
+
+<p>That&rsquo;s pretty darn close. I said that $\sigma=29.83$, which is less than a kW away from my calculated value. I&rsquo;m pretty happy with this, and if I adjust my center value according to the peak of the KDE and use that as my &lsquo;median&rsquo;, that could change the MAD to make my estimation of $\sigma$ even closer.</p>
+
+<p>Here&rsquo;s the plot using the estimated $\mu$ and $\sigma$ values I got from these calculations:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_normal_calculated.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_normal_calculated.png alt="kde_normal_calculated.png not found" title = kde_normal_calculated.png />
+	</a>
+</div>
+
+
+
+
+<p>I&rsquo;m surprised how close it actually is. Up until this point I was pretty much crossing my fingers that I wasn&rsquo;t just pulling random numbers out of thin air. It still catches a good portion of the bulge, but it would be better if I adjusted the center point.</p>
+
+<p>Just for fun, here&rsquo;s the plot using the sample mean and standard deviation:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_normal_bad.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/22/kde_normal_bad.png alt="kde_normal_bad.png not found" title = kde_normal_bad.png />
+	</a>
+</div>
+
+
+
+
+<p>Much worse, right? It just goes to show why I&rsquo;m <strong>not</strong> using these values, and instead using median and a scaled MAD value.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
