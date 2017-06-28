@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-06-28
 title: Day 17
-description: Daily power trends
+description: Daily power trends and couple of stats test resources
 weight: 10
 ---
 
