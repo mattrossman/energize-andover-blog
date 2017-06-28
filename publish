@@ -4,10 +4,6 @@ hugo
 git add --all
 git status
 
-cd public/
-git add --all
-git status
-
 echo "Publish above changes? [y/n]"
 read continue
 
@@ -18,10 +14,6 @@ fi
 echo "Enter git commit message:"
 read message
 
-git commit -m "$message"
-git push origin gh-pages
-
-cd ..
 git commit -m "$message"
 git push origin master
 
