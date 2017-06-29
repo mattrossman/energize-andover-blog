@@ -6,10 +6,20 @@
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 28 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 29 Jun 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 18</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-18/</link>
+      <pubDate>Thu, 29 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-18/</guid>
+      <description>The primary library in Anaconda for performing complex scientific calculations is scipy. It includes 82 built-in distribution functions. You can test how well a distribution applies to a sample using the fit() function.
+Someone online was nice enough to write a script that iterates over every included distribution function and finds the best fitting one. This calculation takes quite a while to run. I tried running it on the Main power data with my school hours filter:</description>
+    </item>
     
     <item>
       <title>Day 17</title>

@@ -1,0 +1,192 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 18 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 18
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jun 29, 2017
+                    · 435 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>The primary library in Anaconda for performing complex scientific calculations is <code>scipy</code>. It includes 82 built-in distribution functions. You can test how well a distribution applies to a sample using the <code>fit()</code> function.</p>
+
+<p>Someone online was nice enough to write <a href="https://stackoverflow.com/questions/6620471/fitting-empirical-distribution-to-theoretical-ones-with-scipy-python">a script that iterates over every included distribution function and finds the best fitting one</a>. This calculation takes quite a while to run. I tried running it on the Main power data with my school hours filter:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/29/all_school.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/29/all_school.png alt="all_school.png not found" title = all_school.png />
+	</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/29/best_fit_school.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/29/best_fit_school.png alt="best_fit_school.png not found" title = best_fit_school.png />
+	</a>
+</div>
+
+
+
+
+<p>Scipy says that the <a href="https://en.wikipedia.org/wiki/Johnson%27s_SU-distribution">Johnson $S_U$</a> distribution is the closest fit across all Main power entries. Perhaps that distribution could serve as a reference for subsets of that data.</p>
+
+<p>I was hoping I could just use a normal distribution as the reference for my time slices, but it doesn&rsquo;t seem to be effective. Scipy has a <code>normtest</code> function that calculates the P-value of a sample coming from a normal population (<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html#scipy.stats.normaltest">documentation</a>). Everything I feed to it generates an extremely small P-value (like, numbers to the power of -60), so even if I set $\alpha=0.01$ every sample would be considered abnormal. I know that the function works though, because if I generate a normal sample with numpy it gets acceptable P-values.</p>
+
+<h4 id="a-second-glance-at-the-kolmogorov-smirnov-test">A second glance at the Kolmogorov-Smirnov test</h4>
+
+<p>I spent a lot of time taking a second look at the Kolmogorov-Smirnov test. Scipy has KS tests built in but it was a trick to set up my distribution as a <em>callable CDF</em>. I figured maybe I could use the Johnson $S_U$ distribution that was calculated earlier and compare subsets of my data to that, however I&rsquo;m still paranoid that this is not statistically valid.</p>
+
+<p>I already mentioned that when testing normality with KS you shouldn&rsquo;t estimate the population distribution from the data. But Wikipedia goes so far as to say that whatever the distribution, <a href="https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test#Test_with_estimated_parameters">it shouldn&rsquo;t be estimated from the sample</a>. I suppose it depends what I define as &ldquo;population&rdquo; vs &ldquo;sample&rdquo;. Is my population just all of the data that I have (i.e. a population would be something like <code>df_school['Main (kW)']</code> and a sample would be just the data on a certain day or from a certain time)? If I&rsquo;m being really strict, the &ldquo;population&rdquo; data would be an infinite number of power recordings starting at the origin of AHS.</p>
+
+<p>So everything I have is just a sample, and stratifying that data just makes smaller samples. Wikipedia isn&rsquo;t explicit about the restrictions on a 2-sample KS test, but <a href="https://math.stackexchange.com/questions/1422394/how-to-test-whether-a-subset-is-representative-of-a-population">this forum post</a> says you can compare a sample with a subsample that way. A random internet post isn&rsquo;t the most trustworthy source, but I&rsquo;d rather be safe than sorry.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
