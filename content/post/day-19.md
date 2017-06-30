@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-06-30
 title: Day 19
-description: Approximating energy usage from power data
+description: Trapezoidal approximation of energy usage from power data
 weight: 10
 ---
 
