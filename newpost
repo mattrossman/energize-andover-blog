@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#Today's date as YYYY-MM-DD
+today=$(date +%F)
+
+#Array of existing post file paths
+posts=(content/post/*)
+
+#Counts number of post files, adds one
+post_num=$((${#posts[@]} + 1))
+
+cat << EOF >> content/post/day-$post_num.md
+---
+author: "Matt Rossman"
+date: $today
+title: Day $post_num
+description:
+weight: 10
+---
+EOF
+
+gedit content/post/day-$post_num.md
