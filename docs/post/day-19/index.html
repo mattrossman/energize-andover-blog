@@ -53,7 +53,7 @@
                     <h2 class="headline">
                     
                     Jun 30, 2017
-                    · 1141 words
+                    · 1151 words
 
                       <span class="tags">
                       
@@ -151,15 +151,16 @@ def consecutives(data, threshold):
 <p>The last step is wrapping everything up nicely:</p>
 
 <pre><code>&quot;&quot;&quot;
-energy_trapz : Data [opt: Offset ] --&gt; int
-uses a trapezoidal approximation to calculate energy used during the time period
+trapz: Data [opt: Offset ] --&gt; int
+Uses a trapezoidal approximation to calculate energy used during the time period.
+If power data is in kW, energy result is in kWh.
 Optional offset parameter determines how large of a time gap between entries
     is the threshold for data grouping
 &quot;&quot;&quot;
 
 def trapz(data, offset=None):
     if offset is None:
-    offset = pd.Timedelta.max
+        offset = pd.Timedelta.max
     grouped = consecutives(data,offset)
     approx_kwh = lambda x: np.trapz(x,x.index).astype('timedelta64[h]').astype(int)
     return grouped.aggregate(approx_kwh).sum()

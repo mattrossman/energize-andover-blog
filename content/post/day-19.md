@@ -81,15 +81,16 @@ Compare this to running the approximation on *non-grouped* data, in which case i
 The last step is wrapping everything up nicely:
 
 	"""
-	energy_trapz : Data [opt: Offset ] --> int
-	uses a trapezoidal approximation to calculate energy used during the time period
+	trapz: Data [opt: Offset ] --> int
+	Uses a trapezoidal approximation to calculate energy used during the time period.
+	If power data is in kW, energy result is in kWh.
 	Optional offset parameter determines how large of a time gap between entries
 	    is the threshold for data grouping
 	"""
 
 	def trapz(data, offset=None):
 	    if offset is None:
-		offset = pd.Timedelta.max
+			offset = pd.Timedelta.max
 	    grouped = consecutives(data,offset)
 	    approx_kwh = lambda x: np.trapz(x,x.index).astype('timedelta64[h]').astype(int)
 	    return grouped.aggregate(approx_kwh).sum()
