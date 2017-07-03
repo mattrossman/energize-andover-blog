@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-07-03
 title: Day 20
-description:
+description: Team meeting with guest Viraj
 weight: 10
 ---
 
