@@ -53,7 +53,7 @@
                     <h2 class="headline">
                     
                     Jun 27, 2017
-                    · 846 words
+                    · 869 words
 
                       <span class="tags">
                       
@@ -111,62 +111,13 @@ time_diffs = times - times.shift()
 
 <h2 id="getting-more-familiar-with-the-distributions">Getting more familiar with the distributions</h2>
 
-<p>In order to determine which statistical test is best suited for our power data, I think I need to spend some more time looking at the distributions of different breakdowns of our sample data. On <a href="https://mattrossman.github.io/energize-andover-blog/post/day-13">Day 13</a>
- I found a nearly normal distribution when looking at the intra-day data filtered during school hours. I will now look at the density functions of other strata.</p>
+<p>In order to determine which statistical test is best suited for our power data, I think I need to spend some more time looking at the distributions of different breakdowns of our sample data. On [Day 13]({{&lt; rel &ldquo;day-13.md&rdquo; &gt;}} I found a nearly normal distribution when looking at the intra-day data filtered during school hours. I will now look at the density functions of other strata.</p>
 
 <p>Here are a few Kernel Density Estimate plots of subsets of the data with a dotted estimated normal curve overlay (using the median and scaled MAD value):</p>
 
-<p>
-
-
-
-
-
-    
-
-
-<div align="center">
-	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/night_main_kde.png>
-	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/night_main_kde.png alt="night_main_kde.png not found" title = night_main_kde.png />
-	</a>
-</div>
-
-
-
-
-
-
-
-
-
-    
-
-
-<div align="center">
-	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_kde.png>
-	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_kde.png alt="weekend_main_kde.png not found" title = weekend_main_kde.png />
-	</a>
-</div>
-
-
-
-
-
-
-
-
-
-    
-
-
-<div align="center">
-	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/summer_main_kde.png>
-	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/summer_main_kde.png alt="summer_main_kde.png not found" title = summer_main_kde.png />
-	</a>
-</div>
-
-
-</p>
+<p>{{&lt; linked-img &ldquo;night_main_kde.png&rdquo; &gt;}}
+{{&lt; linked-img &ldquo;weekend_main_kde.png&rdquo; &gt;}}
+{{&lt; linked-img &ldquo;summer_main_kde.png&rdquo; &gt;}}</p>
 
 <p>Far from perfect. The night and summer plots look pretty good but the weekend plot is quite off. Currently I&rsquo;m making these judgements off intuition. It feels like the estimation plots should wrap more tightly around the left side, especially since our goal is reducing power usage.</p>
 
@@ -174,41 +125,11 @@ time_diffs = times - times.shift()
 
 <p>Oftentimes when a parameter has a lower bound it follows a <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">log-normal distribution</a>. This is when the natural log of the values follow a normal distribution. This creates a right skew in the expected models:</p>
 
-
-
-
-
-
-
-
-<div align="center">
-	<a href=https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png>
-	   <img src=https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png alt="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png not found" title = https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png />
-	</a>
-</div>
-
-
-
+<p>{{&lt; linked-img &ldquo;<a href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png&quot;">https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/PDF-log_normal_distributions.svg/300px-PDF-log_normal_distributions.svg.png&quot;</a> &gt;}}</p>
 
 <p>For example, here is the natural log adjusted distribution of the weekend data:</p>
 
-
-
-
-
-
-
-    
-
-
-<div align="center">
-	<a href=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_log_kde.png>
-	   <img src=https://mattrossman.github.io/energize-andover-blog/images/06/27/weekend_main_log_kde.png alt="weekend_main_log_kde.png not found" title = weekend_main_log_kde.png />
-	</a>
-</div>
-
-
-
+<p>{{&lt; linked-img &ldquo;weekend_main_log_kde.png&rdquo; &gt;}}</p>
 
 <p>It&rsquo;s looks more symmetric than the original plot, and this could be a viable model because of our inherent lower bound of zero.</p>
 

@@ -1,7 +1,7 @@
 ---
 author: "Matt Rossman"
 date: 2017-06-23
-title: Day 14 (Summary)
+title: Day 14 - Summary
 description: Overview of my first couple of weeks, and a guide on how to make a blog
 weight: 10
 ---
@@ -9,7 +9,7 @@ weight: 10
 
 ## Blog Guide
 
-A good chunk of today was spent {{< linked-post "appendix/how-to" >}}writing a guide on how to host your own blog{{< /linked-post >}} just like the one you're reading. Feel free to comment on it if there's areas that need clarification. There's also a link to it on the "About" page so you can find the guide later.
+A good chunk of today was spent [writing a guide on how to host your own blog]({{< ref "how-to.md" >}}) just like the one you're reading. Feel free to comment on it if there's areas that need clarification. There's also a link to it on the "About" page so you can find the guide later.
 
 Now I'd like to summarize the main ideas of my first couple of weeks of work.
 
@@ -34,7 +34,7 @@ The first main function I worked on was a robust time filter. It lets you select
 
 This makes it easier to look at a very specific subset of the data in just one step.
 
-Details in {{< linked-post "post/6" >}}Day 6's{{< /linked-post >}} and {{< linked-post "post/7" >}}Day 7's{{< /linked-post >}} posts.
+Details in [Day 6's]({{< rel "day-6.md" >}} and [Day 7's]({{< rel "day-7.md" >}} posts.
 
 ## iCal Parsing
 To augment the time filter, I made functionality for generating date ranges from `.ics` files. These date ranges can be passed to the time filter function either as the range to include or as the blacklist range.
@@ -43,12 +43,12 @@ To augment the time filter, I made functionality for generating date ranges from
 
 This makes it easier for a user to create date ranges for the time filter function. For instance, I loaded the Andover Public Schools academic calendar into Google Calendar and exported the `.ics` file to easily filter out days when there was no school.
 
-For more details, read {{< linked-post "post/7" >}}Day 7's post{{< /linked-post >}}
+For more details, read [Day 7's]({{< rel "day-7.md" >}}
 
 ## Temperature Data
 One factor that could influence power usage is the outside temperature. Most weather APIs do not provide historical data, but I was able to download a report from the [NOAA website](https://www.ncdc.noaa.gov/cdo-web/datatools/findstation) with air temperature data from the nearby town of Lawrence. Using this data we can look for patterns between temperature and power usage.
 
-More details in {{< linked-post "post/12/#temperature-update" >}}Day 12's post{{< /linked-post >}}
+More details in [Day 12's]({{< rel "day-12.md" >}}
 
 I would like to find a better weather source in the future since this method requires waiting a day for the report to be delivered via email.
 
