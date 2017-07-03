@@ -1,0 +1,176 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 20 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 20
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 3, 2017
+                    · 609 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<blockquote>
+<p><strong>Note</strong>: Today I uploaded my main Python module <a href="github.com/mattrossman/andover-energy-analysis">here</a> for others to reference</p>
+</blockquote>
+
+<h2 id="meeting">Meeting</h2>
+
+<p>Today I had a meeting with Frank, Ajay, and Anil&rsquo;s son Viraj. Viraj is experienced both with statistics and the programming tools we are using so he was able to offer some useful insights. I&rsquo;ll go over some of the main points:</p>
+
+<h4 id="expected-distributions">Expected Distributions</h4>
+
+<p>On <a href="https://mattrossman.github.io/energize-andover-blog/post/day-18/">Day 18</a> I ran a script to calculate the best fitting distribution of our data, but theoretically this isn&rsquo;t a good model to &ldquo;expect&rdquo; of our data since it just happened to be the distribution of our sample. We would have to define ahead of time what distribtion the sample actually should follow. The normal distribution poses the issue of negative values, however a log-normal distribution is a reasonable assumption because it takes that zero limit into account.</p>
+
+<h4 id="marking-abnormal-values">Marking abnormal values</h4>
+
+<p>So far I&rsquo;ve been basing by work around normal distributions (which due to the lower bound is not a good choice) and determining outliers in terms of (estimated) standard deviations from the (estimated) mean (really the median). A more generalized way to approach this is to just mark outliers using percentiles.</p>
+
+<p>That&rsquo;s essentially what I was doing with my normal estimations (the points past 2.5 SD would be past approximately the 99th percentile) but since I&rsquo;m no longer assuming normality this is a better general approach. SciPy distributions have a <code>.ppf</code> (percent point function) that perform an inverse of the CDF function allowing us to specify a desired quantile.</p>
+
+<h4 id="quantifying-savings">Quantifying savings</h4>
+
+<p>Given a sample and an expected distribution, it would be helpful to compare the actual sample values to the equivalent ideally-distributed set. I have the means to compare samples, but I would need a way to mold an unoptimized sample set into an optimal expected distribution.</p>
+
+<p>Viraj suggested using the quantile values as markers to perform the translation between the sample&rsquo;s empirical distribution and the expected continuous one. This would be a fairer quantification of energy savings than the method I described on <a href="https://mattrossman.github.io/energize-andover-blog/post/day-17/">Day 17</a> since it would maintain the desired distribution rather than arbitrarily lowering the sample values until they fit in a desired region.</p>
+
+<h4 id="more-advanced-techniques">More advanced techniques</h4>
+
+<p>Viraj brought up the complex method of Poisson regression as an area to look into. Given arguments to a number of paramters (e.g. time of day, day of week, temperature) it would provide an expected distribution of values that are described by those arguments. Based on that distribution, we can filter the sample data by those same parameters and flag the high outliers.</p>
+
+<h4 id="measuring-fits-of-distributions">Measuring fits of distributions</h4>
+
+<p>Lastly, Viraj explained how the <code>.fit()</code> function in SciPy calculates the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">Maximum Likelihood Estimation</a> to find the optimal parameters to fit a distribution to sample data. When analyzing the fit, we can calculate this likelihood estimation by calculating $$ \prod_{i=1}^{n} f(x_i | \theta)$$ where $\theta$ is a vector of the parameters for the distribution and $x_i$ is the $i^{\text{th}}$ value from the $n$ sample data points. I&rsquo;ll have to look into a way to present this value in a meaninful way to the user. Another value that could be of use the the <a href="https://en.wikipedia.org/wiki/Residual_sum_of_squares">residual sum of squares</a>.</p>
+
+<h2 id="going-forward">Going forward</h2>
+
+<p>I&rsquo;m going to probably slow down a bit now that there are other team members to work with. I want to bring the others up to speed before I get started on some of these complex implementations. Later this week I hope to spend more time with the team to ensure they understand how to use the tools at our disposal. After documenting the contents of our meeting, I&rsquo;ll spend the rest of the day reading up on the SciPy fitting method implementations.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

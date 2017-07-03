@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 30 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 03 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 20</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-20/</link>
+      <pubDate>Mon, 03 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-20/</guid>
+      <description>Note: Today I uploaded my main Python module here for others to reference
+ Meeting Today I had a meeting with Frank, Ajay, and Anil&amp;rsquo;s son Viraj. Viraj is experienced both with statistics and the programming tools we are using so he was able to offer some useful insights. I&amp;rsquo;ll go over some of the main points:
+Expected Distributions On Day 18 I ran a script to calculate the best fitting distribution of our data, but theoretically this isn&amp;rsquo;t a good model to &amp;ldquo;expect&amp;rdquo; of our data since it just happened to be the distribution of our sample.</description>
+    </item>
     
     <item>
       <title>Day 19</title>
