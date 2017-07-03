@@ -47,7 +47,7 @@ It's not convenient to work with this type of data; Pandas isn't as forgiving wi
 I can say `time_diffs[time_diffs > time_diffs.min()]` to get the entries that have larger gaps than 15 minutes. This comes out to only 7 entries, and they're spread out thoughout the whole data set. Compared to the tens of thousands of overall entries, these shouldn't be of concern. The largest gap that occured was on June 7th, when the system didn't record for 1d 9hr 15min. Besides that, there were a couple of 1hr 15min gaps then four 30min gaps. I don't see these gaps having a significant effect on the analysis results. If there was a greater presence of gaps I would have to consider weighing each data point accoring to the timespan it represents.
 
 ## Getting more familiar with the distributions
-In order to determine which statistical test is best suited for our power data, I think I need to spend some more time looking at the distributions of different breakdowns of our sample data. On [Day 13]({{< rel "day-13.md" >}} I found a nearly normal distribution when looking at the intra-day data filtered during school hours. I will now look at the density functions of other strata.
+In order to determine which statistical test is best suited for our power data, I think I need to spend some more time looking at the distributions of different breakdowns of our sample data. On [Day 13]({{< ref "day-13.md" >}} I found a nearly normal distribution when looking at the intra-day data filtered during school hours. I will now look at the density functions of other strata.
 
 Here are a few Kernel Density Estimate plots of subsets of the data with a dotted estimated normal curve overlay (using the median and scaled MAD value):
 
