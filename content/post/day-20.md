@@ -6,7 +6,7 @@ description: Team meeting with guest Viraj
 weight: 10
 ---
 
-> **Note**: Today I uploaded my main Python module [here](github.com/mattrossman/andover-energy-analysis) for others to reference
+> **Note**: Today I uploaded my main Python module [here](https://github.com/mattrossman/andover-energy-analysis) for others to reference
 
 ## Meeting
 Today I had a meeting with Frank, Ajay, and Anil's son Viraj. Viraj is experienced both with statistics and the programming tools we are using so he was able to offer some useful insights. I'll go over some of the main points:
