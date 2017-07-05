@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 03 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 05 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 21</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-21/</link>
+      <pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-21/</guid>
+      <description>Not much new to post about today. I worked with Frank and Ajay this morning to go over a detailed explaination of how to perform some core pandas operations.
+We covered how to read in the CSV file, how to use the ical_ranges and time_filter functions in the energize module, various visualization methods like line plots and histograms, and data indexing methods.
+We&amp;rsquo;re going to go over some more examples tomorrow, and hopefully by the end of the week we&amp;rsquo;ll be ready to get back to work on the actual problem statement.</description>
+    </item>
     
     <item>
       <title>Day 20</title>
