@@ -84,11 +84,17 @@ The other important file you will need to change is your site's `config.toml` fi
 
 ### Generating the Static Files
 
+Before we generate the files, go to your `config.toml` file and add the line
+
+	publishDir = "docs"
+
+This makes it so Hugo will place the static files into a `docs` folder in your Hugo site folder. By default it would put them in a `public` folder but GitHub Pages will need the files to be in a folder called `docs`.
+
 To turn your templates and content files into static web files, just run
 
 	hugo
 
-This builds all the files for your site and places them in a `public` folder in your site directory.
+This builds all the files for your site and places them in a `docs` folder in your site directory.
 
 
 ## GitHub Pages
@@ -97,7 +103,7 @@ By now you already have Git installed on your computer. Go to [GitHub's website]
 
 Now make a new repository and give it a simple name. You don't need to initialize the repository with a README.
 
-Now in your terminal navigate to that `public` folder your built. We're going to make this folder our Git repository. Run
+In your terminal navigate to your hugo site folder. We're going to make this folder our Git repository so that both your Hugo source files and static site files are available on the remote repository. Run
 
 	git init
 
@@ -126,7 +132,7 @@ Up until this point, everything is still happening locally on your computer. To 
 
 You'll have to enter your login credentials to push these remote changes. If you want to avoid logging in every time, [follow this guide](https://stackoverflow.com/questions/8588768/git-push-username-password-how-to-avoid) to set up an RSA SSH key.
 
-Refresh your GitHub repo page and see if the files were pushed correctly. When you see that they've appeared, click "Settings" and scroll down to "GitHub Pages". Set the source to "master branch" and refresh until you get a green publish confirmation above it. It should provide a URL that looks like `https://username.github.io/repo-name/`. Click it and you should see your site hosted online! If your styling is messed up, it's probably because your `baseURL` is not configured properly in your `config.toml` file. Copy your site's url and paste it into the config file. Pay attention to the trailing backslash! Now rebuild it, add the changes to the stage, commit them, and push to the remote again. After a few moments you can refresh and see if your styling is working properly.
+Refresh your GitHub repo page and see if the files were pushed correctly. When you see that they've appeared, click "Settings" and scroll down to "GitHub Pages". Set the source to "master branch /docs folder" and refresh until you get a green publish confirmation above it. It should provide a URL that looks like `https://username.github.io/repo-name/`. Click it and you should see your site hosted online! If your styling is messed up, it's probably because your `baseURL` is not configured properly in your `config.toml` file. Copy your site's url and paste it into the config file. Pay attention to the trailing backslash! Now rebuild it, add the changes to the stage, commit them, and push to the remote again. After a few moments you can refresh and see if your styling is working properly.
 
 ## More to Consider
 

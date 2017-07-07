@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 05 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 22</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-22/</link>
+      <pubDate>Thu, 06 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-22/</guid>
+      <description>Another brief post today. I spent another session going over the remainder of the energize module (unstack_by_time, plot_normal and trapz).
+I also went over python features like lambda, map, filter, and list comprehension.
+That&amp;rsquo;s all I can really think of that needs to be covered, so tomorrow we&amp;rsquo;re going to meet at the library to start planning the actual work that needs to get done.</description>
+    </item>
     
     <item>
       <title>Day 21</title>
