@@ -6,10 +6,21 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 06 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 07 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 23</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-23/</link>
+      <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-23/</guid>
+      <description>The team met at the library today. I started by making a list of the items that we may want to consider working on:
+ fitting a log-normal distribution to the data marking values past a certain percentile of that PDF translating data sample to match the fitted estimation doing something with the temperature data Poisson regressions likelihood estimation calculation, alternatively SSE  
+A lot of these rely on already having a fitted distribution, so that was our goal for today.</description>
+    </item>
     
     <item>
       <title>Day 22</title>

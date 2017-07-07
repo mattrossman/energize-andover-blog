@@ -1,0 +1,250 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 23 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 23
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 7, 2017
+                    · 628 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>The team met at the library today. I started by making a list of the items that we may want to consider working on:</p>
+
+<ul>
+<li>fitting a log-normal distribution to the data</li>
+<li>marking values past a certain percentile of that PDF</li>
+<li>translating data sample to match the fitted estimation</li>
+<li>doing something with the temperature data</li>
+<li>Poisson regressions</li>
+<li>likelihood estimation calculation, alternatively SSE</li>
+</ul>
+
+<p><br>
+A lot of these rely on already having a fitted distribution, so that was our goal for today.</p>
+
+<p>You can find the code <a href="https://github.com/mattrossman/andover-energy-analysis/blob/master/day23.py">here</a>.</p>
+
+<h2 id="fitting-an-expected-distribution">Fitting an expected distribution</h2>
+
+<p>At our last meeting with Viraj we discussed using a log-normal distribution as our expectation to account for the lower bound. SciPy can automatically <code>fit()</code> a given distribution to a dataset. At first we used the built-in <code>scipy.stats.lognorm</code> distribution to perform this fit, however, it was finicky to deal with and it involved extra parameters. Instead we found it easier to just take the log of our sample values and fit a <code>scipy.stats.norm</code> distribution to that adjusted set.</p>
+
+<p>Out of the box, the <code>fit()</code> function didn&rsquo;t achieve what we had hoped:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/07/scipy_fit.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/07/scipy_fit.png alt="scipy_fit.png not found" title = scipy_fit.png />
+	</a>
+</div>
+
+
+
+
+<p>Apparently these parameters maximize the &ldquo;likelihood estimation&rdquo;, however it&rsquo;s not visually close to the KDE plot.</p>
+
+<p>To get us closer, we scrapped the <code>fit()</code> approach and tried calculating our own mean and SD values by using the sample median and adjusted MAD:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit.png alt="estimated_fit.png not found" title = estimated_fit.png />
+	</a>
+</div>
+
+
+
+
+<p>Already looking a lot better. This is pretty much where things were left off on <a href="https://mattrossman.github.io/energize-andover-blog/post/day-13/">Day 13</a>. It&rsquo;s still a bit off center though. The center we really want is essentially the peak of the KDE plot. To find this, we converted the KDE value array into a Series and found the <code>.max()</code>. Then based on the index of that max, we found the corresponding x value in the x-array by converting that to a Series as well. The end code is pretty ugly, but it gets the job done:</p>
+
+<pre><code>x = pd.Series(np.linspace(log_school_main.min(), log_school_main.max(), 10000))
+kde = stats.gaussian_kde(log_school_main)
+kde_pdf = pd.Series(kde.pdf(x))
+est_mu = x[kde_pdf[kde_pdf == kde_pdf.max()].index].iloc[0]
+</code></pre>
+
+<p>One thing to remember is that the step count in the <code>np.linspace()</code> call affects the accuracy of this calculation. We tried using <code>np.arrage()</code> to set a fixed step size, but on larger samples it made the sample count unreasonably large causing an error at runtime.</p>
+
+<blockquote>
+<p>Note: I would like to improve this implementation in the future to directly calculate the exact peak of the KDE PDF rather than an estimate. Perhaps there is some way to find the derivative of the KDE function</p>
+</blockquote>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit_center.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit_center.png alt="estimated_fit_center.png not found" title = estimated_fit_center.png />
+	</a>
+</div>
+
+
+
+
+<p>Now it is centered properly. It would be a better fit if there was a lower variance which could be accomlished by decreasing our scaling factor, but after tweaking the MAD scaling factor and testing various sample data sets we found the original value of <code>1.4826</code> to be the fairest overall.</p>
+
+<p>Since there was some variation in the fit using this constant Frank suggested implementing some kind of dynamic scaling factor that tries to match the peak value of the KDE PDF to the estimated PDF, so that may be an area to look into.</p>
+
+<h2 id="flagging-the-high-points">Flagging the high points</h2>
+
+<p>Now that we have a expected fit density function we can calculate the value at a given percentile using <code>scipy.stats.norm.ppf()</code></p>
+
+<p>Then we can plug that into the <code>scipy.stats.percentileofscore()</code> function to get the percentile equivalent of that value from our original sample. For the Main power data during school hours, we got:</p>
+
+<pre><code>In [16]: stats.percentileofscore(log_school_main,stats.norm.ppf(0.95, est_mu, est_sd))
+Out[16]: 86.532858530268697
+</code></pre>
+
+<p>That means that about 13.5% of the sample data is operating at power values predicted by only 5% of the expected model. That yields an 8.5% surplus of power usage in this region. Ideally there would be no difference, though I&rsquo;m not yet sure what percentage difference would qualify as statistically significant. That is another area we should look into.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
