@@ -53,7 +53,7 @@
                     <h2 class="headline">
                     
                     Jul 10, 2017
-                    · 1084 words
+                    · 1105 words
 
                       <span class="tags">
                       
@@ -104,11 +104,11 @@ def lognorm_params(series):
 
 <p>Then I calculate the estimated standard deviation of the log sample using the scaled MAD value. Next is the estimated population mean. In the <code>minimize_scalar</code> call, the first argument is a function that evaluates the negative PDF at a point (so that we&rsquo;re really <em>maximizing</em> this PDF). The <code>guassian_kde.pdf()</code> function returns an array even if you only pass in one value, so I needed to extract the first value of the return array to get the actual scalar.</p>
 
-<p>I had an issue using the default <code>method</code> for <code>minimize_scalar</code> where it would always return zero, so I changed it to the <code>'bounded'</code> method which let me specify which region to try to optimize. After changing this it was able to optimize properly. For now I&rsquo;m just setting the bounds to be the range of the log sample values, but if efficiency relaly becomes an issue we could even narrow that down. Lastly note the <code>.x</code> on the end of the call. That&rsquo;s because the method returns an object with many properties, and the <code>x</code> property contains the actual solution.</p>
+<p>I had an issue using the default <code>method</code> for <code>minimize_scalar</code> where it would always return zero, so I changed it to the <code>'bounded'</code> method which let me specify which region to try to optimize. After changing this it was able to optimize properly. For now I&rsquo;m just setting the bounds to be the range of the log sample values, but if efficiency really becomes an issue we could even narrow that down. Lastly note the <code>.x</code> on the end of the call. That&rsquo;s because the method returns an object with many properties, and the <code>x</code> property contains the actual solution.</p>
 
-<p>I return a tuple containing the shape, location, and scale values of the lognormal distribution. The <strong>location</strong> property translates the distribution along the x-axis, and I&rsquo;ve been advised to force that to zero. That makes sense since the whole point of using the lognormal distribution was to fix our lower bound at zero, and translation would disrupt that. According to <a href="http://www.math.uah.edu/stat/special/LogNormal.html">this page</a> (and verified on Wikipedia), the <strong>shape</strong> attribute of a lognormal distribution is the estimated standard deviation of the normal distribution of the log values. The <strong>scale</strong> is defined as $e^{\mu}$</p>
+<p>I return a tuple containing the shape, location, and scale values of the lognormal distribution. According to <a href="http://www.math.uah.edu/stat/special/LogNormal.html">this page</a> (and verified on Wikipedia), the <strong>shape</strong> attribute of a lognormal distribution is the estimated standard deviation of the normal distribution of the log values. The <strong>location</strong> property translates the distribution along the x-axis, and I&rsquo;ve been advised to force that to zero. That makes sense since the whole point of using the lognormal distribution was to fix our lower bound at zero, and translation would disrupt that. The <strong>scale</strong> is defined as $e^{\mu}$.</p>
 
-<p>Those are the parameters that SciPy interprets natively for the <code>stats.lognorm</code> distribution functions.</p>
+<p>Those are the parameters that SciPy interprets natively for the <code>stats.lognorm</code> distribution functions, so you would just have to unpack the resulting tuple of this function when passing it to a SciPy log-normal function.</p>
 
 <h4 id="example-usage">Example usage:</h4>
 
