@@ -6,10 +6,20 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 07 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 10 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 24</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-24/</link>
+      <pubDate>Mon, 10 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-24/</guid>
+      <description>Improving the maximization Last time I mentioned how I wanted to find a better way to find the peak of the Kernel Density Estimation. Previously we were evaluating the KDE probability at 10,000 sample points within the region and letting Pandas find the max of that set. I wanted to see if there was a more direct, precise way to do this.
+Numpy has a gradient function for calculating partial derivatives, but it only applies to arrays of sample points.</description>
+    </item>
     
     <item>
       <title>Day 23</title>

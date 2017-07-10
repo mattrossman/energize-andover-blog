@@ -1,0 +1,256 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 24 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 24
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 10, 2017
+                    · 1084 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="improving-the-maximization">Improving the maximization</h2>
+
+<p>Last time I mentioned how I wanted to find a better way to find the peak of the Kernel Density Estimation. Previously we were evaluating the KDE probability at 10,000 sample points within the region and letting Pandas find the max of that set. I wanted to see if there was a more direct, precise way to do this.</p>
+
+<p>Numpy has a <code>gradient</code> function for calculating partial derivatives, but it only applies to arrays of sample points. That wouldn&rsquo;t really be any more precise than our current method since it depends on the resolution of the sample data.</p>
+
+<p>SciPy has an <code>optimize</code> module that lets you perform a <code>minimize_scalar</code> algorithm on a sample. It still bothers me that this seems to be running an approximation algorithm rather than exact mathematical calculations. I&rsquo;ll keep my eyes out for any other libraries that can do better.</p>
+
+<blockquote>
+<p>Note: perhaps this could be solved by manually calculating the KDE to get the exact probability density function (rather than whatever method object SciPy returns) and combine that with SymPy to calculate the derivative?</p>
+</blockquote>
+
+<p>Nonetheless, this is probably more efficient than the maximum approximation that we were using before. You may be wondering why I specified the <code>minimize_scalar</code> function as opposed to a maximization function. SciPy only includes optimization for minimizing functions, so to &ldquo;maximize&rdquo; you simply minimize the function with its sign reversed.</p>
+
+<h2 id="abstraction">Abstraction</h2>
+
+<pre><code>&quot;&quot;&quot;
+lognorm_params: Series --&gt; ( float, float, float )
+Returns the shape, loc, and scale of the lognormal distribution of the sample data
+&quot;&quot;&quot;
+
+def lognorm_params(series):
+    # resolve issues with taking the log of zero
+    np.seterr(divide='ignore')
+    log_data = np.log(series)
+    np.seterr(divide='warn')
+    log_data[np.isneginf(log_data)] = 0
+
+    kde = stats.gaussian_kde(log_data)
+    est_std = mad(log_data)*1.4826
+    est_mu = optimize.minimize_scalar(lambda x: -1*kde.pdf(x)[0],
+                                  method='bounded',
+                                  bounds=(log_data.min(),log_data.max())).x
+    return (est_std, 0, math.exp(est_mu))
+</code></pre>
+
+<p>The first few lines of the function are there so that there&rsquo;s no issue if the sample data contains zeroes. Usually numpy will give you a warning and fill the offending results with <code>-inf</code>. These first lines temporarily disable that warning and replace the <code>-inf</code> values with zeros.</p>
+
+<p>Then I calculate the estimated standard deviation of the log sample using the scaled MAD value. Next is the estimated population mean. In the <code>minimize_scalar</code> call, the first argument is a function that evaluates the negative PDF at a point (so that we&rsquo;re really <em>maximizing</em> this PDF). The <code>guassian_kde.pdf()</code> function returns an array even if you only pass in one value, so I needed to extract the first value of the return array to get the actual scalar.</p>
+
+<p>I had an issue using the default <code>method</code> for <code>minimize_scalar</code> where it would always return zero, so I changed it to the <code>'bounded'</code> method which let me specify which region to try to optimize. After changing this it was able to optimize properly. For now I&rsquo;m just setting the bounds to be the range of the log sample values, but if efficiency relaly becomes an issue we could even narrow that down. Lastly note the <code>.x</code> on the end of the call. That&rsquo;s because the method returns an object with many properties, and the <code>x</code> property contains the actual solution.</p>
+
+<p>I return a tuple containing the shape, location, and scale values of the lognormal distribution. The <strong>location</strong> property translates the distribution along the x-axis, and I&rsquo;ve been advised to force that to zero. That makes sense since the whole point of using the lognormal distribution was to fix our lower bound at zero, and translation would disrupt that. According to <a href="http://www.math.uah.edu/stat/special/LogNormal.html">this page</a> (and verified on Wikipedia), the <strong>shape</strong> attribute of a lognormal distribution is the estimated standard deviation of the normal distribution of the log values. The <strong>scale</strong> is defined as $e^{\mu}$</p>
+
+<p>Those are the parameters that SciPy interprets natively for the <code>stats.lognorm</code> distribution functions.</p>
+
+<h4 id="example-usage">Example usage:</h4>
+
+<p>Let&rsquo;s say we want to plot the distribution:</p>
+
+<pre><code>x = np.linspace(school_main.min(),school_main.max(),100)
+params = egz.lognorm_params(school_main)
+plt.plot(x,stats.lognorm.pdf(x,*params))
+</code></pre>
+
+<p>Here&rsquo;s a plot of the fitted distribution (orange) against the sample KDE (blue):</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/10/fitted_vs_kde.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/10/fitted_vs_kde.png alt="fitted_vs_kde.png not found" title = fitted_vs_kde.png />
+	</a>
+</div>
+
+
+
+
+<p>Note that this unlike yesterday this is actually plotting the lognormal distribution as opposed to the normal distribution of the log values.</p>
+
+<h2 id="likelihood-function">Likelihood Function</h2>
+
+<p>The SciPy <code>fit()</code> function tries to maximize the <em>likelihood</em> of a distribution function when picking its parameters, who I&rsquo;m curious how the likelihood of our fitted distribution function compares to that of the one that SciPy picks.</p>
+
+<p>But first, I want to make sure I really understand what the likelihood represents. <a href="https://stats.stackexchange.com/a/2647/166768">This post</a> does a nice job of explaining what it represents both in discrete and continuous contexts. Basically, likelihood operates sort of opposite to probability. Where probability asserts the parameters ahead of time and quantifies the chances of getting a certain outcome, likelihood asserts the outcomes first and quantifies the chances of them coming from a certain set of parameters.</p>
+
+<p>A likelihood is calculated as the joint density of the observations given the parameters.</p>
+
+<h4 id="the-problem-really-small-numbers">The Problem: Really Small Numbers</h4>
+
+<p>The probability density of a given value occuring is already really small, as in less than 1. Looking at the graph above, the density never even exceeds 0.014. Remember than when you take a joint probability of such events, the probability is only going to keep going down. Taking the product of 3,000+ such values yields a miniscule result. Python doesn&rsquo;t even have the resources to keep track of events this small. It runs out of decimal places and rounds it out to zero everytime.</p>
+
+<p>If I wanted I could probably look into a way to counteract this (one idea I saw mentioned was to use log values or the <code>mpmath</code> package) but I should ask myself, is it really worth it?</p>
+
+<p>As far as I&rsquo;m aware there is no straightforward way to even interpret the likelihood of a sample, since the value can change drastically depending on how many sample values you have. It seems to be just a tool used to find optimal parameters. I think that a SSE may be a more reasable value for this purpose.</p>
+
+<h2 id="comparing-quantiles">Comparing Quantiles</h2>
+
+<p>One area we played around with last time was comparing the quantiles of the sample data and fitted distribution. A more generalized approach for this is visualized in a <a href="https://en.wikipedia.org/wiki/Q%E2%80%93Q_plot">Q-Q plot</a> which directly plots the quartiles against each other. Ideally this would give a straight line, but since our expected fit model is not intended to line up 1:1 with our sample data it definitely won&rsquo;t.</p>
+
+<p>Example of a nice fitting Q-Q plot from Wikipedia:
+
+
+
+
+
+
+
+<div align="center">
+	<a href=https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Normal_normal_qq.svg/300px-Normal_normal_qq.svg.png>
+	   <img src=https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Normal_normal_qq.svg/300px-Normal_normal_qq.svg.png alt="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Normal_normal_qq.svg/300px-Normal_normal_qq.svg.png not found" title = https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Normal_normal_qq.svg/300px-Normal_normal_qq.svg.png />
+	</a>
+</div>
+
+
+</p>
+
+<p>Looking at the fit of that Q-Q plot could be another way to analyze the fit of the estimated model.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
