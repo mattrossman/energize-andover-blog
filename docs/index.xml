@@ -6,10 +6,22 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 10 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 25</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-25/</link>
+      <pubDate>Tue, 11 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-25/</guid>
+      <description>Plotting the Quartiles scipy.stats.probplot is a method for comparing data quantiles to a distribution.
+stats.probplot(school_main,egz.lognorm_params(school_main),&#39;lognorm&#39;, plot=plt)    For some reason even if I set fit=False it still shows the regression line. This visual doesn&amp;rsquo;t interest me too much because I can&amp;rsquo;t see the actual percentage values, I&amp;rsquo;d rather have a plot comparing the percentile ranks
+I can see this happening two ways:
+ a range of quantiles (for the sample) compared to the expected CDF of their corresponding values a range of quantiles (for the model) compared to the sample percentileofscore of their values (using the model PPF)</description>
+    </item>
     
     <item>
       <title>Day 24</title>
