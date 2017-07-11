@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-07-11
 title: Day 25
-description: 
+description: Plotting and comparing sample/model quartiles
 weight: 10
 ---
 
