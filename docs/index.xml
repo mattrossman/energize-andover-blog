@@ -6,10 +6,19 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 11 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 12 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 26</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-26/</link>
+      <pubDate>Wed, 12 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-26/</guid>
+      <description>Wrapping up from yesterday Before I go on, I was thinking more about the importance of the quantile residual plot. The benefit of using the local extrema of this chart is that they identify the points of greatest dissonance between the sample and model. On Day 23 we picked the 95th percentile of the model and found it correlated to the 86th percentile of the sample. But that was just a nice sounding threshold.</description>
+    </item>
     
     <item>
       <title>Day 25</title>

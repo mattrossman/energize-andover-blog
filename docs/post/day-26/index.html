@@ -1,0 +1,239 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 26 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 26
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 12, 2017
+                    · 1538 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h4 id="wrapping-up-from-yesterday">Wrapping up from yesterday</h4>
+
+<p>Before I go on, I was thinking more about the importance of the quantile residual plot. The benefit of using the local extrema of this chart is that they identify the points of greatest dissonance between the sample and model. On <a href="">Day 23</a> we picked the 95th percentile of the model and found it correlated to the 86th percentile of the sample. But that was just a nice sounding threshold. The local min on that quantile difference plot would be the best area to highlight since it shows the most dissonance. We weren&rsquo;t far off from the ideal value; we tracked an 8.5% data surplus in the sample at the 95th percentile of model. According the the plot, the most extreme difference was 8.63% which occured at the 95.7th percentile.</p>
+
+<p>I&rsquo;d be curious to compare the locations of the extrema on this plot to the points of intersection in the density plots.</p>
+
+<p>Also in order for this system to be really useful, we need to be sure that the fitted model is right. It looks nice for the main power data during school hours, but some other plots don&rsquo;t look quite as nicely fitted.</p>
+
+<h1 id="quantile-translation">Quantile Translation</h1>
+
+<p>Theoretically, the models that we&rsquo;ve been fitting thus far should provide better energy usage than the samples they&rsquo;re based on. To prove that, I want to fit the data set to our model and compare the energy usage of those two data sets. Viraj explained that this could be done by translating the quantiles accordingly. My first approach at this was pretty slow and more complicated than it needed to be. I&rsquo;ll explain how I first did it and how I revised it.</p>
+
+<h2 id="the-bad-way">The Bad Way</h2>
+
+<p>First, I needed to figure out the quantile of every value in the data. In the past I&rsquo;ve used <code>scipy.stats.percentileofscore(data,val)/100</code> to get the quantile of a value, but the disadantage is this only works on a single value, not list-likes. While pandas lets you perform the <code>quantile</code> function on a Series to get the value of a given quantile, it doesn&rsquo;t have an inverse version of that function. So I would have to manually apply the SciPy function to each element of the data Seres using <code>pandas.Series.apply()</code> or <code>pandas.Series.map()</code> (the former is more useful for DataFrames I believe since you can specify an axis).</p>
+
+<p>This is a very slow operation. While most pandas operations are instantaneous, this takes a few seconds to spit out a result. It felt like there should be a faster way to get my results (there is).</p>
+
+<p>Next, I&rsquo;d have to run <em>another</em> mapping of the <code>stats.lognorm.ppf</code> to these quantile values to get their corresponding power values in the fitted model. It seemed to work and I tried plotting the results, which brought to my attention another problem. By default, the <code>percentileofscore</code> method uses the <code>'weak'</code> interpretation of the score, meaning it considers all values in the list that are <em>less than or equal to</em> the given value. That&rsquo;s the best method according to the definition of a cumulative distribution function, but it doesn&rsquo;t play nicely with the <code>.ppf</code> function. With a lognorm distribution, you can&rsquo;t reach the 100th percentile; it&rsquo;s infinite. You <em>can</em> reach the 0th percentile since lognormal distributions have that lower bound of zero, but they stretch infinitely in the positive direction. So for my maximum data value (which by default was recognized as the 100th percentile), the equavalent model value was <code>inf</code> for $\infty$. This made it unable to be plotted.</p>
+
+<p>I could have resolved this by simply dropping the value, but it seemed unfair to drop my largest data value. To remedy this, in the <code>percentileofscore</code> call I changed the argument for <code>kind</code> to <code>'mean'</code>, which averages between the <code>'weak'</code> and <code>'strict'</code> methods. The <code>'strict'</code> method would only look at the values <em>less than</em> the given values, so the minimum data value would automatically get assigned to the 0th percentile, which in turn would set it to 0 kW. That didn&rsquo;t seem fair either, so the <code>'mean'</code> method seemed like the best compromise.</p>
+
+<p>This is what the inefficient approach looks like:</p>
+
+<pre><code>quantiles = data.map(lambda x: stats.percentileofscore(data,x,'mean')/100)
+adjusted = quantiles.map(lambda q: stats.lognorm.ppf(q,*fit_params))
+</code></pre>
+
+<h2 id="the-good-way">The Good Way</h2>
+
+<p>The problem with the current approach is the usage of mapping. It&rsquo;s an inefficient way to manipulate the large list values. There are two instances of mapping that need to be resolved:</p>
+
+<p>The first is when calculating the data quantiles. Quantiles look at data solely by <em>count</em>. That means that since the distance between data counts is constant (it&rsquo;s just 1), the difference between quantiles (just the ranks, not the values associated with those quantiles) is constant too. That is, assuming the data values are sorted (since a quantile counts the proportion of data equal or below it).</p>
+
+<p>So, what is that constant? Well, it depends how I want to set up my quantile ranges. I realize there&rsquo;s some miscommunication between Pandas&rsquo; <code>quantile</code> method and SciPy&rsquo;s <code>percentileofscore</code> method. Pandas (and Wikipedia) defines the quartile range as $0 \le q \le 1$. The first and last values are thus fixed to the 0th and 100th percentiles, then everything in between splits up the middle region. But no matter which <code>'kind'</code> argument you select, you can&rsquo;t replicate this behavior with <code>percentileofscore</code>. If you say <code>kind='weak'</code> then your range is $\frac{1}{n} \le q \le 1$. For <code>kind='strict'</code> the range is $0 \le q \le 1-\frac{1}{n}$. The <code>'mean'</code> method splits the difference of these ranges, and <code>'rank'</code> is only used for duplicate element values.</p>
+
+<p>I might as well define the range that I <em>want</em> since I won&rsquo;t be needing the <code>percentileofscore</code> method anymore. I already explained the disadvantages of allowing the range to include 0 or 1. So I want to evenly distribute the quantiles with a buffer on either end. The affect of a smaller buffer size is more &ldquo;extreme&rdquo; values in my adjusted set (i.e. as the buffer size decreases, the maximum value approaches $\infty$). The most straightforward approach I can think of would be to set my range to be $\frac{1}{n+1} \le q \le (1-\frac{1}{n+1})$ with an equal quantile spacing of $\frac{1}{n+1}$. That would effectively put two invisible dummy values on the ends of the set to take the places of the 0th and 100th percentiles and let the actual data be evenly spaced in between.</p>
+
+<h4 id="proof">Proof:</h4>
+
+<p>Note that you would intuitively think that I should be using $\frac{1}{n+2}$ instead of $\frac{1}{n+1}$ since I&rsquo;m adding <em>two</em> dummy points on the sides, but if you do it out you&rsquo;ll see that due to the inclusive edges it should just be $n+1$. Consider an array <code>[1, 2, 3, 4, 5]</code>. Take the quantiles for these values and you get <code>[0, 0.25, 0.5, 0.75, 1.0]</code>. The spacing is $0.25=\frac{1}{4}$ or $\frac{1}{n-1}$. Now imagine you&rsquo;re just looking at the subarray <code>[2, 3, 4]</code>, and the <code>1</code> and <code>5</code> values are your buffer dummies. The spacing should be the same as before so your output quantiles are <code>[0.25, 0.5, 0.75]</code>. Now that $n=3$ you can see this spans the range $\frac{1}{n+1} \le q \le \left( 1-\frac{1}{n+1} \right)$.</p>
+
+<p>More generally, given a buffer of $b$ points (on each side), your range should be $$\frac{1}{n+2b-1} \le q \le \left(1-\frac{1}{n+2b-1}\right)$$</p>
+
+<h4 id="code">Code</h4>
+
+<p>First step: sorting the values. I can do this efficiently with <code>pandas.Series.sort_values()</code>.</p>
+
+<p>Next step: assign the desired quantiles to these values. I can generate the range of quantile values using the equation above and <code>numpy.linspace()</code>, then assign it an index and re-sort:</p>
+
+<pre><code>data_sorted = data.sort_values()
+buffer = 1
+step = 1/(data.size+2*buffer-1)
+quantiles=pd.Series(np.linspace(buffer*step,1-buffer*step,data.size),
+                data_sorted.index)
+quantiles.sort_index(inplace=True)
+</code></pre>
+
+<p>This part would have been a lot shorter if I just hard-coded the buffer size of 1, but I may want to tweak that later on so it&rsquo;s a bit more future-proofed.</p>
+
+<p>Lastly we need to get the inverse of the CDF on these values from the lognorm distribution. The revision to this step is simple since the <code>.ppf</code> function lets you pass in an array of values so there&rsquo;s no need to use a map function.</p>
+
+<pre><code>adjusted = pd.Series(data=stats.lognorm.ppf(quantiles,*fit_params),
+                 index=quantiles.index)
+</code></pre>
+
+<h1 id="the-result">The Result</h1>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/12/adjusted.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/12/adjusted.png alt="adjusted.png not found" title = adjusted.png />
+	</a>
+</div>
+
+
+
+
+<p>The plot shows the distribution of the new adjusted sample against a density histogram of the original data. It also shows how the adjusted sample follows the fitted model almost exactly. I&rsquo;m guessing the small amount of error could be adjusted by changing the buffer size. Visually you may wonder what this even accomplished since it looks just like the fitted plot. However, the benefit is that now we have tangible data to work with as opposed to just some SciPy distribution parameters.</p>
+
+<p>So, if I want to compare the energy usage of the two data sets, I can check <code>egz.trapz(data,'15 min')</code> against <code>egz.trapz(adjusted,'15 min')</code>. Here&rsquo;s an output showing the difference:</p>
+
+<pre><code>Sample: 320679.0 kWh
+Model: 312584.0 kWh
+Saved: 8095.0 kWh
+</code></pre>
+
+<p>So in that case the fitted model saved about 8,100 kWh of energy, which is about 2.5% of the sample&rsquo;s energy usage. That doesn&rsquo;t seem like a huge amount, but it&rsquo;s realistic. Also this is just relying on squashing outliers, it&rsquo;s not intended to shift the center point of the data so it can&rsquo;t cause massive changes in energy usage.</p>
+
+<p>For the future, I should abstract this process and also look at how the shift affects the daily power plots.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
