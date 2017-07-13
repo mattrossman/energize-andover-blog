@@ -4,6 +4,8 @@ title = "About"
 hidden = true
 +++
 
+You can find (some) of the code and resources I'm using on the GitHub repository [located here](https://github.com/mattrossman/andover-energy-analysis).
+
 This blog is published on GitHub Pages. It is built with the [Hugo](https://gohugo.io/) static site tool, based off the [Cactus Plus](https://github.com/nodejh/hugo-theme-cactus-plus) theme.
 
 Want to make a blog like this one? [Read my guide]({{< ref "how-to.md" >}}) for a breakdown of how to get started.

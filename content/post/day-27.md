@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-07-13
 title: Day 27
-description: Tour of AHS
+description: Tour of AHS, sample adjustment function and testing
 weight: 10
 ---
 
