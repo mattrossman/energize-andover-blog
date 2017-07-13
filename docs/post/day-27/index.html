@@ -1,0 +1,243 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 27 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 27
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 13, 2017
+                    · 624 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>This morning I joined Anil on a guided tour of Andover High School. He pointed out key parts of the electric and heating framework for the building. Starting with the main power switch and working down to the sub-panels distributed throughout the school it became easier to visualize the tree structure of the circuitry. It also became appart how challenging it is to navigate the electrical map, so it&rsquo;s good that the other team(s) are working on improving this.</p>
+
+<p>Later on Anil will show me more about the structure of the building&rsquo;s heating and ventilation system. Also soon he will be providing our team with more data samples which will be really helpful for branching out our expectations for power usage, and it will allow us to test the usefulness of what has been done so far.</p>
+
+<h2 id="back-to-the-code">Back to the code</h2>
+
+<p>I moved the work from yesterday into a function and tweaked some labels:</p>
+
+<pre><code>&quot;&quot;&quot;
+adjust_sample: Series *int --&gt; Series
+returns an adjusted version of the data that approximately follows the
+energize fitted lognormal distribution
+
+Buffer count (for setting the quantiles) defaults to 1 on each side (to take
+the place of the 0th and 100th percentiles) and can optionally be changed
+&quot;&quot;&quot;
+
+def adjust_sample(series, buffer=1):
+    fit_params = lognorm_params(series)
+    s_sorted = series.sort_values()
+    q_step = 1/(series.size+2*buffer-1)
+    q_array = np.linspace(buffer*q_step, 1-buffer*q_step, series.size)
+    quantiles=pd.Series(q_array, s_sorted.index).sort_index()
+    return pd.Series(stats.lognorm.ppf(quantiles,*fit_params),
+                 quantiles.index)
+</code></pre>
+
+<p>I&rsquo;ve been playing around with this and have found some areas where it succeeds, and plenty of areas where it has some trouble.</p>
+
+<p>Here&rsquo;s a few subplots of the adjustments running on subsets of the weekend data:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/13/weekend.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/13/weekend.png alt="weekend.png not found" title = weekend.png />
+	</a>
+</div>
+
+
+
+
+<p>The <em>Lighting</em> plot looks good and shows a solid 6.85% improvement. The <em>Main</em> and <em>Plug load</em> show a nice improvement but it&rsquo;s questionable how realistic the fit is. The <em>Gym</em> plot is a different story. The fit is not able to keep up with the crazy looking data sample. The histogram looks just as raggedy as the KDE suggests. I think the model makes a decent effort, but by smoothing out all the spikes in the data it ends up using <em>more</em> energy that the sample did. To be fair, the data is more of a problem here than the model is.</p>
+
+<p>The night data doesn&rsquo;t look too bad:
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/13/night.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/13/night.png alt="night.png not found" title = night.png />
+	</a>
+</div>
+
+
+</p>
+
+<p>But the summer data is a <strong>nightmare</strong>:
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/13/summer.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/13/summer.png alt="summer.png not found" title = summer.png />
+	</a>
+</div>
+
+
+</p>
+
+<p>Again, the problem is really with the data itself. We&rsquo;re assuming a log-normal distribution, and the summer samples don&rsquo;t seem to be following any sort of traditional distribution. Why the erratic data?</p>
+
+<p>Either there really is some ridiculous randomness going on in the data, or there are underlying variables causing the distortion of the distribution. I&rsquo;m thinking that for this reason the Poisson regression method will allow us to better refine our distributions to rule out as many variables as possible.</p>
+
+<p>But for samples that <em>do</em> follow a relatively lognormal distribution, this seems to be doing a good job of filtering out the abnormalities and yielding reasonable savings values.</p>
+
+<p>You may notice that the blue adjusted KDE doesn&rsquo;t always follow the the purple fitted distribution. It even looks like the adjusted value distribution extends below 0 kW in some subplots. I looked into it, and it&rsquo;s an issue with the way a KDE plot is calculated. if you plot the histogram it follows the model more closely.</p>
+
+<blockquote>
+<p>Random side note: while I was tweaking the buffer value, I realized it may be easier to let the user specify a buffer percentage rather than count? (e.g. a buffer that excludes 2% of the model values on either tail). Note that depending on the sample size this may cause issues with the fit of the adjusted sample.</p>
+</blockquote>
+
+<p>Tomorrow I&rsquo;ll be meeting with the group and Anil so we can reconvene and get some more data to work with.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

@@ -20,3 +20,5 @@ weight: 10
 EOF
 
 gedit content/post/day-$post_num.md & disown
+
+hugo server

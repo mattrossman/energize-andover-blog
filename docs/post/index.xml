@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 12 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 13 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 27</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-27/</link>
+      <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-27/</guid>
+      <description>This morning I joined Anil on a guided tour of Andover High School. He pointed out key parts of the electric and heating framework for the building. Starting with the main power switch and working down to the sub-panels distributed throughout the school it became easier to visualize the tree structure of the circuitry. It also became appart how challenging it is to navigate the electrical map, so it&amp;rsquo;s good that the other team(s) are working on improving this.</description>
+    </item>
     
     <item>
       <title>Day 26</title>
