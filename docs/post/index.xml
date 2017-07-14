@@ -6,10 +6,20 @@
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 13 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 14 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 28</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-28/</link>
+      <pubDate>Fri, 14 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-28/</guid>
+      <description>Met with the team today at the library. I gave an update on the status of the fitting process. Frank had looked into the Poisson regression and was having some trouble so I wanted to take a stab at it.
+I too was unable to see a clear application of the theory to our scenario. From what I understand, a Poisson distribution is used for counts of event occurences. Our data doesn&amp;rsquo;t immediately apply to this since we are measuring a continuous value, but you can tweak it by, for instance, measuring the counts of data points that lie between 400-450 kW.</description>
+    </item>
     
     <item>
       <title>Day 27</title>
