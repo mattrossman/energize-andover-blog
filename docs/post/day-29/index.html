@@ -1,0 +1,223 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 29 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 29
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 17, 2017
+                    · 501 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>Today I&rsquo;ll be taking a look at the new Bancroft school data. Bancroft is supposed to be a very energy efficient building so it&rsquo;ll be ineresting to compare the energy usage patterns to AHS.</p>
+
+<p>The simplest filter to compare would be night data. Some activities may go on during the summer or weekends, but most buildings will not be operating at night.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/17/bancroft_night_kde.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/17/bancroft_night_kde.png alt="bancroft_night_kde.png not found" title = bancroft_night_kde.png />
+	</a>
+</div>
+
+
+
+
+<p>Interestingly we&rsquo;re seeing a bimodal shape in the night-time distribution. To see why I can look at the line plot:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/17/bancroft_night.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/17/bancroft_night.png alt="bancroft_night.png not found" title = bancroft_night.png />
+	</a>
+</div>
+
+
+
+
+<p>The baseline usage starts out a bit above 20,000 kW, then after August 2016 it rises to around 40,000 kW. Filtering just the data points that are after this point in time yields a more familiar shape:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/17/after_aug.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/17/after_aug.png alt="after_aug.png not found" title = after_aug.png />
+	</a>
+</div>
+
+
+
+
+<h3 id="catching-errors-in-the-time-filterer">Catching Errors in the Time Filterer</h3>
+
+<p>When I tried running the school filter on the Bancroft data, I noticed an issue with the time filtering method. When you specify bounds that extend past the range of the data, usually it extends as far as it can and doesn&rsquo;t raise an issue. But when specific dates are out of the data range, it throws a <code>KeyError</code>. To combat this, I added a Try/Except block in the data range token parser:</p>
+
+<pre><code>if (type(token)==str):
+    try:
+        return data[token]
+    except KeyError: #returns None
+        print('[!] energize.py : range_token_df : ' + token+' not in range')
+</code></pre>
+
+<p>This way it lightly warns you about your unused dates without causing the script to halt. Strangely, by default Pandas won&rsquo;t throw a <code>KeyError</code> if you use slice indexes that are completely out of the data range (it&rsquo;ll just return an empty data set), it only does the error for individual bad indexes.</p>
+
+<h3 id="nonlinear-regression">Nonlinear Regression</h3>
+
+<p>I spent a lot of time today fumbling around web pages describing various regression techniques. Viraj elaborated on the Poisson regression that I probably could consider the decimal kilowatts used as &ldquo;counts&rdquo; of infinitesimally small wattage units, and he shared my concern about the independence of the events. <a href="https://en.wikipedia.org/wiki/Poisson_regression#Poisson_regression_in_practice">This example</a> from Wikipedia is somewhat reassuring that the events could be considered independent (since counts are wattage units used, and using a unit of power does not make it more or less likely to subsequently use another unit of power).</p>
+
+<p>However, Viraj also noted that Poisson regression is just one of many regression techniques available, which led me down the rabbit hole of online resources on the subject.</p>
+
+<p>I ended up finding something very promising on the topic of <em>non-linear regression</em>. <a href="https://www.youtube.com/watch?v=AbK7UYk4OVQ">This Carnegie Mellon lecture</a> goes over exactly what I hope to achieve, fitting a non linear multi-dimensional model to a data set. The professor literally uses power data compared against variables like temperature and time of day. It&rsquo;s almost funny how perfect of an example this is. It&rsquo;s comforting to see the familiar tilted-U shape in the lecture&rsquo;s temperature versus power plot as I saw in <a href="https://mattrossman.github.io/energize-andover-blog/post/day-12/">Day 12</a>. The video is quite long and I&rsquo;ve only seen part of it, but tomorrow I will try to cover as much as seems necessary and probably look at other sources.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 14 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 17 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 29</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-29/</link>
+      <pubDate>Mon, 17 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-29/</guid>
+      <description>Today I&amp;rsquo;ll be taking a look at the new Bancroft school data. Bancroft is supposed to be a very energy efficient building so it&amp;rsquo;ll be ineresting to compare the energy usage patterns to AHS.
+The simplest filter to compare would be night data. Some activities may go on during the summer or weekends, but most buildings will not be operating at night.
+  Interestingly we&amp;rsquo;re seeing a bimodal shape in the night-time distribution.</description>
+    </item>
     
     <item>
       <title>Day 28</title>
