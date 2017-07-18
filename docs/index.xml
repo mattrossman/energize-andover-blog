@@ -6,10 +6,19 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 17 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 18 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 30</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-30/</link>
+      <pubDate>Tue, 18 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-30/</guid>
+      <description>An exciting find I ended yesterday with a CMU lecture on nonlinear regression that looked eerily similar to the work we&amp;rsquo;re doing. After sharing it with the team, Frank noticed that it&amp;rsquo;s actually part of an entire course called Computational Methods for the Smart Grid. All of the resources (lecture videos, slides, notes) are freely availabe online. The course teaches how to do precisely what we&amp;rsquo;ve been trying to accomplish this whole summer.</description>
+    </item>
     
     <item>
       <title>Day 29</title>

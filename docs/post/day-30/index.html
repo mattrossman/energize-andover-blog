@@ -1,0 +1,179 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 30 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 30
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 18, 2017
+                    · 535 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="an-exciting-find">An exciting find</h2>
+
+<p>I ended yesterday with a CMU lecture on nonlinear regression that looked eerily similar to the work we&rsquo;re doing. After sharing it with the team, Frank noticed that it&rsquo;s actually part of an entire course called <em>Computational Methods for the Smart Grid</em>. All of the resources (lecture videos, slides, notes) are freely availabe online. The course teaches how to do precisely what we&rsquo;ve been trying to accomplish this whole summer. I only wish we had found it sooner!</p>
+
+<p><a href="https://www.youtube.com/playlist?list=PLvWdgVGcyGIlbqDQmSGq6SDWgs94qamSR">I made a playlist here</a> of all the course&rsquo;s video lectures. Linked in the description is <a href="http://www.cs.cmu.edu/~zkolter/course/15-884/">the course page</a> that contains the lecture slides and notes.</p>
+
+<p>I spent today watching the first couple of lectures to fill in some of the background I was missing for the 6th lecture on nonlinear regression (and beyond).</p>
+
+<h4 id="lecture-1">Lecture 1</h4>
+
+<p>This mainly gave an overview of the course, what it is trying to accomplish and why (where energy waste is coming from, the negative consequences of it). It lays out the basic principles of how you can use various factors to model and predict energy usage.</p>
+
+<h4 id="lecture-2">Lecture 2</h4>
+
+<p>The main topic here is modeling via linear regression. Prof. Kolter explains the theory and formal notation of models, which consist of:</p>
+
+<ul>
+<li><strong>Input:</strong> $x_i \in \mathbb{R}^n, i=1,&hellip;,m$</li>
+<li><strong>Output:</strong> $y_i \in \mathbb{R}$</li>
+<li><strong>Model Parameters:</strong> $\theta \in \mathbb{R}^k$</li>
+<li><strong>Output:</strong> $\hat{y}_i \in \mathbb{R}$</li>
+</ul>
+
+<p>I won&rsquo;t waste time copying everything over from his slides, but you can find the full explainations on the course site.</p>
+
+<p>He introduces that fact that we can make a loss function that measures how well the model fits the input data (the most common one is the squared loss). The end goal is to figure out how to minimize the loss function for all inputs (called the cost function).</p>
+
+<h4 id="lecture-3">Lecture 3</h4>
+
+<p>To go about minimizing the cost function (i.e. perform a least squares regression) he rewrites the cost function in matrix notation using principles from linear algebra. It&rsquo;s pretty cool that I&rsquo;ll be taking linear algebra this fall, so I&rsquo;m already getting a head start on the basics. Then since our variable $\theta$ is a vector, you have to use the gradient to optimize the function. That is really cool as well, because just last semester I took multivariable calculus where we learned how to do this.</p>
+
+<p>The process is somewhat complicated and uses some rules that he derives in the lecture, but after replaying the confusing bits enough times it finally makes sense. The end result is called the <em>normal equations</em>: $$ 2\Phi^T\Phi\theta^* - 2\Phi^Ty = 0 \Longleftrightarrow \theta^* = (\Phi^T\Phi)^{-1}\Phi^Ty $$</p>
+
+<p>He&rsquo;s using Matlab for the course and he explains that there&rsquo;s a built in function for the normal equations, so I&rsquo;m guessing there will be something similar in one of the Python libraries that we&rsquo;re using.</p>
+
+<p>The rest of the lecture is a review of linear algebra concepts, which are also available in a neatly organized note sheet in his course resources.</p>
+
+<p>Tomorrow I hope to make my way up to the lecture on nonlinear regression and eventually try to implement that in Python. And that&rsquo;s only a quarter of the way through the course, so I wonder what other advanced topics he covers later on!</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
