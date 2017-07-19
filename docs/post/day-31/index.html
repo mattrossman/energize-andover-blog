@@ -1,0 +1,188 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 31 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 31
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 19, 2017
+                    · 543 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h4 id="continuing-with-the-lectures">Continuing with the lectures</h4>
+
+<p>I skimmed over the 4th and 5th lectures, as they started getting into more specific linear algebra topics that I can delve into later if necessary.</p>
+
+<p>Lecure 6 discussed how you can take the concept of minimizing the cost function using linear features and simply add in non-linear features to fit a model more closely to non-linear data.</p>
+
+<p>Prof. Kolter showed two main approaches here. The first is adding polynomial terms to the feature vector, and the other is using a number of Radial Basis Functions (RBFs). More specifically he demonstrates the usage of a Gaussian RBF, which functions a lot like a normal curve. With enough of these RBFs you can mold them to minimize the cost function on your sample.</p>
+
+<p>Some issues he mentions are that these methods can be computationally demanding, especially when dealing with multi-dimensional input. Additionally, you have to be careful when setting up your feature vector to avoid over/under fitting the model to your data.</p>
+
+<p>To remedy the latter issue, he explains the process of regularization, which incorporates the size of the model parameters (relative to a constant $\lambda$) in the cost function so that features are discouraged from overfitting.</p>
+
+<p>The last topic he discusses is <em>kernels</em>, which through mathematical sorcery that he derives allow you to optimize the cost function using an arbitrarily high (or even infinite) dimension feature vector without ever explicity defining that feature vector, making it a much more efficient process.</p>
+
+<h4 id="trying-out-some-code">Trying out some code</h4>
+
+<p>As I mentioned yesterday, the course uses MATLAB. Numpy and SciPy are the primary Python libraries that accomplish similar goals. Since these libraries are designed for scientific analysis, most of the regression techniques are probably already included in these libraries (but it&rsquo;s still beneficial to know the theory behind how they work).</p>
+
+<p>Since the lecture video looks at a plot of power vs temperature, I will do the same with our own data. Note that the video compares maximum power load to maximum temperature because in that context the concern is power distribution, but I&rsquo;m not concerned with the maximum power load as much as an overall indicator of the power usage. I&rsquo;m going to look at the average power usage for each day during school hours versus the observed temperature for that day.</p>
+
+<p>Numpy has a <code>polyfit</code> function that will perform a least squares regression using polynomial features. Here are a few plots showing the fitted polynomial regressions of varying degrees:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/19/polyfit_school_tobs.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/19/polyfit_school_tobs.png alt="polyfit_school_tobs.png not found" title = polyfit_school_tobs.png />
+	</a>
+</div>
+
+
+
+
+<p>I was inspired by the lectures to use x&rsquo;s instead of dots for my plot markers for better visibility.</p>
+
+<p>I&rsquo;m using NumPy&rsquo;s <code>poly1d</code> objects to plot the polynomial model. Given an input value, they&rsquo;ll return the expected response.</p>
+
+<p>The plots for degrees 3 through 5 look the best, the others are either underfitted or overfitted. What stands out about the $d=5$ model is that it approaches $+\infty$ at both edges, which is nice because you would expect a trend of higher power usage at both temperature extremes. From this example alone, polynomials seem to do the job just fine. Perhaps other variables won&rsquo;t share such a nice relationship though.</p>
+
+<p>Tomorrow I&rsquo;m going to look at other relationships and see if it would be a good idea to use a kernel regression method.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

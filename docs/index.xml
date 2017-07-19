@@ -6,10 +6,21 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 18 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 19 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 31</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-31/</link>
+      <pubDate>Wed, 19 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-31/</guid>
+      <description>Continuing with the lectures I skimmed over the 4th and 5th lectures, as they started getting into more specific linear algebra topics that I can delve into later if necessary.
+Lecure 6 discussed how you can take the concept of minimizing the cost function using linear features and simply add in non-linear features to fit a model more closely to non-linear data.
+Prof. Kolter showed two main approaches here. The first is adding polynomial terms to the feature vector, and the other is using a number of Radial Basis Functions (RBFs).</description>
+    </item>
     
     <item>
       <title>Day 30</title>
