@@ -7,7 +7,7 @@ weight: 10
 ---
 
 #### Wrapping up from yesterday
-Before I go on, I was thinking more about the importance of the quantile residual plot. The benefit of using the local extrema of this chart is that they identify the points of greatest dissonance between the sample and model. On [Day 23]({{< ref "day23.md#flagging-the-high-points" >}}) we picked the 95th percentile of the model and found it correlated to the 86th percentile of the sample. But that was just a nice sounding threshold. The local min on that quantile difference plot would be the best area to highlight since it shows the most dissonance. We weren't far off from the ideal value; we tracked an 8.5% data surplus in the sample at the 95th percentile of model. According the the plot, the most extreme difference was 8.63% which occured at the 95.7th percentile.
+Before I go on, I was thinking more about the importance of the quantile residual plot. The benefit of using the local extrema of this chart is that they identify the points of greatest dissonance between the sample and model. On [Day 23]({{< ref "day-23.md#flagging-the-high-points" >}}) we picked the 95th percentile of the model and found it correlated to the 86th percentile of the sample. But that was just a nice sounding threshold. The local min on that quantile difference plot would be the best area to highlight since it shows the most dissonance. We weren't far off from the ideal value; we tracked an 8.5% data surplus in the sample at the 95th percentile of model. According the the plot, the most extreme difference was 8.63% which occured at the 95.7th percentile.
 
 I'd be curious to compare the locations of the extrema on this plot to the points of intersection in the density plots.
 
