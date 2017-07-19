@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-07-19
 title: Day 31
-description:
+description: Nonlinear regression lecture (polynomials, RBFs, kernels), testing out polynomial modeling on temperature data
 weight: 10
 ---
 
