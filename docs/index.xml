@@ -6,10 +6,20 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 19 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 20 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 32</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-32/</link>
+      <pubDate>Thu, 20 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-32/</guid>
+      <description>Quick Disclaimer on Validation For now I&amp;rsquo;m testing models using all the data available. Later on I will worry about proper validation / cross-validation procedures.
+Power vs. Time of Day I have already looked at the load profile of the school throughout the day (see Day 17), but that was using a fairly simple method that relied on the fact that the data is being sampled at the same 15-minute intervals every day.</description>
+    </item>
     
     <item>
       <title>Day 31</title>

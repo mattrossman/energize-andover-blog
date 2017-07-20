@@ -1,0 +1,210 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 32 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 32
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 20, 2017
+                    · 928 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h4 id="quick-disclaimer-on-validation">Quick Disclaimer on Validation</h4>
+
+<p><em>For now I&rsquo;m testing models using all the data available. Later on I will worry about proper validation / cross-validation procedures.</em></p>
+
+<h2 id="power-vs-time-of-day">Power vs. Time of Day</h2>
+
+<p>I have already looked at the load profile of the school throughout the day (see <a href="https://mattrossman.github.io/energize-andover-blog/post/day-17/">Day 17</a>), but that was using a fairly simple method that relied on the fact that the data is being sampled at the same 15-minute intervals every day. It only considered the midpoint of the data at each 15-minute timestamp, so the trend line had total freedom to jump around as much as it pleased. It would be more useful to fit a regression to the load profile to capture a smoother, more generalized model.</p>
+
+<p>Since they&rsquo;ll be used in the regression calculations, I&rsquo;ll need to convert the timestamp objects to quantitative values. I&rsquo;ll measure the number of minutes since midnight. An easy way to get this is:</p>
+
+<pre><code>data.index.minute + data.index.hour*60
+</code></pre>
+
+<p>Using the same polynomial fitting method from yesterday:
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/20/school_poly.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/20/school_poly.png alt="school_poly.png not found" title = school_poly.png />
+	</a>
+</div>
+
+
+</p>
+
+<h2 id="robustness-of-the-regression">Robustness of the Regression</h2>
+
+<p>I often bring up the fact that we&rsquo;re assuming flaws and outliers in our sample, which is why I have leaned towards measures like the median and MAD over mean and standard devaiation. The least squares regression technique tries to minimize the overall cost function, but that means it isn&rsquo;t resistent to outliers in the data. It just wants to &ldquo;please&rdquo; all the points equally by picking a middle ground of &ldquo;maximum likelihood&rdquo;.</p>
+
+<p>Wikipedia has <a href="https://en.wikipedia.org/wiki/Robust_regression">an article</a> on alternative robust techniques. The overall best compromise of effectiveness and efficiency <em>seems</em> to be the MM-estimation.</p>
+
+<p>The SciPy documentation also <a href="http://scipy-cookbook.readthedocs.io/items/robust_regression.html">has a post</a> that overviews how you can go about robust nonlinear regression. It notes that the absolute loss (AKA Least Absolute Deviations or LAD) is a robust loss function, but it is more complex to optimize than least squares (since it is non-differentiable). Instead it describes applying a <em>sublinear function</em> (which grows slower than a linear function) on the cost function</p>
+
+<blockquote>
+<p>Note: I&rsquo;ve found many <code>scipy.optimize</code> functions that seem to accomplish the same task (<code>leastsq</code>,<code>curve_fit</code>, and <code>least_squares</code>) but from what I&rsquo;ve read the most recent and direct version is <code>least_squares</code>, which is what is used in the post I linked above</p>
+</blockquote>
+
+<h2 id="kernels">Kernels?</h2>
+
+<p>I haven&rsquo;t found a clear offering in the &ldquo;Big 3&rdquo; libraries I&rsquo;ve used (Pandas, NumPy, SciPy) for kernel smoothing. It&rsquo;s appealing that kernels let you use complex features without explicitly defining them, but so far our data has&rsquo;t appeared to follow too crazy of a model anyway. The most complex model I can imagine us using would be something that models the entire lifespan of the time series power data, but we might be able to simply fit that using sinusoidal features (to account for the daily and annual cycles).</p>
+
+<p>Realistically, we won&rsquo;t even need to make that kind of complex model because we could just perform seperate regressions on subsets of the data filterd by factors such as day of the week, week of the year, temperature, etc. which would be causing those hourly or seasonal shifts. We could allow the user to check off boxes for which factors they want to stratify the regressions by. Each stratified regression could most likely be fitted by a low degree polynomial.</p>
+
+<h1 id="scikit-learn">scikit-learn</h1>
+
+<p>I&rsquo;ve been seeing the name scikit-learn pop up a lot in my research lately (such as in my search for kernel smoothing), so I finally checked it out. It&rsquo;s a library built on Numpy, SciPy and Matplotlib designed for machine learning. It can do classification, regression, validation, and tons more. Plus it&rsquo;s supported by Anaconda. I&rsquo;m definitely going to poke around the documentation and see what it can do for us. <a href="http://scikit-learn.org/stable/tutorial/index.html">This resource</a> provides tutorials that go over the key points. I&rsquo;ll just make some notes of anything interesting I see along the way.</p>
+
+<h4 id="unsupervised-learning-clustering">Unsupervised learning &amp; Clustering</h4>
+
+<p>So far I&rsquo;ve just been looking at <em>supervised learning</em> which looks for patterns according to a provided set of inputs and outputs. <em>Unsupervised learning</em> on the other hand finds patterns based solely on input vectors. This goes way back to when I mentioned that it would be nice to be able to automatically classify different power usage profiles (e.g. night, weekend, school day, special event) rather than having the user manually specify them. Unsupervised learning is the general topic, <em>clustering</em> is a more specific category that applies to what I&rsquo;m talking about here.</p>
+
+<h4 id="using-estimator-objects">Using estimator objects</h4>
+
+<p>Using models in scikit-learn is amazingly straightforward. There are various estimator object types (e.g. for linear, polynomial, kernel, and many more) which have a simple <code>fit()</code> method that takes in the input and response values, and a <code>predict()</code> method that takes in a new value and predicts the response based on the model. Machine learning is a really complicated subject but this library practically spoonfeeds it to you; it&rsquo;s fantastic.</p>
+
+<h4 id="picking-estimators">Picking estimators</h4>
+
+<p>You can use <em>folding</em> methods such as k-folding to perform cross-validation on your &ldquo;learning&rdquo; data set to narrow down the best parameters for your estimator. (Estimators actually have a <code>score</code> method that indicates how well they fit the data). <a href="http://scikit-learn.org/stable/tutorial/statistical_inference/model_selection.html#cross-validated-estimators">Some estimators</a> even automatically pick their parameters via cross-validation.</p>
+
+<p>There is a <strong>ton</strong> more awesome stuff to unpack here. It may be hard to convey through a blog post, but I am really excited about the potential here. I&rsquo;m going to try to start on the intro tutorials for the library, but I probably won&rsquo;t be able to get too far into it yet.</p>
+
+<p>So far I&rsquo;ve just been able to replicate the polynomial regression technique that I had previously done with NumPy.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
