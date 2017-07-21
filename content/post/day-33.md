@@ -46,7 +46,7 @@ I got this far with the regression plot, but it's definitely not right; it's not
 
 ## Fixed!
 {{< linked-img "3d_good.png" >}}
-I finally got the plot to display correctly. I don't entirely understand how it works since I'm unfamiliar with the specifics of the `numpy_meshgrid` and `Axes3D.plot_wireframe` methods. [This post](https://stackoverflow.com/a/9153138) helped me figure out how to organize my Z-array. Visualization is not the most important part of this project so I suppose it's not a big deal if I do a hack-job on the plotting scripts.
+I finally got the plot to display correctly. I don't entirely understand how it works since I'm unfamiliar with the specifics of the `numpy.meshgrid()` and `Axes3D.plot_wireframe()` methods. [This post](https://stackoverflow.com/a/9153138) helped me figure out how to organize my Z-array. Visualization is not the most important part of this project so I suppose it's not a big deal if I do a hack-job on the plotting scripts.
 
 Anyways, you can see the saddle shape now. The red surface represents a least squares regression on 5th degree polynomial features of the data. I can now take a theoretical temperature and time input (and convert that to minutes since midnight) and return an estimated power usage. I could do this for as many input variables as I wanted now, but I wouldn't be able to really visualize that nicely (I had a hard enough time plotting in 3D). Pretty cool!
 

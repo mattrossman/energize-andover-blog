@@ -157,7 +157,7 @@ plt.plot(x_plot, reg.predict(x_plot_))
 
 
 
-I finally got the plot to display correctly. I don&rsquo;t entirely understand how it works since I&rsquo;m unfamiliar with the specifics of the <code>numpy_meshgrid</code> and <code>Axes3D.plot_wireframe</code> methods. <a href="https://stackoverflow.com/a/9153138">This post</a> helped me figure out how to organize my Z-array. Visualization is not the most important part of this project so I suppose it&rsquo;s not a big deal if I do a hack-job on the plotting scripts.</p>
+I finally got the plot to display correctly. I don&rsquo;t entirely understand how it works since I&rsquo;m unfamiliar with the specifics of the <code>numpy.meshgrid()</code> and <code>Axes3D.plot_wireframe()</code> methods. <a href="https://stackoverflow.com/a/9153138">This post</a> helped me figure out how to organize my Z-array. Visualization is not the most important part of this project so I suppose it&rsquo;s not a big deal if I do a hack-job on the plotting scripts.</p>
 
 <p>Anyways, you can see the saddle shape now. The red surface represents a least squares regression on 5th degree polynomial features of the data. I can now take a theoretical temperature and time input (and convert that to minutes since midnight) and return an estimated power usage. I could do this for as many input variables as I wanted now, but I wouldn&rsquo;t be able to really visualize that nicely (I had a hard enough time plotting in 3D). Pretty cool!</p>
 
