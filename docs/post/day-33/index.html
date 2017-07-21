@@ -1,0 +1,241 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 33 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+			MathJax.Hub.Config({
+			  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+			});
+		</script>
+
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 33
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 21, 2017
+                    · 471 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h3 id="polynomial-regression-as-linear-regression">Polynomial regression as linear regression</h3>
+
+<p>There is no specific polynomial regression estimator in <code>sklearn</code>. Zico Kolter goes over this in his lecture, but polynomial regression is really an extension of linear regression because the additional feature terms ($x^2$, $x^3$, &hellip; $x^n$) can be thought of as regular variables with linear coefficients. Scikit-learn has you making a <code>PolynomialFeatures</code> object of a particular degree, then using its <code>fit_transform</code> method to generate the feature matrix.</p>
+
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn import linear_model
+
+X = np.sort(5 * np.random.rand(40, 1), axis=0)
+y = np.sin(X).ravel()
+x_plot = np.linspace(X.min(),X.max(),100).reshape(-1, 1)
+poly = PolynomialFeatures(degree=5)
+
+X_ = poly.fit_transform(X)
+x_plot_ = poly.fit_transform(x_plot)
+
+reg = linear_model.LinearRegression()
+reg.fit(X_,y)
+
+plt.scatter(X,y)
+plt.plot(x_plot, reg.predict(x_plot_))
+</code></pre>
+
+<p>That example fits a 5th degree polynomial to a sinusoidal sample.</p>
+
+<h2 id="more-dimensions">More Dimensions</h2>
+
+<p>I know how to perform a regression on one-dimensional input, but it would be cool to try adding a dimension. There&rsquo;s no real extra coding involved (other than passing in an array of $x_i \in \mathbb{R}^n$ as opposed to $x_i \in \mathbb{R}^1$) but the hard part is actually showing the results&hellip;</p>
+
+<h4 id="3d-visualization">3D Visualization</h4>
+
+<p>I&rsquo;m using <a href="https://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html">this resource</a> to try out 3D plotting in Matplotlib. I&rsquo;m going to start by just making a scatterplot of the data, looking both at the observed temperature for each point&rsquo;s day and the number of minutes since midnight:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/21/3d.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/21/3d.png alt="3d.png not found" title = 3d.png />
+	</a>
+</div>
+
+
+
+
+<p>It&rsquo;s hard to see here, but it should form a tilted saddle shape.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/21/3d_bad.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/21/3d_bad.png alt="3d_bad.png not found" title = 3d_bad.png />
+	</a>
+</div>
+
+
+
+
+<p>I got this far with the regression plot, but it&rsquo;s definitely not right; it&rsquo;s not accounting for changes in the y-axis. I&rsquo;ve verified that the regression is working when changing the y variable, but I&rsquo;m doing something wrong with the plotting process.</p>
+
+<h2 id="fixed">Fixed!</h2>
+
+<p>
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/21/3d_good.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/21/3d_good.png alt="3d_good.png not found" title = 3d_good.png />
+	</a>
+</div>
+
+
+
+I finally got the plot to display correctly. I don&rsquo;t entirely understand how it works since I&rsquo;m unfamiliar with the specifics of the <code>numpy_meshgrid</code> and <code>Axes3D.plot_wireframe</code> methods. <a href="https://stackoverflow.com/a/9153138">This post</a> helped me figure out how to organize my Z-array. Visualization is not the most important part of this project so I suppose it&rsquo;s not a big deal if I do a hack-job on the plotting scripts.</p>
+
+<p>Anyways, you can see the saddle shape now. The red surface represents a least squares regression on 5th degree polynomial features of the data. I can now take a theoretical temperature and time input (and convert that to minutes since midnight) and return an estimated power usage. I could do this for as many input variables as I wanted now, but I wouldn&rsquo;t be able to really visualize that nicely (I had a hard enough time plotting in 3D). Pretty cool!</p>
+
+<h2 id="to-do">To do</h2>
+
+<p>I&rsquo;m still using a basic linear regression technique for the estimator. I&rsquo;m fine with using a polynomial for now, but I might want to look at other loss function options (e.g. LassoCV is a regularized linear estimator that has cross validation built in)</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

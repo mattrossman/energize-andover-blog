@@ -47,4 +47,4 @@ You can use *folding* methods such as k-folding to perform cross-validation on y
 
 There is a **ton** more awesome stuff to unpack here. It may be hard to convey through a blog post, but I am really excited about the potential here. I'm going to try to start on the intro tutorials for the library, but I probably won't be able to get too far into it yet.
 
-So far I've just been able to replicate the polynomial regression technique that I had previously done with NumPy.
+So far I've just been able to replicate the polynomial regression technique that I had previously done with NumPy by following [this post](https://stats.stackexchange.com/questions/58739/polynomial-regression-using-scikit-learn)

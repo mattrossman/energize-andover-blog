@@ -6,10 +6,19 @@
     <description>Recent content on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 20 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 21 Jul 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://mattrossman.github.io/energize-andover-blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Day 33</title>
+      <link>https://mattrossman.github.io/energize-andover-blog/post/day-33/</link>
+      <pubDate>Fri, 21 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-33/</guid>
+      <description>Polynomial regression as linear regression There is no specific polynomial regression estimator in sklearn. Zico Kolter goes over this in his lecture, but polynomial regression is really an extension of linear regression because the additional feature terms ($x^2$, $x^3$, &amp;hellip; $x^n$) can be thought of as regular variables with linear coefficients. Scikit-learn has you making a PolynomialFeatures object of a particular degree, then using its fit_transform method to generate the feature matrix.</description>
+    </item>
     
     <item>
       <title>Day 32</title>
