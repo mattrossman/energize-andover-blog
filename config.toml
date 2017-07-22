@@ -11,6 +11,10 @@ hasCJKLanguage = true
 disqusShortname = "energize-andover-blog"
 publishDir = "docs"
 
+[outputs]
+	home = [ "HTML", "JSON"]
+	page = [ "HTML"]
+
 [params]
 	name = "Energize Andover Summer 2017 Blog"
 	description = "Blog Description"
