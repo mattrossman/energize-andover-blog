@@ -1,7 +1,10 @@
 var siteSearch;
+var siteJSON;
+var searchBox = document.getElementById('site-search')
 
 $.getJSON('/energize-andover-blog/index.json',jsonCallback);
 
+searchBox.onchange = submitSearch;
 
 function jsonCallback(data) {
 	var idx = lunr(function () {
@@ -13,22 +16,48 @@ function jsonCallback(data) {
 			this.add(doc)
 		}, this)
 	});
-	
+
+	siteJSON = data;
 	siteSearch = function(query) {
 		var search_result = idx.search(query);
 		var getRef = function(obj){ return obj.ref; };
-		console.log(search_result.map(getRef))
+		return search_result.map(getRef);
 	}
 };
 
 
 function submitSearch(){
-	query = document.getElementById('site-search').value;
-	siteSearch(query);
+	query = searchBox.value;
+	if (query=='')
+		setAllDisplay('block');
+	else {
+		setAllDisplay('none');
+		displayPosts(siteSearch(query));
+	}
 }
 
 document.onkeydown=function(e){
     if(e.keyCode=='13'){
         submitSearch();
     }
+}
+
+function displayPosts(names) {
+	for (var i=0; i<names.length; ++i) {
+		document.getElementById(names[i]).style.display = 'block'
+	}
+}
+
+
+function setAllDisplay(arg) {
+	var posts = document.getElementById('post-list').children;
+	for (var i=0; i<posts.length; ++i) {
+		posts[i].style.display = arg;
+	}
+}
+
+function hidePosts(names) {
+	for (var i=0; i<names.length; ++i) {
+		document.getElementById(names[i]).style.display = 'none'
+	}
 }

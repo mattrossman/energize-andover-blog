@@ -142,7 +142,7 @@ h2 {
 }
 
 .profile #header {
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     text-align: center;
     position: relative;
 }
@@ -494,7 +494,7 @@ Post List
     margin-bottom: 0;
 }
 
-#post-list li+li {
+#post-list li {
     padding-top: 20px;
     /*border-top: 1px solid #eee;*/
 }
@@ -953,4 +953,3 @@ a.symbol:hover {
 .disqus-comment-count {
     float:right
 }
-

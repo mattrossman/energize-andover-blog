@@ -1,4 +1,8 @@
 <nav class="main-nav">
+	{{ if .IsHome }}
+	<input type="search" id="site-search">
+	<a href="#"><img src="{{ .Site.BaseURL }}images/search.png" style="width:20px; height:20px; vertical-align:text-bottom;" onclick=submitSearch()></a>
+	{{ end }}
 	{{ $url := replace .Permalink .Site.BaseURL "" }}
 	{{ if not .IsHome }}
 		<a href='{{ .Site.BaseURL }}'> <span class="arrow">←</span>{{ with .Site.Params.home }}{{ . }}{{ else }}Home{{ end }}</a>
