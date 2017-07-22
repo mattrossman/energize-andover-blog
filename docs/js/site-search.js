@@ -6,7 +6,8 @@ $.getJSON('/energize-andover-blog/index.json',jsonCallback);
 function jsonCallback(data) {
 	var idx = lunr(function () {
 		this.field('content')
-		this.ref('title')
+		this.field('title')
+		this.ref('basename')
 
 		data.forEach(function (doc) {
 			this.add(doc)
