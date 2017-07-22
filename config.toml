@@ -9,7 +9,9 @@ theme = "hugo-theme-cactus-plus"
 googleAnalytics = "UA-86883080-2"
 hasCJKLanguage = true
 disqusShortname = "energize-andover-blog"
+
 publishDir = "docs"
+paginate = 100
 
 [outputs]
 	home = [ "HTML", "JSON"]
