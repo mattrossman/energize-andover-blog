@@ -1,0 +1,250 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 34 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 34
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 24, 2017
+                    · 676 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="blog-update-site-search">Blog update - site search</h2>
+
+<p>As my blog has grown, it&rsquo;s gotten harder to find specific posts from the archive. This weekend I had some free time on my hands so I got to implement client-side search on the site. I&rsquo;m using Hugo&rsquo;s <code>output</code> configuration parameter and an <code>index.json</code> template to create a search index of my posts. <a href="https://lunrjs.com/">Lunr.js</a> performs the necessary search algorithms in <a href="https://github.com/mattrossman/energize-andover-blog/blob/master/static/js/site-search.js">my search script</a>. The result is a lighting-quick site search that doesn&rsquo;t need to even reload the page - try it out on the home page. It was a neat learning experience.</p>
+
+<h1 id="improving-the-estimator">Improving the estimator</h1>
+
+<h2 id="quick-note-on-pipelines">Quick note on pipelines</h2>
+
+<p>Previously I would manually run the <code>PolynomialFeatures</code> <code>fit_transform()</code> on my sample points prior to fitting and on my test points prior to prediction. <code>sklearn.pipeline</code> streamlines this process by letting me build the <code>PolynomialFeatures</code> tranformations straight into my estimator.</p>
+
+<p>Example:</p>
+
+<pre><code>model = make_pipeline(PolynomialFeatures(degree=5), linear_model.LinearRegression())
+</code></pre>
+
+<p>To get the coefficients of the underlying estimator, you would call <code>model.steps[1][1]</code> or <code>model.named_steps[&lt;name&gt;]</code> and access the <code>coef_</code> attribute.</p>
+
+<h2 id="ridge-regression">Ridge regression</h2>
+
+<p><a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html">Ridge regression</a> is a step up from the basic <code>LinearRegression</code> object. Its cost function includes a regularization term consisting of the l2-norm of the parameter vector scaled by a constant $\alpha$.</p>
+
+<p>The default arguments do practically nothing for me, probably because the size of the squared error term vastly outweighs the  regularization term for this data. It think as the number of samples grows, the squared error term grows (since the l2-norm is inherently summing more things) but the regularization term can potentially stay constant (since the parameters don&rsquo;t necessarily change, and the number of parameters is constant)</p>
+
+<p>To get around this, I found it useful to set <code>normalize=True</code>, which resolves the scaling issue between the penalty factor and the size of your sample.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/24/ridge_v_ols.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/24/ridge_v_ols.png alt="ridge_v_ols.png not found" title = ridge_v_ols.png />
+	</a>
+</div>
+
+
+
+
+<p>Here you can see how the ridge regression does not suffer from the same overfitting problem as the basic least squares regression, even when permited to use 12th polynomial features. Since the regressors are normalized, $\alpha$ can be quite small (otherwise I had to set it to around 10,000 to achieve similar results)</p>
+
+<h4 id="energize-module-update">Energize module update</h4>
+
+<p>Every day I&rsquo;ve been copying and pasting the same variable definitions into my code. I <em>finally</em> got around to actually moving these definitions into the energize module since I always end up referencing variables like <code>df_energy</code> or <code>df_school</code>. Now they&rsquo;re defined once and I can access them from the energize prefix.</p>
+
+<p>Additionally, I added a function that finds the intersection of two Pandas objects by thier indexes (strange that there isn&rsquo;t one built into Pandas) called <code>intersect()</code>.</p>
+
+<h2 id="lasso-and-elasticnet">Lasso and ElasticNet</h2>
+
+<p>Lasso is quite similar to Ridge regression, but it differs in the implementation of the penalty term. While Ridge has the goal of reducing parameter sizes, Lasso has the goal of reducing unecessary parameters. There&rsquo;s also a method Elastic Net which combines the two (it has an l1-norm and l2-norm penalty term). By default it uses a <sup>50</sup>&frasl;<sub>50</sub> ratio between the two.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/24/ridge_lasso_elasticnet.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/24/ridge_lasso_elasticnet.png alt="ridge_lasso_elasticnet.png not found" title = ridge_lasso_elasticnet.png />
+	</a>
+</div>
+
+
+
+
+<p>I spent some time tweaking the degree and $\alpha$ levels. Overall, I found that the Ridge &amp; Lasso regressions were more closely fitted than the ElasticNet, but most of the differences I was seeing could be settled by simply adjusting the $\alpha$ value. There&rsquo;s not a clear winner for me yet.</p>
+
+<h2 id="cross-validated-estimators">Cross validated estimators?</h2>
+
+<p>I tried out the cross-validated versions of these estimators out without much luck. I&rsquo;ve been mainly sticking with the default values they provide though, so perhaps that is part of the problem.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/24/cv_night.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/24/cv_night.png alt="cv_night.png not found" title = cv_night.png />
+	</a>
+</div>
+
+
+
+
+<p>I&rsquo;m using the <code>alpha_</code> attribute to get the cross validated alpha values. They seem to be performing worse on their own than when I manually specified the alpha value. I&rsquo;ll have to spend more time reading about how they&rsquo;re supposed to be implemented, but so far changing the <code>cv</code>, <code>max_iter</code> and <code>tol</code> arguments hasn&rsquo;t provided a clear benefit.</p>
+
+<h2 id="to-do">To do:</h2>
+
+<p>I want to look into robust regression estimators and figure out what&rsquo;s going wrong with the cross validation. I also should find out whether the standard error of the residuals can be used as a way to detect trend outliers.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
