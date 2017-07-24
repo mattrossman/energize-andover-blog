@@ -945,11 +945,21 @@ a.symbol:hover {
 }
 
 .read-more-handle {
-    float:left
+    float:left;
 }
 
 /* COMMENT COUNT */
 
 .disqus-comment-count {
-    float:right
+    float:right;
+}
+
+.search {
+    max-width: 300px;
+    display:inline-block;
+    width:50%;
+}
+
+#site-search {
+    width:70%;
 }

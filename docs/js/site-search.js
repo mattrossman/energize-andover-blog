@@ -38,7 +38,7 @@ function submitSearch(){
 		setAllDisplay('none');
 		displayPosts(siteSearch(query));
 		queryLabel.style.display = 'block'
-		queryLabel.innerHTML = 'Posts containing "' + query + '"';
+		queryLabel.innerHTML = 'Posts containing "' + query + '":';
 	}
 }
 
