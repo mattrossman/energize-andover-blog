@@ -29,16 +29,18 @@ function jsonCallback(data) {
 
 
 function submitSearch(){
-	query = searchBox.value;
-	if (query=='') {
+	var queries = searchBox.value.split(' ');
+	
+	if (queries[0]=='') {
 		setAllDisplay('block');
 		queryLabel.style.display = 'none'
 	}
 	else {
 		setAllDisplay('none');
-		displayPosts(siteSearch(query));
+		var results = queries.map(siteSearch).reduce(intersect)
+		displayPosts(results);
 		queryLabel.style.display = 'block'
-		queryLabel.innerHTML = 'Posts containing "' + query + '":';
+		queryLabel.innerHTML = 'Posts containing "' + queries.join('" and "') + '":';
 	}
 }
 
@@ -46,6 +48,12 @@ document.onkeydown=function(e){
     if(e.keyCode=='13'){
         submitSearch();
     }
+}
+
+function intersect(array1,array2) {
+	return array1.filter(function(n) {
+	    return array2.indexOf(n) != -1;
+	});
 }
 
 function displayPosts(names) {
