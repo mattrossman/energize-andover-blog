@@ -38,9 +38,10 @@ function submitSearch(){
 	else {
 		setAllDisplay('none');
 		var results = queries.map(siteSearch).reduce(intersect)
+		var num = results.length
 		displayPosts(results);
 		queryLabel.style.display = 'block'
-		queryLabel.innerHTML = 'Posts containing "' + queries.join('" and "') + '":';
+		queryLabel.innerHTML = num + ' result' + ((num==1) ? '' : 's') + ' for "' + queries.join('" and "') + '":';
 	}
 }
 
