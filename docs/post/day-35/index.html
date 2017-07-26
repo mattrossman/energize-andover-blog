@@ -1,0 +1,238 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 35 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 35
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 25, 2017
+                    · 1053 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="how-much-error-is-acceptable">How much error is acceptable?</h2>
+
+<p>Before I get much further refining the regression technique, it&rsquo;d be good idea to spend some time figuring out how I&rsquo;m going to end up using it. The obvious use of regressions is to allow me to find an expected value given certain arguments, but I&rsquo;m not expecting the sample to fit these predictions exactly. Considering the small random variance in power usage under a given set of parameters, you can assume the residuals should follow a consistent distribution.</p>
+
+<p>Here&rsquo;s a look at the distribution of residuals in a Ridge regression of the power versus temperature data during school hours</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/25/ridge_school_resid.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/25/ridge_school_resid.png alt="ridge_school_resid.png not found" title = ridge_school_resid.png />
+	</a>
+</div>
+
+
+
+
+<h4 id="distributions-to-consider">Distributions to Consider</h4>
+
+<p>The usual assumption is that the errors (and residuals) should follow a normal distribution.</p>
+
+<p>Previously, I went with the assumption that our response variable follows a lognormal distribution due to the lower bound of power usage. If I continued that assumption, then I think I would have to log-transform all the data before the whole fitting / residual calculation process, and from then on I could treat it as normal.</p>
+
+<p>I also might want to consider a Student&rsquo;s t-distribution in stratifications of the data where there are less than 30 data points. Here I have 114 so it is probably not necessary.</p>
+
+<p>I think for now I&rsquo;ll stick with assuming normality since it&rsquo;s the most straightforward. There may be negative implications of log-transforming the regressors that I haven&rsquo;t considered.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/25/resid_norm_95.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/25/resid_norm_95.png alt="resid_norm_95.png not found" title = resid_norm_95.png />
+	</a>
+</div>
+
+
+
+
+<p>Here I added shaded regions to highlight the area that is predicted to enclose 95% of the data assuming normality.</p>
+
+<p>Note that $\hat{\sigma} = \sqrt{ \frac{1}{m} \sum_{i=1}^{m} (y_i - \hat{y})^2 }$, or in other words the variance equals the mean sum of square errors of the residuals. $\hat{\mu}=0$ since in an ideal normal distribution the positive and negative residuals would all cancel out.</p>
+
+<p>At first glance it appears that the acceptable region gets narrower on the right, but this is just a visual side effect of the steep slope of that area (like a caligraphy pen). The height of the shaded region is constant all the way through.</p>
+
+<p><em>Note for the future: It might be better to use a more robust stastic like a scaled MAD for estimating the underlying standard deviation of the residuals</em></p>
+
+<h2 id="trouble-with-robust-estimators">Trouble with robust estimators</h2>
+
+<p>I&rsquo;m not having much luck with pretty much any of the other estimators I&rsquo;ve tried. Problem is, right now the model gets completely thrown off in the face of large outliers. We don&rsquo;t have huge outliers but if our sample has any abnormal power usage, the model is being impacted by it, making it harder to detect abnormalities. To reduce this effect I looked into <a href="http://scikit-learn.org/stable/auto_examples/linear_model/plot_robust_fit.html">this resource</a> on robust linear estimators.</p>
+
+<p>I tried all the estimators they describe (RANSAC, TheilSen, and Huber), and each one had a poor fit on the data (even at lower polynomial degrees). At higher degrees they weren&rsquo;t even close. Part of the issue is that as far as I can tell, Huber regression is the only one that incorporates regularization (it&rsquo;s related to Ridge regression).</p>
+
+<p>Aside from that, I wonder if normalization has something to do with it? Yesterday I noticed that I had to set <code>normalize=True</code> to get the basic regularized estimators to fit properly. There is no such parameter for the robust estimators, but there is a preprocessing <code>Normalizer()</code>. I thought I could just toss it into the pipeline to replicate the behavior of the <code>normalize</code> parameter, but on trying this with the Ridge regressor I got very different results (I also tried both <code>norm</code> arguments).</p>
+
+<h2 id="what-exactly-is-normalization">What exactly is normalization?</h2>
+
+<p>Generally, normalization scales a set of values so they all lie between 0 and 1. Using l2-norms, this would scale a vector to be of unit length. In my Calc 3 course we used this method to find unit vectors, though we never actually called it normalization. If using the l1-norm, I believe it scales the vector so that its values sum to 1 (i.e. its l1-norm = 1). The default method of the <code>Normalizer()</code> prepocessor is to use the l2 norm.</p>
+
+<p>One odd thing I noticed is the <code>Normalizer</code> tranformation object introduces more calculation error than the non-class-based <code>preprocessing.normalize()</code> method (assuming the <code>numpy.linalg.norm()</code> method is accurate). The former consitently scales the input vectors at least $10^{-4}$ units too high, while the latter isn&rsquo;t more than $10^{-15}$ units lower than it should be (i.e. it basically shows up as 0.99999999&hellip;). Still, I don&rsquo;t know if that&rsquo;s enough to be causing my troubles. I tried manually using the <code>normalize()</code> method rather than putting the <code>Normalizer()</code> in my pipeline and I didn&rsquo;t see any noticable change in the output plot.</p>
+
+<h2 id="the-solution">The solution</h2>
+
+<p>I had a hunch this was the case but I was convinced it was mathematically wrong. It turns out the <code>normalize</code> parameter in the other estimators I had used normalizes the <em>features</em> rather than the <em>samples</em>. The documentation claims that <code>normalize=True</code> normalizes the &ldquo;regressors&rdquo;, but as far as I can tell the &ldquo;regressors&rdquo; are the X data, so I must be misunderstanding that definition.</p>
+
+<p>In my calls to <code>preprocessing.normalize()</code> I just set <code>axis=0</code> (it is set to 1 by default) and voila, the Ridge regression looks as good as it did by using the <code>normalize</code> parameter. I&rsquo;ll have to see if there&rsquo;s a way to use this fix in the <code>Normalizer()</code> object so I can put it straight into the pipeline.</p>
+
+<p>The moment of truth&hellip; did this actually help fix the bad plots from the robust estimators? Yes and no. RANSAC and TheilSen still completely break at high order polynomials since they don&rsquo;t have regularization. Huber regression is performing wonderfully though. I tested it out by tossing in a ridiculously high outlier at 10,000 kW and Huber didn&rsquo;t even flinch. It&rsquo;s not worth trying the debug the other two estimators when Huber does the job just fine. I&rsquo;m happy with it, as judging by its description it&rsquo;s a relatively noninstrusive method that softly aids in reducing the impact of outliers.</p>
+
+<h2 id="putting-it-in-the-pipeline">Putting it in the pipeline</h2>
+
+<p>Sklearn lets you make custom transformer functions using <code>preprocessing.FunctionTransformer</code>. For my function I used <code>preprocessing.normalize</code>, and I passed the keyword argument to set <code>axis=0</code>:</p>
+
+<pre><code>myNormalizer = FunctionTransformer(normalize,kw_args={'axis':0})
+</code></pre>
+
+<p>Then I can just put <code>myNormalizer</code> in the pipeline after my <code>PolynomialFeatures</code> transformer and it will properly normalize my features for estimators that don&rsquo;t support the <code>normalize</code> parameter.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
