@@ -32,8 +32,8 @@ At first glance it appears that the acceptable region gets narrower on the right
 
 *Note for the future: It might be better to use a more robust stastic like a scaled MAD for estimating the underlying standard deviation of the residuals*
 
-## Trouble with robust estimators
-I'm not having much luck with pretty much any of the other estimators I've tried. Problem is, right now the model gets completely thrown off in the face of large outliers. We don't have huge outliers but if our sample has any abnormal power usage, the model is being impacted by it, making it harder to detect abnormalities. To reduce this effect I looked into [this resource](http://scikit-learn.org/stable/auto_examples/linear_model/plot_robust_fit.html) on robust linear estimators.
+## Difficulty implementing robust estimators
+Right now the model gets completely thrown off in the face of large outliers. We don't have huge outliers but if our sample has any abnormal power usage, the model is being impacted by it, making it harder to detect abnormalities. To reduce this effect I looked into [this resource](http://scikit-learn.org/stable/auto_examples/linear_model/plot_robust_fit.html) on robust linear estimators.
 
 I tried all the estimators they describe (RANSAC, TheilSen, and Huber), and each one had a poor fit on the data (even at lower polynomial degrees). At higher degrees they weren't even close. Part of the issue is that as far as I can tell, Huber regression is the only one that incorporates regularization (it's related to Ridge regression).
 

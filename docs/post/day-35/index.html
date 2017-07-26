@@ -47,7 +47,7 @@
                     <h2 class="headline">
                     
                     Jul 25, 2017
-                    · 1050 words
+                    · 1033 words
 
                       <span class="tags">
                       
@@ -118,9 +118,9 @@
 
 <p><em>Note for the future: It might be better to use a more robust stastic like a scaled MAD for estimating the underlying standard deviation of the residuals</em></p>
 
-<h2 id="trouble-with-robust-estimators">Trouble with robust estimators</h2>
+<h2 id="difficulty-implementing-robust-estimators">Difficulty implementing robust estimators</h2>
 
-<p>I&rsquo;m not having much luck with pretty much any of the other estimators I&rsquo;ve tried. Problem is, right now the model gets completely thrown off in the face of large outliers. We don&rsquo;t have huge outliers but if our sample has any abnormal power usage, the model is being impacted by it, making it harder to detect abnormalities. To reduce this effect I looked into <a href="http://scikit-learn.org/stable/auto_examples/linear_model/plot_robust_fit.html">this resource</a> on robust linear estimators.</p>
+<p>Right now the model gets completely thrown off in the face of large outliers. We don&rsquo;t have huge outliers but if our sample has any abnormal power usage, the model is being impacted by it, making it harder to detect abnormalities. To reduce this effect I looked into <a href="http://scikit-learn.org/stable/auto_examples/linear_model/plot_robust_fit.html">this resource</a> on robust linear estimators.</p>
 
 <p>I tried all the estimators they describe (RANSAC, TheilSen, and Huber), and each one had a poor fit on the data (even at lower polynomial degrees). At higher degrees they weren&rsquo;t even close. Part of the issue is that as far as I can tell, Huber regression is the only one that incorporates regularization (it&rsquo;s related to Ridge regression).</p>
 
