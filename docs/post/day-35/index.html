@@ -47,7 +47,7 @@
                     <h2 class="headline">
                     
                     Jul 25, 2017
-                    · 1053 words
+                    · 1050 words
 
                       <span class="tags">
                       
@@ -130,7 +130,7 @@
 
 <p>Generally, normalization scales a set of values so they all lie between 0 and 1. Using l2-norms, this would scale a vector to be of unit length. In my Calc 3 course we used this method to find unit vectors, though we never actually called it normalization. If using the l1-norm, I believe it scales the vector so that its values sum to 1 (i.e. its l1-norm = 1). The default method of the <code>Normalizer()</code> prepocessor is to use the l2 norm.</p>
 
-<p>One odd thing I noticed is the <code>Normalizer</code> tranformation object introduces more calculation error than the non-class-based <code>preprocessing.normalize()</code> method (assuming the <code>numpy.linalg.norm()</code> method is accurate). The former consitently scales the input vectors at least $10^{-4}$ units too high, while the latter isn&rsquo;t more than $10^{-15}$ units lower than it should be (i.e. it basically shows up as 0.99999999&hellip;). Still, I don&rsquo;t know if that&rsquo;s enough to be causing my troubles. I tried manually using the <code>normalize()</code> method rather than putting the <code>Normalizer()</code> in my pipeline and I didn&rsquo;t see any noticable change in the output plot.</p>
+<p>One odd thing I noticed is the <code>Normalizer</code> tranformation object introduces more calculation error than the non-class-based <code>preprocessing.normalize()</code> method (assuming the <code>numpy.linalg.norm()</code> method is accurate). The former consistently scales the input vectors at least $10^{-4}$ units too high (e.g. 1.000159&hellip;), while the latter isn&rsquo;t more than $10^{-15}$ units lower than it should be (e.g 0.99999999&hellip;). Still, I don&rsquo;t know if that&rsquo;s enough to be causing my troubles. I tried manually using the <code>normalize()</code> method rather than putting the <code>Normalizer()</code> in my pipeline and I didn&rsquo;t see any noticable change in the output plot.</p>
 
 <h2 id="the-solution">The solution</h2>
 
