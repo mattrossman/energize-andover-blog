@@ -1,0 +1,242 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 36 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 36
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 26, 2017
+                    · 701 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="normalization-strikes-again">Normalization strikes again</h2>
+
+<p>I <em>thought</em> I had found the solution yesterday to my normalization problem since the plot looked much better. Today I tried running the <em>whole</em> plot (with the residuals and everything) where I saw my first red flag - the residuals were not displaying properly. After some time debugging, I noticed that my regression&rsquo;s <code>predict</code> function was returning different values for the same inputs depending on how many samples you passed in - not good!</p>
+
+<p>When using the <code>normalize</code> parameter this behavior does not occur. It makes sense why the issue is happening right now - I&rsquo;m normalizing along the columns so as I add more columns (one for each input) the will all have to scale down accordingly. As to why I didn&rsquo;t notice this before, it&rsquo;s likely because I plot my regression line as 100 uniform samples, which is close to the 114 samples I used to create the model.</p>
+
+<p>To get to the bottom of this I went to the scikit-learn source code and started a scavenger hunt for how the <code>normalize</code> parameter is implemented. It led me to <a href="https://github.com/scikit-learn/scikit-learn/blob/ab93d657eb4268ac20c4db01c48065b5a1bfe80d/sklearn/linear_model/base.py#L144">this</a> <code>_preprocess_data</code> function in the parent <code>linear_model</code> class. Maybe I could manually call this function to perform the appropriate normalization procedure for the Huber regression?</p>
+
+<p>I copied the Ridge regression&rsquo;s call to <code>_preprocess_data</code>:</p>
+
+<pre><code>self._preprocess_data(
+            X, y, self.fit_intercept, self.normalize, self.copy_X,
+    sample_weight=sample_weight)
+</code></pre>
+
+<p>Then I replaced the references to <code>self</code> with the variable for my Ridge object and <code>X</code> and <code>y</code> with my actual data variables, and it spat out some tuples so I hope it worked. I then tried the same process with a Huber estimator, and at first it gave an error because the estimator has no <code>copy_X</code> attribute. So for the attributes that don&rsquo;t exist for Huber estimators I went to the <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html">Ridge documentation</a> and replaced them with Ridge&rsquo;s default values (since I just want to replicate Ridge&rsquo;s behavior). The Ridge default is <code>True</code> which matches the <code>_preprocess_data</code> default, so I can actually just delete that argument altogether. Finally I forced <code>normalize=True</code>. It successfully returned the same tuple as the Ridge object did. Remember that this is just a preprocessing step, so there&rsquo;s no reason for the two estimators to return different values yet.</p>
+
+<p>The items it is returning are <code>X</code>, <code>y</code>, <code>X_offset</code>, <code>y_offset</code>, and <code>X_scale</code>. Unfortunately the Huber estimator doesn&rsquo;t use those parameters, so I&rsquo;d have to somehow implement the manually. This seems like far too complex of a solution for what should be a simple problem. I&rsquo;ve posted a help thread on a stats forum for a recommended solution so I don&rsquo;t waste time trying to solve this on my own.</p>
+
+<h2 id="the-real-solution">The real solution(?)</h2>
+
+<p>I&rsquo;m hestitant now to claim to have the &ldquo;solution&rdquo;, but I got a response to my post that seems to mostly fix my issue. It comes down to how you define normalization. In some contexts it means the scaling a vector to unit length (as the <code>Normalizer()</code> object and <code>normalize()</code> methods do), but in this case it&rsquo;s referring to scaling values to have unit variance and mean of zero.</p>
+
+<p>Therefore I should be putting <code>StandardScaler()</code> in my pipeline rather than <code>Normalizer()</code>. It doesn&rsquo;t <em>completely</em> replicate the output of the <code>normalize</code> parameter but it&rsquo;s pretty close and can be adjusted by the estimator&rsquo;s parameters.</p>
+
+<p>Now I get consistent predictions regardless of how many items I predict on.</p>
+
+<p>Here&rsquo;s some plots comparing the Huber regression to Ridge, note that they look more similar at a higher $\epsilon$ value.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/26/huber_v_ridge_135.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/26/huber_v_ridge_135.png alt="huber_v_ridge_135.png not found" title = huber_v_ridge_135.png />
+	</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/26/huber_v_ridge_2.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/26/huber_v_ridge_2.png alt="huber_v_ridge_2.png not found" title = huber_v_ridge_2.png />
+	</a>
+</div>
+
+
+
+
+<p>And here&rsquo;s how the residual distribution looks:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/26/huber_school.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/26/huber_school.png alt="huber_school.png not found" title = huber_school.png />
+	</a>
+</div>
+
+
+
+
+<p>It may look similar to the Ridge plot, but if you throw in some outliers you&rsquo;ll quickly see the difference.</p>
+
+<h4 id="robust-scalers">Robust Scalers</h4>
+
+<p>As another followup to my post, I learned that there is a <code>RobustScaler</code> that as the name implies, uses a more robust method for scaling based of interquartile ranges. I also could potentially make my own scaler using the scaled MAD as a unit of variance. From my brief testing, these would take some debugging to implement properly (so far they make the fit worse).</p>
+
+<h4 id="to-do">To do</h4>
+
+<p>Tomorrow I will be catching up with Anil at the library. I&rsquo;ve made decent progress with picking an estimator, next on my agenda is to focus on cross validation.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
