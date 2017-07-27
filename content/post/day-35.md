@@ -6,6 +6,8 @@ description: Distribution of the residuals, robust estimators, comprehending and
 weight: 10
 ---
 
+*EDIT: as a disclaimer, this post's use of normalization is flawed. The [subsequent post]({{< ref "day-36.md" >}}) revises this error.*
+
 ## How much error is acceptable?
 Before I get much further refining the regression technique, it'd be good idea to spend some time figuring out how I'm going to end up using it. The obvious use of regressions is to allow me to find an expected value given certain arguments, but I'm not expecting the sample to fit these predictions exactly. Considering the small random variance in power usage under a given set of parameters, you can assume the residuals should follow a consistent distribution.
 
@@ -44,12 +46,13 @@ Generally, normalization scales a set of values so they all lie between 0 and 1.
 
 One odd thing I noticed is the `Normalizer` tranformation object introduces more calculation error than the non-class-based `preprocessing.normalize()` method (assuming the `numpy.linalg.norm()` method is accurate). The former consistently scales the input vectors at least $10^{-4}$ units too high (e.g. 1.000159...), while the latter isn't more than $10^{-15}$ units lower than it should be (e.g 0.99999999...). Still, I don't know if that's enough to be causing my troubles. I tried manually using the `normalize()` method rather than putting the `Normalizer()` in my pipeline and I didn't see any noticable change in the output plot.
 
-## The solution
+## <s>The solution
+
 I had a hunch this was the case but I was convinced it was mathematically wrong. It turns out the `normalize` parameter in the other estimators I had used normalizes the *features* rather than the *samples*. The documentation claims that `normalize=True` normalizes the "regressors", but as far as I can tell the "regressors" are the X data, so I must be misunderstanding that definition.
 
 In my calls to `preprocessing.normalize()` I just set `axis=0` (it is set to 1 by default) and voila, the Ridge regression looks as good as it did by using the `normalize` parameter. I'll have to see if there's a way to use this fix in the `Normalizer()` object so I can put it straight into the pipeline.
 
-The moment of truth... did this actually help fix the bad plots from the robust estimators? Yes and no. RANSAC and TheilSen still completely break at high order polynomials since they don't have regularization. Huber regression is performing wonderfully though. I tested it out by tossing in a ridiculously high outlier at 10,000 kW and Huber didn't even flinch. It's not worth trying the debug the other two estimators when Huber does the job just fine. I'm happy with it, as judging by its description it's a relatively noninstrusive method that softly aids in reducing the impact of outliers.
+The moment of truth... did this actually help fix the bad plots from the robust estimators? Yes and no. RANSAC and TheilSen still completely break at high order polynomials since they don't have regularization. Huber regression is performing wonderfully though. I tested it out by tossing in a ridiculously high outlier at 10,000 kW and Huber didn't even flinch. It's not worth trying the debug the other two estimators when Huber does the job just fine. I'm happy with it, as judging by its description it's a relatively noninstrusive method that softly aids in reducing the impact of outliers.</s>
 
 ## Putting it in the pipeline
 Sklearn lets you make custom transformer functions using `preprocessing.FunctionTransformer`. For my function I used `preprocessing.normalize`, and I passed the keyword argument to set `axis=0`:

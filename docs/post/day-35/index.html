@@ -47,7 +47,7 @@
                     <h2 class="headline">
                     
                     Jul 25, 2017
-                    · 1033 words
+                    · 1050 words
 
                       <span class="tags">
                       
@@ -57,6 +57,8 @@
                 
                 <section id="post-body">
                     
+
+<p><em>EDIT: as a disclaimer, this post&rsquo;s use of normalization is flawed. The <a href="https://mattrossman.github.io/energize-andover-blog/post/day-36/">subsequent post</a> revises this error.</em></p>
 
 <h2 id="how-much-error-is-acceptable">How much error is acceptable?</h2>
 
@@ -132,13 +134,13 @@
 
 <p>One odd thing I noticed is the <code>Normalizer</code> tranformation object introduces more calculation error than the non-class-based <code>preprocessing.normalize()</code> method (assuming the <code>numpy.linalg.norm()</code> method is accurate). The former consistently scales the input vectors at least $10^{-4}$ units too high (e.g. 1.000159&hellip;), while the latter isn&rsquo;t more than $10^{-15}$ units lower than it should be (e.g 0.99999999&hellip;). Still, I don&rsquo;t know if that&rsquo;s enough to be causing my troubles. I tried manually using the <code>normalize()</code> method rather than putting the <code>Normalizer()</code> in my pipeline and I didn&rsquo;t see any noticable change in the output plot.</p>
 
-<h2 id="the-solution">The solution</h2>
+<h2 id="s-the-solution"><s>The solution</h2>
 
 <p>I had a hunch this was the case but I was convinced it was mathematically wrong. It turns out the <code>normalize</code> parameter in the other estimators I had used normalizes the <em>features</em> rather than the <em>samples</em>. The documentation claims that <code>normalize=True</code> normalizes the &ldquo;regressors&rdquo;, but as far as I can tell the &ldquo;regressors&rdquo; are the X data, so I must be misunderstanding that definition.</p>
 
 <p>In my calls to <code>preprocessing.normalize()</code> I just set <code>axis=0</code> (it is set to 1 by default) and voila, the Ridge regression looks as good as it did by using the <code>normalize</code> parameter. I&rsquo;ll have to see if there&rsquo;s a way to use this fix in the <code>Normalizer()</code> object so I can put it straight into the pipeline.</p>
 
-<p>The moment of truth&hellip; did this actually help fix the bad plots from the robust estimators? Yes and no. RANSAC and TheilSen still completely break at high order polynomials since they don&rsquo;t have regularization. Huber regression is performing wonderfully though. I tested it out by tossing in a ridiculously high outlier at 10,000 kW and Huber didn&rsquo;t even flinch. It&rsquo;s not worth trying the debug the other two estimators when Huber does the job just fine. I&rsquo;m happy with it, as judging by its description it&rsquo;s a relatively noninstrusive method that softly aids in reducing the impact of outliers.</p>
+<p>The moment of truth&hellip; did this actually help fix the bad plots from the robust estimators? Yes and no. RANSAC and TheilSen still completely break at high order polynomials since they don&rsquo;t have regularization. Huber regression is performing wonderfully though. I tested it out by tossing in a ridiculously high outlier at 10,000 kW and Huber didn&rsquo;t even flinch. It&rsquo;s not worth trying the debug the other two estimators when Huber does the job just fine. I&rsquo;m happy with it, as judging by its description it&rsquo;s a relatively noninstrusive method that softly aids in reducing the impact of outliers.</s></p>
 
 <h2 id="putting-it-in-the-pipeline">Putting it in the pipeline</h2>
 
