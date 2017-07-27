@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-07-26
 title: Day 36
-description:
+description: Fixing yesterday's normalization misuse
 weight: 10
 ---
 
