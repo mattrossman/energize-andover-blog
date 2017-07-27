@@ -1,0 +1,207 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 37 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 37
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 27, 2017
+                    · 642 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h4 id="side-note">Side note</h4>
+
+<p>I found <a href="http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html">this neat flowchart</a> on the scikit-learn site that guides you through picking an estimator. It basically guided me down the path I expected (on the regression side of things), although it brought to my attention that it may be better to use a Lasso or ElasticNet-based estimator (Huber is closer to Ridge) due to its preference for feature sparsity. That may be beneficial once I start working with mugh higher dimensional inputs. I&rsquo;ll worry about that later since I finally got the robust Huber estimator to work.</p>
+
+<h2 id="cross-validation">Cross validation</h2>
+
+<p>The purpose of validatation and cross validation is to generalize your model making it a better predictor of future unknowns. The danger of simply fitting a model to you whole data set is that it can create a highly fitted model that works very well at predicting the exact sample set you trained on, but it may be bad at predicting values outside of your training set.</p>
+
+<p>In general you want to break your data into training, validation, and testing sets. It can be confusing at first but <a href="https://stats.stackexchange.com/a/96869/166768">this answer</a> does a nice job of explaining the unique purpose of each division.</p>
+
+<p><em>Cross validation</em> more specifically has the advantage of not wasting any of your data since you recycle data from your training/validation sets across iterations. More info <a href="http://scikit-learn.org/stable/modules/cross_validation.html">here</a> in the scikit-learn documentation on cross validation.</p>
+
+<p>I also found <a href="https://stats.stackexchange.com/questions/95797/how-to-split-the-dataset-for-cross-validation-learning-curve-and-final-evaluat">this post</a> to be a very helpful breakdown of to cross validation procedure in sklearn specifically.</p>
+
+<h2 id="time-series-validation">Time series validation</h2>
+
+<p>The standard iterative cross validation method in sklearn is <a href="http://scikit-learn.org/stable/modules/cross_validation.html#k-fold">k-fold</a>, however it assumes the data are independent and have a consistent distribution as noted <a href="http://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-i-i-d-data">here</a>.</p>
+
+<p><a href="http://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-of-time-series-data">This</a> is the documentation&rsquo;s recommendation on splitting time-series data. The goal is to always evaluate performance on <em>future</em> data (i.e. data that is least like your training data). This also means I can&rsquo;t use the standard <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split"><code>train_test_split</code></a> because it performs a <code>ShuffleSplit</code> on the data (the documentation warns against shuffling samples that aren&rsquo;t independent).</p>
+
+<h2 id="time-series-split">Time Series Split</h2>
+
+<p>The (only) iterator for timer series data in sklearn is <code>TimeSeriesSplit</code> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html#sklearn.model_selection.TimeSeriesSplit">(documentation)</a>. This maintains the consecutive nature of the time series data, and only evaluates model performance on &ldquo;future&rdquo; data points.</p>
+
+<p>Example definition: <code>cross_val = TimeSeriesSplit(n_splits=5)</code></p>
+
+<h2 id="picking-hyperparameters">Picking hyperparameters</h2>
+
+<p>To pick the optimal hyperparameters via validation I can use <code>GridSearchCV</code>. I was having a little trouble figuring out how to make this work with my pipeline, but basically the <code>GridSearchCV</code> object <em>becomes</em> the estimator that you finish off the pipeline with. So I wrapped my Huber estimator with the grid search and passed in my <code>cross_val</code> iterator and my dictionary of parameters. I also set <code>iid=False</code> since the data is from a time series, thus it is not identically distributed across my CV folds.</p>
+
+<p>For the aforementioned dictionary of parameters I created the following items:</p>
+
+<pre><code>alphas = np.logspace(-6, 1, 8)
+epsilons = np.linspace(1.00001, 2, 5)
+params = {'alpha':alphas, 'epsilon':epsilons}
+</code></pre>
+
+<p>(Epsilon is required to be larger than one).</p>
+
+<p>Then I can run the cross validated fit with <code>pipe.fit(X_train,y_train)</code> where <code>pipe</code> is my pipeline</p>
+
+<h2 id="poor-score">Poor score</h2>
+
+<p>Unfortunately I&rsquo;m not getting great scores right off the bat. Right now I&rsquo;m performing an <sup>80</sup>&frasl;<sub>20</sub> split on my sample data into training/testing sets as follows:</p>
+
+<pre><code>_train_size = 0.8
+_train_cutoff = int(_train_size*X.size)
+
+X_train, X_test = np.split(X,[_train_cutoff])
+y_train, y_test = np.split(y,[_train_cutoff])
+</code></pre>
+
+<p>In accordance with the specifications from the sklearn documentation on time series data, I&rsquo;m only testing on future data and maintaining the consecutive order of data points. My cross validation iterater does the same.</p>
+
+<pre><code>&gt;&gt;&gt; pipe.score(X_test,y_test)
+0.73681231517651635
+</code></pre>
+
+<p>That&rsquo;s not a terrible score but most of the examples online are above 90%. I&rsquo;m running out of time for now but next time I&rsquo;ll look into what the default scoring method actually returns / how to interpret it. I also should see if there are other parameters I could optimize since I just arbitrarily picked alpha and epsilon.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
