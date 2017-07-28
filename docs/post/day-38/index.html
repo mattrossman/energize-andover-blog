@@ -1,0 +1,195 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 38 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 38
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 28, 2017
+                    · 314 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>Today is a shorter post as I have to leave this afternoon.</p>
+
+<h2 id="testing-the-cross-validated-results">Testing the cross validated results</h2>
+
+<p>Last time I noted that the initial scores I was seeing didn&rsquo;t appear high. Today I&rsquo;m going to look deeper into how to interpret the results. I think last time I was just looking at night data but today I&rsquo;m going to use the school data (which gets an even lower score on the testing set, below 30%)</p>
+
+<h2 id="plotting-the-residuals">Plotting the residuals</h2>
+
+<p>The first area I should look is the residual plot to see if there are any unwanted trends</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/28/school_resid.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/28/school_resid.png alt="school_resid.png not found" title = school_resid.png />
+	</a>
+</div>
+
+
+
+
+<p>I see a couple of things here:</p>
+
+<ul>
+<li>There&rsquo;s more variance for the higher temperature values</li>
+<li>The testing residuals are mostly negative</li>
+</ul>
+
+<p><br>
+The latter issue could just be poor luck (more data would help create a stronger prediction on future test points). The former could be a real problem.</p>
+
+<h2 id="nonconstant-variance">Nonconstant variance</h2>
+
+<p>My analysis of the residual distribution (i.e. how I&rsquo;m going to tell which points are too far from the trend) relies on the assumption that the variance is independent of the explanatory variable. I wouldn&rsquo;t want to end up solely flagging summer data points as abnormal just because there is more variance on hotter days.</p>
+
+<p><a href="http://polisci.msu.edu/jacoby/icpsr/regress3/lectures/week4/14.Heteroskedastic.pdf">This presentation</a> looks at the effects of nonconstant variance, also called <em>heteroscedasticity</em>. Heteroscedasticity violates the assumptions of OLS, but the presentation notes that using a more robust estimator such as Huber regression makes this less of an issue.</p>
+
+<p>Since my residuals &ldquo;fan out&rdquo; in a predictable fashion I could apply a transformation to the response variable to make the variance more constant. My concern is, what if the heteroscedasticity is not so predictable (e.g. what if it oscillates between low and high variance rather than a constant increase)?</p>
+
+<p>I have to cut this post short as I&rsquo;m leaving for a weekend trip. Next week I&rsquo;ll be back to continue where I left off.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
