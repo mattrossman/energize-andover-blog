@@ -1,0 +1,263 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 39 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 39
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Jul 31, 2017
+                    · 890 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>Last time I noted that the variance in the power vs. temperature residuals fanned out quite a bit at higher temperature values. I&rsquo;m curious if other data sets behave similarly.</p>
+
+<p>That time I was looking at the school-time data, but you can see the same fanning occuring in the night data:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/31/ahs_night.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/31/ahs_night.png alt="ahs_night.png not found" title = ahs_night.png />
+	</a>
+</div>
+
+
+
+
+<p>However, it is much less pronounced in the weekend data:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/31/ahs_weekend.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/31/ahs_weekend.png alt="ahs_weekend.png not found" title = ahs_weekend.png />
+	</a>
+</div>
+
+
+
+
+<p>One thing to consider: is the changing variance truly a sign of more variance, or is there another variable at play here?</p>
+
+<p>By comparison, here is the weekend data plot for Bancroft:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/31/bancroft_weekend.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/31/bancroft_weekend.png alt="bancroft_weekend.png not found" title = bancroft_weekend.png />
+	</a>
+</div>
+
+
+
+
+<p>The difference in model shapes is striking between AHS and Bancroft. Relative to the size of its overall load, Bancroft shows much less change in power load across temperatures than AHS. The regression plot is almost a flat line. Note that the Bancroft load values are <em>significantly</em> larger than those for AHS though, so the actual amount of explained variance for Bancroft is larger than it seems.</p>
+
+<p>Alas, the score for the above Bancroft plot is incredibly poor (it is negative) which is odd because it looks to be doing a decent job. The <code>score</code> method that I&rsquo;m using here finds the $R^2$ coefficient, and a negative value there means that the model is supposedly performing worse than just a line through the mean (on the test points at least).</p>
+
+<h2 id="today-s-distractions">Today&rsquo;s distractions</h2>
+
+<p>Today I spent some time learning more about how kernel functions and Support Vector Machines work. It sounds like SVMs are more commonly used for classification problems, but they can be implemented for regression too. Letting a kernel figure out the implicit shape of my data sounds more elegant than having me arbitrarily pick a maximum number of polynomial features to look for.</p>
+
+<p>Here&rsquo;s a visualization of how the kernel trick works for classification (which I may use later on for classifying load profiles):</p>
+
+
+<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/3liCbRZPrZA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0"></iframe>
+ </div>
+
+
+<p><br></p>
+
+<h2 id="research-papers">Research papers</h2>
+
+<p><a href="https://arxiv.org/pdf/1512.05979.pdf">Energy Consumption Forecasting for Smart Meters</a></p>
+
+<p><a href="http://www.sciencedirect.com/science/article/pii/S0097849313001477">Anomaly detection for visual analytics of power consumption data</a></p>
+
+<p><a href="http://www.sciencedirect.com/science/article/pii/S0959652617302329">Early-warning application for real-time detection of energy consumption anomalies in buildings</a></p>
+
+<p>The papers hosted on ScienceDirect I was able to access after logging in through the UMass libraries website. The second article looks particularly promising.</p>
+
+<p>I&rsquo;m going to need some time to read and digest all the information avaliable here. I&rsquo;ll jot down what sticks out to me.</p>
+
+<h4 id="anomaly-detection-for-visual-analytics-of-power-consumption-data"><em>Anomaly detection for visual analytics of power consumption data</em></h4>
+
+<p>One approach this paper mentions is weighted predictions, where recent samples have a stronger influence on future predictions than older samples. This would be helpful because it makes the prediction more dynamic as the building undergoes changes in usage.</p>
+
+<p>The actual predictive approach this takes is somewhat basic - they stratify historical data by time of day and day of the week and take the average of each pool to create a bank of expected values. That is, it assumes each time of day will behave the same way it did last week and weeks before. To score values by their abnormality, they use the ratio of the difference between an observed and expected value to the average of all such differences for the data.</p>
+
+<p>The second approach is not as clearly explained, but it tracks what power load patterns are most common and ranks days by how similar they are to the frequently-occuring patterns. This doesn&rsquo;t explicitly account for variables like temperature, but since it looks for pattern similarity it accounts for a varying load profile for buildings with complex schedules (such as a school where you have weekend patterns, snow day patterns, school day patterns, etc.)</p>
+
+<p>The rest of the paper is focused on the effectiveness of a variety of visualization techniques, such as dynamic blurring and interval/ratio color palettes.</p>
+
+<h4 id="early-warning-application-for-real-time-detection-of-energy-consumption-anomalies-in-buildings"><em>Early-warning application for real-time detection of energy consumption anomalies in buildings</em></h4>
+
+<p>This paper aims to create a user friendly realtime system of anomaly detection and monitoring. The visualizations included in the paper look really good. They are clean and simple, showing a plot of predicted usage versus the actual day&rsquo;s usage. The predictions are saved from the week before and they are calculated using a method described in <a href="https://www.researchgate.net/publication/303132876_Time_series_analytics_using_sliding_window_metaheuristic_optimization-based_machine_learning_system_for_identifying_building_energy_consumption_patterns">a different paper</a>, which is a hybrid of a modified Support Vector Regression algorithm and a Seasonal ARIMA algorithm.</p>
+
+<p>It&rsquo;s unfortunate that the former paper doesn&rsquo;t go a little deeper into its prediction technique, as the latter paper is a bit too dense to skim over.</p>
+
+<h4 id="energy-consumption-forecasting-for-smart-meters"><em>Energy Consumption Forecasting for Smart Meters</em></h4>
+
+<p>The technique used in this paper is Boosted Decision Tree Regression. It is an example of an ensemble method, which is a method that combines the results of a number of base estimators to get a more generalized prediction. The paper is quite readable.</p>
+
+<p>There&rsquo;s a lot to unpack here and many different approaches to our problem. It&rsquo;ll be tough to narrow down the best option. On the bright side I think I&rsquo;m reaching the light at the end of the tunnel where I&rsquo;ve seen most of what these machine learning libraries have to offer (even if I don&rsquo;t completely understand what they all do yet) so at least the constant train of discoveries should slow down. I&rsquo;ll read more into each author&rsquo;s argument for their model and hopefully come up with a &ldquo;best&rdquo; approach in the near future. Scikit-learn makes it easy to do the code, but picking the best technique is really tough.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
