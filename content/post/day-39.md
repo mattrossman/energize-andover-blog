@@ -6,17 +6,15 @@ description: Research papers on power usage forecasting, residual plots of more 
 weight: 10
 ---
 
-Last time I noted that the variance in the power vs. temperature residuals fanned out quite a bit at higher temperature values. I'm curious if other data sets behave similarly.
+Last time I noted that the variance in the power vs. temperature residuals fanned out quite a bit at higher temperature values. I'm curious if other data sets behave similarly. One thing to consider: is the changing variance truly an issue of randomness, or is there another variable at play here? The more variables you consider, the less you leave up to chance.
 
-That time I was looking at the school-time data, but you can see the same fanning occuring in the night data:
+Previously I was looking at the school-time data, but you can see the same fanning occuring in the night data (where there is also an annoying flare on the right):
 
 {{< linked-img "ahs_night.png" >}}
 
-However, it is much less pronounced in the weekend data:
+However, the fanning is much less pronounced in the weekend data:
 
 {{< linked-img "ahs_weekend.png" >}}
-
-One thing to consider: is the changing variance truly a sign of more variance, or is there another variable at play here?
 
 By comparison, here is the weekend data plot for Bancroft:
 
