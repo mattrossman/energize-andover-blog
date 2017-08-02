@@ -30,15 +30,19 @@ I could even combine lag features with features about the current time.
 
 My main stumbling block is deciding which approach to take. Should I keep looking at this as a regression problem with a broader range of features? Should I try a timeseries approach like S/ARIMA/X? Should I look into neural networks? [This response](https://www.quora.com/Data-Science-Can-machine-learning-be-used-for-time-series-analysis/answer/Shehroz-Khan-2?srid=PC6k) suggests that all are valid options.
 
+**EDIT: I just realized that the method I used in the next section isn't *really* valid for forecasting since it used the lagged actual values in the testing inputs. Instead I think I'd have to iteratively predict values and use those predictive values as lagged inputs for future points.**
+<s>
 ## Amazing results
 I'm a little scared by how good these results are... I tried adding some lag features into an SVR and got great scores (over 90% $R^2$). I will do a better implementation next time but I'm already blown away by what I'm seeing. I trained on 4000 data points and tested on the following 1000. Here's what I got:
 
 {{< linked-img "svr_lags.png" >}}
 
 Wow. That looks pretty darn good to me. Before I get *too* excited I should remember that a perfect fit is not always a good thing. But I like the fact that the prediction is a little under the actual, leaving area for improvement.
-
+</s>
 ## Dummy variables
 I was under the impression that I could just represent variables like day of the week, month of the year, etc., with quantitative values (e.g. 0=Jan, 1=Feb ... ). However, most of the resources I see instead say to use $n-1$ dummy variables for the $n$ options. I don't totally understand why since the intervals are meaningful (the difference between day 1 and day 2 of the week is 24hrs just like between days 4 and 5) but I'll roll with it.
 
 #### To do
 I whipped up the lag feature implementation pretty quickly, but next time I'll need to do a lot more extensive testing and maybe use some more proper cross validation. But this was a very good way to end the day.
+
+**EDIT: I need to rethink the implementation of lag features.**

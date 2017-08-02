@@ -47,7 +47,7 @@
                     <h2 class="headline">
                     
                     Aug 1, 2017
-                    · 624 words
+                    · 683 words
 
                       <span class="tags">
                       
@@ -101,6 +101,9 @@ consumption anomalies in buildings</em>, I found <a href="http://www.sciencedire
 
 <p>My main stumbling block is deciding which approach to take. Should I keep looking at this as a regression problem with a broader range of features? Should I try a timeseries approach like S/ARIMA/X? Should I look into neural networks? <a href="https://www.quora.com/Data-Science-Can-machine-learning-be-used-for-time-series-analysis/answer/Shehroz-Khan-2?srid=PC6k">This response</a> suggests that all are valid options.</p>
 
+<p><strong>EDIT: I just realized that the method I used in the next section isn&rsquo;t <em>really</em> valid for forecasting since it used the lagged actual values in the testing inputs. Instead I think I&rsquo;d have to iteratively predict values and use those predictive values as lagged inputs for future points.</strong>
+<s></p>
+
 <h2 id="amazing-results">Amazing results</h2>
 
 <p>I&rsquo;m a little scared by how good these results are&hellip; I tried adding some lag features into an SVR and got great scores (over 90% $R^2$). I will do a better implementation next time but I&rsquo;m already blown away by what I&rsquo;m seeing. I trained on 4000 data points and tested on the following 1000. Here&rsquo;s what I got:</p>
@@ -123,7 +126,8 @@ consumption anomalies in buildings</em>, I found <a href="http://www.sciencedire
 
 
 
-<p>Wow. That looks pretty darn good to me. Before I get <em>too</em> excited I should remember that a perfect fit is not always a good thing. But I like the fact that the prediction is a little under the actual, leaving area for improvement.</p>
+<p>Wow. That looks pretty darn good to me. Before I get <em>too</em> excited I should remember that a perfect fit is not always a good thing. But I like the fact that the prediction is a little under the actual, leaving area for improvement.
+</s></p>
 
 <h2 id="dummy-variables">Dummy variables</h2>
 
@@ -132,6 +136,8 @@ consumption anomalies in buildings</em>, I found <a href="http://www.sciencedire
 <h4 id="to-do">To do</h4>
 
 <p>I whipped up the lag feature implementation pretty quickly, but next time I&rsquo;ll need to do a lot more extensive testing and maybe use some more proper cross validation. But this was a very good way to end the day.</p>
+
+<p><strong>EDIT: I need to rethink the implementation of lag features.</strong></p>
 
                 </section>
             </article>
