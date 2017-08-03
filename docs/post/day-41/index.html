@@ -1,0 +1,236 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 41 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 41
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 2, 2017
+                    · 731 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="multi-step-forecasting">Multi-step forecasting</h2>
+
+<p>I quickly corrected it after posting, but I mistakenly thought I had struck gold last time when working with lagged features. In reality, I was violating the rules of predictions by including data about the future in my testing inputs (I was performing a bunch of one-step-ahead forecasts which made it look like my overally forecast was really strong).</p>
+
+<p>When I tried recursively generating lagged predictions for my inputs, I got a much weaker model. In fact, I found that the lag features only hurt my overall model compared to solely accounting for current conditions. At the moment I don&rsquo;t have a whole lot of hope left for the multiple regression approach, but the problem may lie in my naive attempt at multi-step forecasting. <a href="http://machinelearningmastery.com/multi-step-time-series-forecasting/">This page</a> explains a few different techniques (I was using the recursive one).</p>
+
+<p>I&rsquo;m particularly interested in the final method (multiple output approach) which uses a model which predicts an entire span of time rather than a single prediction value. It does so by training the model on multi-dimensional outputs, something I&rsquo;ve not yet tried. For instance, I could train a model to predict the entire next day&rsquo;s power usage based on the past week.</p>
+
+<p>In order to do this I&rsquo;ll want an array of rolling window measurements. Unfortunately the Pandas <code>rolling</code> objects don&rsquo;t appear to have a handy way to return their underlying array structures.</p>
+
+<h4 id="data-involved">Data involved</h4>
+
+<p>For now I&rsquo;ll only consider lag data, not features about current time. To see how far I can push it, I&rsquo;ll have my input be an array of all of the data for the past 4 weeks, and my output be an array out the data for the next week. To generate this from my regular time series I made a helper function:</p>
+
+<pre><code>def train_target_windows(arr, windows, step=1):
+    trains = []
+    targets = []
+    for i in range (len(arr) - windows[0] - windows[1] + 1):
+        trains.append(arr[i:i+windows[0]:step])
+        targets.append(arr[i+windows[0]:i+windows[0]+windows[1]])
+    return (np.array(trains),np.array(targets))
+</code></pre>
+
+<p>Here you pass in your starting array <code>arr</code> and a tuple of desired window sizes for your input/output sets. For me this was <code>(4*24*7*4, 4*24*7)</code> (i.e. 4 weeks, 1 week). The <code>step</code> parameter lets you take larger steps between values on the input matrix to reduce the number of features that need to be regressed.</p>
+
+<p>Here&rsquo;s what I got when training a <code>DecisionTreeRegressor</code> model on windows extracted from 10,000 of the data points:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/02/decision_tree.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/02/decision_tree.png alt="decision_tree.png not found" title = decision_tree.png />
+	</a>
+</div>
+
+
+
+
+<pre><code>&gt;&gt;&gt; est.score(X_test,y_test)
+0.59252701026688193
+</code></pre>
+
+<p>And here&rsquo;s the same calculation with a <code>RandomForestRegressor</code>:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/02/random_forest.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/02/random_forest.png alt="random_forest.png not found" title = random_forest.png />
+	</a>
+</div>
+
+
+
+
+<pre><code>&gt;&gt;&gt; est.score(X_test,y_test)
+0.80756960256071542
+</code></pre>
+
+<p>Not bad. I&rsquo;m just using the parameter defaults here since I don&rsquo;t know enought about these predictors to know what parameters to change. And this time I&rsquo;m not cheating when I make this prediction. That entire week of data is predicted from the previous 4 weeks in 1 calculation, so there&rsquo;s no funny business where I&rsquo;m using future values within the prediction input.</p>
+
+<p>Right now the code is pretty slow (takes a minute or so to run), mostly due to the slow window generation step. Currently I&rsquo;m making a <em>lot</em> of windows with a lot of unecessary overlap so that&rsquo;s one area I know for sure I could improve.</p>
+
+<h2 id="realtime-anomaly-detection">Realtime anomaly detection</h2>
+
+<h4 id="remarks-on-the-studies">Remarks on the studies</h4>
+
+<p>I&rsquo;m impressed by the results of Chou &amp; Telaga in their study on realtime anomaly detection. They tested 2 methods, ARIMA and NNAR on two sizes of sliding windows. Overall, the best predictor was NNAR on a 4-week window of training data. Both NNAR tests performed better than the ARIMA tests.</p>
+
+<p>I was under the impression that we would need a large span of data in order to make an accurate model so it&rsquo;s a nice surprise that only 1 month of prior data may be necessary for training. That also means calculations can run much more quickly.</p>
+
+<p>One thing to note is that for their study they had a data stream at 1-minute intervals, while the data I have for testing is at 15-minute intervals. I&rsquo;m not sure how significantly this will affect my results.</p>
+
+<p>Lastly, they used the R language in their study. It may be worthwhile to try this if there are no equivalent functions for the methods they used in Python. The methodology report was most recently revised in January 2014, and the subsequent report using it for an early warning application was revised in January 2017. So the technique had been implemented fairly recently and has stood the test of time.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
