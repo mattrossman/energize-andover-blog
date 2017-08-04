@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-08-04
 title: Day 43
-description:
+description: Preparing the inputs/output matricies, testing the RF fit with median APE using different input/output/gap sizes, starting improvements to train speed
 weight: 10
 ---
 
