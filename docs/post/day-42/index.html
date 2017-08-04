@@ -1,0 +1,251 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 42 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 42
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 3, 2017
+                    · 1162 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>Yesterday I performed a regression using decision trees because it&rsquo;s the most straightforward sklearn estimator that support multiple outputs. It turns out the use case  for them is pretty similar to that of artificial neural networks.</p>
+
+<p>First thing to address is decision trees vs random forests. Random forests are an ensemble of decision trees so they create a better, more generalized model (note that in yesterday&rsquo;s examples the decision tree model looked like a better fit, but the random forest had a much better score overall). Decision trees alone tend to overfit.</p>
+
+<p>Next is random forest (RF) vs artificial neural networks (ANN). It&rsquo;s crazy how perfect some of the research out there is. I did a brief search hoping to learn more about the differences between ANNs and decision trees / random forests and came across <a href="http://www.sciencedirect.com/science/article/pii/S0378778816313937">this research paper</a> that not only compares them, but does it in the context of forecasting building energy consumption. Too perfect.</p>
+
+<p>Here&rsquo;s some differences that are highlighted in the paper:</p>
+
+<p>RF have fewer hyperparameters you need to worry about, and just using the default values gives really good results. ANNs are more ambiguous with their parameters, and it can be unclear how many hidden layer neurons to include (although they do mention a starting point in the article as $n+1$ hidden neurons for $n$ output nodes).</p>
+
+<p>ANN is much slower to train than RF (yesterday&rsquo;s use of RF was already really slow).</p>
+
+<p>RF can make predictions even when some input values are missing. On the other hand ANN tends to produce more accurate predictions than RF. Nonetheless, both estimators proved to be fairly accurate.</p>
+
+<h4 id="another-report">Another report</h4>
+
+<p><a href="https://dspace.mit.edu/bitstream/handle/1721.1/99565/924315586-MIT.pdf?sequence=1">Here is another report</a> from MIT that compares some forecasting algorithms. It found RF to perform better than ANN. What I like about this paper is that the authors actually explain the entire prediction process in detail so it is clear what the inputs and outputs are.</p>
+
+<p>They train their model every night, and every hour they use the recent model to predict the following 12 hours of data. If I understand this correctly, that means their forecast changes throughout the day as newer predictions override old ones. I was under the assumption that once values were forecasted they would remain unchanged. The benefit of this is that your forecast will adapt to unpredictable situations making it a better indicator of what is to come.</p>
+
+<p>On the other hand, if the forecast is update too frequently then there is no accountability; the predicted values are subject to change at any time. In some cases a dynamic prediction makes sense (like weather forecasts). But since we are trying to make an accountable model of power usage it would be better to avoid changing the prediction (at least, avoid changing it very often) so that the user has a chance to see the dissonance between predictions and reality.</p>
+
+<p>Another idea: update the forecast throughout the day, but save the old forecast. That way the user can both see an accurate model of the future and see how consistent their prediction is throughout the day.</p>
+
+<h4 id="which-one-to-pick">Which one to pick?</h4>
+
+<p>I&rsquo;m liking the sound of random forests at the moment. It may not perform as well as ANN in many situtations, but it still can do a great job and it sounds like it is much less resource intensive.</p>
+
+<h2 id="brainstorming-a-prediction-flow">Brainstorming a prediction flow</h2>
+
+<p>There a a lot of ways the prediction process can be organized. Some things to consider:</p>
+
+<ul>
+<li>How often to train the model?</li>
+<li>How often to run predictions?</li>
+<li>If there is prediction overlap, how is it resolved?</li>
+<li>How much to predict? (output size)</li>
+<li>How much to predict off of? (input size)</li>
+<li>How far ahead to predict?</li>
+</ul>
+
+<p><br>
+Regarding the last point, so far I&rsquo;ve only been predicting value(s) that immediately follow my input(s). It would probably make more sense to predict farther ahead, both so that your predictions are actually useful and so that you don&rsquo;t run out of forecasted values during the time when the process needs to relearn the model / make new predictions.</p>
+
+<p>I don&rsquo;t see a lot of value in overlapping predictions. I think it would be reasonable to predict either a full day of data or 24 hours of data at some point in advance. For instance, predicting an hour of data a day in advance. Or predicting a day of data 2 days or a week in advance. A shorter gap between prediction/actual would likely make a more accurate prediction. A longer gap (or a longer prediction) means farther predictions. A longer predictions means slower calculations. In the realtime anomaly detection report, the model predicts 1 day of data a week in advance based on the previous 4 weeks of data.</p>
+
+<p>I&rsquo;ll have to try a few different methods and find a reasonable compromise between accuracy and performance.</p>
+
+<h2 id="code">Code</h2>
+
+<p>For the sake of consistency between Pandas and non-Pandas list structures, I&rsquo;m calling</p>
+
+<pre><code>egz.df_energy['Main (kW)'].resample('15 min').asfreq()
+</code></pre>
+
+<p>so that the intervals between values are proportionate (otherwise missing values will cause calibration issues with the model&rsquo;s timeline). I haven&rsquo;t forgotten that I&rsquo;m calling <code>dropna()</code> before this on <code>df_energy</code>. I&rsquo;m dropping the null values (which are not all at 15-minute intervals), then reintroducing the null spaces where appropriate.</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/03/autocorrelation.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/03/autocorrelation.png alt="autocorrelation.png not found" title = autocorrelation.png />
+	</a>
+</div>
+
+
+
+
+<p>Here&rsquo;s the autocorrelation plot for part of the data. The initial oscillation shows significance up to lag 30 (which is 8 hours of time).</p>
+
+<h4 id="truncating-the-start-of-the-sample">Truncating the start of the sample</h4>
+
+<p>Right now my data starts in the middle of a day. I want to have nice windows that line up on the hour, so I&rsquo;ll cut off the days that are incomplete as follows:</p>
+
+<pre><code>data.groupby(data.index.date).filter(lambda x: x.size==96)
+</code></pre>
+
+<p>There should be 96 15-minute intervals in a complete day. Note that this is not going to exclude days with missing values since I filled those spots with null placeholders.</p>
+
+<p>Now my data starts at midnight on 08/05/15.</p>
+
+<h4 id="splitting-it-into-bins">Splitting it into bins</h4>
+
+<p>Last time I made my bins from a rolling window, but that takes a lot of processing power when iterating over a lot of data. Also it&rsquo;s unecessary for my training since I will only be predicting at the same intervals as my bin sizes (i.e. there&rsquo;s no need to train the model how to make a forecast in the middle of an hour).</p>
+
+<p>The grouping can be done with some nifty Python code:</p>
+
+<pre><code>groups = np.array(list(zip(*[iter(data)]*4)))
+</code></pre>
+
+<p><a href="https://stackoverflow.com/questions/2233204/how-does-zipitersn-work-in-python">Read this</a> for a breakdown of how the <code>zip(*[iter(data)]*n)</code> step works. It&rsquo;s pretty clever.</p>
+
+<p>On second thought I&rsquo;m going to need to use sliding windows anyways (to get the selections from these hourly groupings). Luckily there&rsquo;s a much more efficient way to do it in Numpy as described <a href="https://stackoverflow.com/questions/40084931/taking-subarrays-from-numpy-array-with-given-stride-stepsize">here</a>. It gets into some hiden functions that access NumPy&rsquo;s underlying C code. That post in particular provides a function for getting rolling windows with a desired window and step size, so I can set my step size to be <code>4</code> for an hour. That means I can replicate the behavior of the above code with</p>
+
+<pre><code>strided_app(data.values, 4, 4)
+</code></pre>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
