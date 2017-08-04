@@ -1,0 +1,437 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 43 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 43
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 4, 2017
+                    · 890 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="setting-up-the-input-output">Setting up the input/output</h2>
+
+<h4 id="cluttered-approach">Cluttered approach</h4>
+
+<p>First I split the data up into hourly chunks with the <code>rolling_window</code> method. Then I run a 2D rolling window to pull enough hours to include both my predictor value and response values. Note that there&rsquo;s extra data in the middle. I drop this middle section and assign the X and y arrays via <code>np.split()</code>. Then I reshape the arrays so that the hours are no longer divided. I&rsquo;m using the <code>rolling_window</code> method that I mentioned yesterday (using strides) and a 2D version that doesn&rsquo;t use strides as defined <a href="https://stackoverflow.com/a/39203586/8371763">here</a>.</p>
+
+<pre><code>data = egz.df_energy['Main (kW)']
+bins = egz.rolling_window(data,4,4)
+windows = egz.rolling_window2D(bins,24*7*5+1)
+
+X,_,y = np.split(windows,[24*7*4,24*7*5],1)
+
+X = X.reshape(X.shape[0],-1)
+y = y.reshape(y.shape[0],-1)
+</code></pre>
+
+<h4 id="streamlining-it">Streamlining it</h4>
+
+<p>I can declutter this process by getting rid of the step where I break into hour-long bins (although that section did make it a bit easier to follow):</p>
+
+<pre><code>windows = egz.rolling_window(data,4*(24*7*5+1),4)
+X,_,y = np.split(windows,[4*24*7*4,4*24*7*5],1)
+</code></pre>
+
+<p><em>See <a href="#changing-variables">below</a> for a more readable edit</em></p>
+
+<h4 id="the-result">The result</h4>
+
+<p>Now my <code>X</code> array of 4-week predictor values starts at 00:00:00 on 8/5/15 and my <code>y</code> array holds the hour-long predictions 5 weeks from then starting on 9/9/15 at 00:00:00.</p>
+
+<p>4 weeks of prediction data, 1 week gap, 1 hour of target data.</p>
+
+<h2 id="null-values">Null values</h2>
+
+<p>Apparently sklearn doesn&rsquo;t like when you give it null values. For now I&rsquo;ll just <code>fillna(0)</code> although this may impact the accuracy of the model. I&rsquo;d be better off filling in values from the week before to give a better estimate of the actual usage that occured then (or average the value the week before with the interpolated values to also reflect that day&rsquo;s context).</p>
+
+<h2 id="making-predictions">Making predictions</h2>
+
+<p>Here&rsquo;s a really big plot of all the test samples compared to their target values. Since the predictions are each hour-long bins of data, I plotted them by raveling the predicted array.</p>
+
+<p>Click the image to expand it to full size:
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/04/random_forest_large.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/04/random_forest_large.png alt="random_forest_large.png not found" title = random_forest_large.png />
+	</a>
+</div>
+
+
+</p>
+
+<h4 id="measuring-the-fit">Measuring the fit</h4>
+
+<p>I tried measuring the Mean Absolute Percent Error to measure the fit, however the outlier days when the model didn&rsquo;t know that there was no school threw this measure off entirely (it was over 4 billion percent).</p>
+
+<p>To reduce the impact of these outlier days I instead measured the Median Absolute Percent Error which gave a much more reasonable value. Note the addition of a <code>1e-9</code> term so that the system doesn&rsquo;t try to divide by zero.</p>
+
+<pre><code>np.median((np.abs(((y_test+1e-9) - (pipe.predict(X_test)+1e-9))) / (y_test+1e-9)))
+&gt;&gt;&gt; 0.16049520499889364
+</code></pre>
+
+<p>To put this in comparison, the MIT report from yesterday measured a MAPE of about 0.12 for RF and 0.14 for ANN, so we&rsquo;re not far off. And this is only trained on data about previous consumption, so it doesn&rsquo;t have information about holidays yet.</p>
+
+<h4 id="changing-variables">Changing variables</h4>
+
+<p>I tweaked the ranges of some of the window variables to see how it affected the predictions. To do so I added some more variables which also makes the assignment more readable:</p>
+
+<pre><code>input_size   = 4*24*7*4
+gap_size     = 4*24*7
+output_size  = 4
+
+windows = egz.rolling_window(data,input_size+gap_size+output_size,output_size)
+X,_,y = np.split(windows,[input_size,input_size+gap_size],1)
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Gap</th>
+<th>Output</th>
+<th>Median APE</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>4 weeks</td>
+<td>1 week</td>
+<td>1 hour</td>
+<td>0.1605</td>
+</tr>
+
+<tr>
+<td>1 weeks</td>
+<td>1 week</td>
+<td>1 hour</td>
+<td>0.1718</td>
+</tr>
+
+<tr>
+<td>4 weeks</td>
+<td>1 week</td>
+<td>1 day</td>
+<td>0.1597</td>
+</tr>
+
+<tr>
+<td>8 weeks</td>
+<td>1 week</td>
+<td>1 day</td>
+<td>0.1717</td>
+</tr>
+
+<tr>
+<td>8 weeks</td>
+<td>1 day</td>
+<td>1 hour</td>
+<td>0.1439</td>
+</tr>
+
+<tr>
+<td>8 weeks</td>
+<td>1 day</td>
+<td>1 day</td>
+<td>0.1569</td>
+</tr>
+
+<tr>
+<td>4 weeks</td>
+<td>1 day</td>
+<td>1 day</td>
+<td>0.1593</td>
+</tr>
+
+<tr>
+<td><strong>4 weeks</strong></td>
+<td><strong>1 day</strong></td>
+<td><strong>1 hour</strong></td>
+<td><strong>0.1325</strong></td>
+</tr>
+
+<tr>
+<td>1 weeks</td>
+<td>1 day</td>
+<td>1 hour</td>
+<td>0.1526</td>
+</tr>
+
+<tr>
+<td>1 day</td>
+<td>1 hour</td>
+<td>1 hour</td>
+<td>0.0794</td>
+</tr>
+</tbody>
+</table>
+
+<p>Note that due to the random nature of the model, the accuracy is subject to change across trials (but as an ensemble method it should be somewhat consistent).</p>
+
+<p>As expected, the model with the smallest gap (1 hour) had the best accuracy but at that small of a gap the forecast is no longer very useful. From what I can tell, the winner is 4 weeks of input, 1 day gap, 1 hour predicted. That way the forecast will be available a day beforehand. We could also present the user with an option to run a forecast of their desired length, although they would have to wait for the server to process their request.</p>
+
+<h2 id="better-handling-of-null-values">Better handling of null values</h2>
+
+<p>Instead of replacing the nulls with 0 kW, I can replace them with last week&rsquo;s value with</p>
+
+<pre><code>data.fillna(data.shift(-4*24*7))
+</code></pre>
+
+<p>I actually tried using the <code>'W'</code> offset alias instead of calculating the week index interval but it wasn&rsquo;t behaving as I expected.</p>
+
+<h2 id="slow-training">Slow training</h2>
+
+<p>The training process is rather slow, even if I drastically reduce the number of samples. It appears the biggest time-suck is the large number of features that need to be tracked.</p>
+
+<p>The <code>feature_importances_</code> property of a trained RF estimator shows the relative importance of your features. Here&rsquo;s what the distribution looks like:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/04/features.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/04/features.png alt="features.png not found" title = features.png />
+	</a>
+</div>
+
+
+
+
+<p>As you can see, almost all the features have close to zero importance. Here&rsquo;s the top 10 values of the sorted list:</p>
+
+<table>
+<thead>
+<tr>
+<th>Index</th>
+<th>Importance</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>2114</td>
+<td>0.335970</td>
+</tr>
+
+<tr>
+<td>2687</td>
+<td>0.107384</td>
+</tr>
+
+<tr>
+<td>2115</td>
+<td>0.096686</td>
+</tr>
+
+<tr>
+<td>2113</td>
+<td>0.050099</td>
+</tr>
+
+<tr>
+<td>97</td>
+<td>0.043213</td>
+</tr>
+
+<tr>
+<td>96</td>
+<td>0.031255</td>
+</tr>
+
+<tr>
+<td>98</td>
+<td>0.024074</td>
+</tr>
+
+<tr>
+<td>2116</td>
+<td>0.014845</td>
+</tr>
+
+<tr>
+<td>99</td>
+<td>0.011222</td>
+</tr>
+
+<tr>
+<td>2208</td>
+<td>0.006476</td>
+</tr>
+</tbody>
+</table>
+
+<p>The importance drops off very quickly. Only a couple of sparse values are significant predictors (the top contenders appear to be from a few weeks in the past).</p>
+
+<p>By changing the <code>max_features</code> argument to something like <code>'sqrt'</code> or <code>'log2'</code> I was able to increase the training speed at the expense of the median APE (0.13 vs 0.15).</p>
+
+<p>Here&rsquo;s an example output using <code>'sqrt'</code> max features:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/04/random_forest_small.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/04/random_forest_small.png alt="random_forest_small.png not found" title = random_forest_small.png />
+	</a>
+</div>
+
+
+
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
