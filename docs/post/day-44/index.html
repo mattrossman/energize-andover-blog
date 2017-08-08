@@ -1,0 +1,286 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 44 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 44
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 7, 2017
+                    · 1087 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="adding-features">Adding features</h2>
+
+<h4 id="index-windows">Index windows</h4>
+
+<p>In order to avoid doing extra work I wanted to switch to using value indexes for my windows as opposed to rolling across the raw data. This way I can reuse the indexes of these windows later to pull other information from the same sections of the data (things like day of the year, day of the week, etc).</p>
+
+<p>Here&rsquo;s an example of adding day of the week features (about the <em>target</em> values) to my input array.</p>
+
+<pre><code>ixs = np.array(range(len(data)))
+
+ix_windows = egz.rolling_window(ixs,input_size+gap_size+output_size,output_size)
+
+def index_data(ixs_arr,data):
+    return np.apply_along_axis(lambda ixs: data[ixs],0,ixs_arr)
+
+X_ixs,_,y_ixs = np.split(ix_windows,[input_size,input_size+gap_size],1)
+X = np.concatenate((index_data(X_ixs,data),index_data(y_ixs,data.index.dayofweek)),1)
+
+y = index_data(y_ixs,data)
+</code></pre>
+
+<p>This had a minor improvement to my model (Median APE from 0.149 -&gt; 0.146).</p>
+
+<p>I added in some more features including whether or not the building is occupied:</p>
+
+<pre><code>occ = pd.Series(0,data.index)
+occ[occ.index.intersection(egz.df_school.index)] = 1
+
+X_ixs,_,y_ixs = np.split(ix_windows,[input_size,input_size+gap_size],1)
+X = np.concatenate((index_data(X_ixs,data),,
+                index_data(y_ixs,occ),
+                index_data(y_ixs,data.index.dayofweek),
+                index_data(y_ixs,data.index.month)),1)th)),1)
+</code></pre>
+
+<p>This brought the Median APE down to 0.139. The occupancy implementation is flawed, as I&rsquo;m supposed to be feeding the model completely true information. However, I only have school session information starting in September of 2016, so I&rsquo;m lying about the occupancy in the 2015 and early 2016 data. Additionally, there are times when the school is occupied but school is not in session. I may be better off simply having a variable set for the entire day, 1 if that day is a holiday or 0 if not (and another variable for half days).</p>
+
+<p>I implemented that as follows:</p>
+
+<pre><code>no_school = pd.Series(0,data.index)
+no_school[np.where(np.in1d(data.index.date,
+                     (egz.time_filter(
+                             no_school,include=(egz.no_school
+                                                +['2/9/17','2/13/17','3/14/17','3/15/17']
+                                                ))).index.date))[0]] = 1
+
+half_day = pd.Series(0,data.index)
+half_day[np.where(np.in1d(data.index.date,
+                     (egz.time_filter(
+                             half_day,include=egz.half_days)).index.date))[0]] = 1
+</code></pre>
+
+<p><strong>Note:</strong> to be more strict about the data I&rsquo;m using, I&rsquo;m currently just testing/training on sets of the data within the &lsquo;16-&lsquo;17 school year (so that I&rsquo;m not ignoring the academic calendar for the rest of the data)</p>
+
+<h2 id="testing-the-features">Testing the features</h2>
+
+<p>I spent a bunch of time just trying different combinations of features on the data and seeing what got the best results.</p>
+
+<p>I actually found that after adding some more features, the model performs significantly better when predicting an entire day of data rather than just an hourly chunk. I&rsquo;m keeping the gap at 1 day and the input at 4 weeks. Also, I noticed a slight improvement after downsampling the input data to hourly intervals.</p>
+
+<p>You&rsquo;d think that adding all possible features (giving the model the most data to work with) would always increase the accuracy, but that is not always the case as I saw last time. Additionally, some changes would appear to make a better fit and would decrease the MAPE but would actually increase the median APE. For instance, when I realized that I wasn&rsquo;t adding the extra snow days to my <code>no_school</code> array my median APE went from a solid 0.11 up to 0.13, while the MAPE went from 0.19 to 0.18. I&rsquo;m going by the assumption that an improved MAPE trumps an improved median APE since it&rsquo;s important to account for those outlier days.</p>
+
+<p>Adding the half-day variable somehow made both the median and mean APE perform worse so I&rsquo;m excluding that info for the moment.</p>
+
+<h2 id="a-note-on-randomness">A note on randomness</h2>
+
+<p>I was surprised to see that changing the order of the features affected the MAPE and median APE scores.</p>
+
+<p>I have been setting <code>random_state</code> (the seed for the random forest) at a constant value accross trials to try to be consistent with my scoring. I guess changing the features in turn changes the way the seed behaves, so my scores comparing the features are not really consistent since they&rsquo;re coming from different trees.</p>
+
+<p>For instance, maybe adding the half day variable <em>doesn&rsquo;t</em> actually hurt my model in the long run, it&rsquo;s just that that particular tree performed worse than the previous one.</p>
+
+<p>I&rsquo;m wondering if there&rsquo;s a built-in way to run numerous trials and create a confidence interval for the score values so I can more fairly judge my features.</p>
+
+<h2 id="current-feature-set">Current feature set</h2>
+
+<p>I added in a couple more metrics (things like mean of past 4 weeks, min and max, etc) which may just be presenting redundant information but it didn&rsquo;t seem to hurt the model either. Here&rsquo; the feature construction at the moment:</p>
+
+<pre><code>X = np.concatenate((np.std(index_data(X_ixs,data),axis=1).reshape(-1,1),
+                np.median(index_data(X_ixs,data),axis=1).reshape(-1,1),
+                np.min(index_data(X_ixs,data),axis=1).reshape(-1,1),
+                np.max(index_data(X_ixs,data),axis=1).reshape(-1,1),
+                index_data(y_ixs,no_school),
+                index_data(y_ixs,half_day),
+                index_data(y_ixs,data.index.weekday),
+                index_data(y_ixs,data.index.dayofyear),
+                index_data(y_ixs,data.index.hour*60+data.index.minute),
+                index_data(y_ixs,data.index.month),
+                index_data(X_ixs,data)[:,::4]),1)
+</code></pre>
+
+<h2 id="playing-with-the-hyperparameters">Playing with the hyperparameters</h2>
+
+<p>So far the only hyperparameter I changed from the default is <code>max_features</code>. I actuallly <a href="http://scikit-learn.org/stable/modules/ensemble.html#parameters">read that for regression problems</a> it&rsquo;s better to leave this as the default of $n_{estimators}$. The other significant parameter I&rsquo;ve ignored is <code>n_estimators</code> which defaults to <code>10</code>. I upped this to <code>40</code> and got significantly lower variation across random trials.</p>
+
+<h2 id="metrics">Metrics</h2>
+
+<p>To detect anomalies I&rsquo;m going with the RMSE as an estimate of the predictions&rsquo; standard deviation from the true values. I&rsquo;ll then use $2\sigma$ as a threshold for acceptable values. Sklearn can do the MSE for you with <code>sklearn.metrics.mean_squared_error</code>, so I just have to take <code>np.sqrt</code> of that value and multiply by 2.</p>
+
+<h2 id="update-on-the-plot">Update on the plot</h2>
+
+<p>Here&rsquo;s how the model looks with its latest upgrades:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/07/rf_anomalies.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/07/rf_anomalies.png alt="rf_anomalies.png not found" title = rf_anomalies.png />
+	</a>
+</div>
+
+
+
+
+<p>I showed off this section of the test data since you can see how it handles school days, weekends, anomalous behavior, and holidays.</p>
+
+<p>You also might notice that the x-axis is actually readable now, as the units track the dates. I did this by creating another set of arrays:</p>
+
+<pre><code>dates = index_data(y_ixs,data.index)
+dates_train,dates_test = np.split(dates,[num_train])
+</code></pre>
+
+<p>and setting my axis to <code>dates_test.ravel()</code>.</p>
+
+<p>I am very pleased with how it is looking currently. It handles weekends and holidays very well. The predictions are fairly consistent and look reasonable. The only hitch at this point is having to manually specify holidays and half days. I don&rsquo;t know if clustering will help us take care of that automatically or if we&rsquo;ll just have to settle for importing an <code>.ical</code> file.</p>
+
+<h4 id="a-couple-last-notes">A couple last notes</h4>
+
+<p>I was playing around with the input/gap/output parameters with the new features implemented. I noticed that increasing the gap size doesn&rsquo;t have a huge impact on the model as it did before. That gives us some flexibility with how far we want to predict ahead of time (e.g. if we want to have our predictions a week or more ahead of time, that&rsquo;s probably doable)</p>
+
+<p>More shockingly, I removed the previous power usage feature entirely and even that had minimal impact on the fit. That could potentially speed up training significantly. I&rsquo;ve spent enough time fiddling with parameters today. Tomorrow I&rsquo;ll be presenting some of the work we&rsquo;ve done so far with some other team members so I&rsquo;ve got to prepare the presentation for that.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
