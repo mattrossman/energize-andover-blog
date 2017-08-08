@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-08-07
 title: Day 44
-description:
+description: Index windows, more input features (holidays, descriptive stats, time data), trying non-default hyperparameters, flagging anomalies
 weight: 10
 ---
 
