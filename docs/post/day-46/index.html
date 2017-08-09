@@ -1,0 +1,272 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 46 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 46
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 9, 2017
+                    · 946 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="scrutinizing-yesterday-s-approach">Scrutinizing yesterday&rsquo;s approach</h2>
+
+<p>The method yesterday took a quantile approach at creating a prediction interval. I read <a href="http://blog.datadive.net/prediction-intervals-for-random-forests/">the blogger&rsquo;s explanation</a> a bit further and I finally have some trust in his approach.</p>
+
+<p>This statement still bothers me though:</p>
+
+<blockquote>
+<p>A prediction interval is an estimate of an interval into which the future observations will fall with a given probability. In other words, it can quantify our confidence or certainty in the prediction</p>
+</blockquote>
+
+<p>I have my doubts about how well that concept is represented by the method they propose. future outcomes, however I don&rsquo;t know that this is the case. I would imagine that each tree is more or less following a similar path and is not capable of predicting the full range of possible response values. What if none of the trees are able to predict a certain response value?</p>
+
+<p>Also you can only be 100% confident in an interval that spans the entire y-axis, while this method will give you a much narrower region that only spans the range of values predicted across all the trees.</p>
+
+<p>I just found <a href="http://contrib.scikit-learn.org/forest-confidence-interval/">this</a> from the community scikit-learn docs that claims to add confidence interval calculations to scikit-learn RF through a module called <code>randomforestci</code>.</p>
+
+<p>The official PyPi release of <code>randomforestci</code> gave me an error when I tried running <code>fci.random_forest_error()</code> because the documentation online is for the development version (v. 0.2), different from the official release (v. 0.1). The order of the arguments was different, so I instead installed the development version.</p>
+
+<p>However I was still getting errors, this time from NumPy function calls. The problem seemed to stem from the fact that I have multi-dimensional output.</p>
+
+<h4 id="to-the-source-code">To the source code</h4>
+
+<p>I looked through the source code and found the area that was throwing the error. By manually running bits of the function line by line I was able to narrow down the root of the issue.</p>
+
+<p>I modified this section:</p>
+
+<pre><code>pred = np.array([t.predict(X_test) for t in forest])
+pred = pred.reshape(pred.shape[0],-1).T
+</code></pre>
+
+<p>Previously it was creating a 3D matrix (retaining the daily seperations) but I removed the seperations and just created a stream of power values (kind of like how I <code>ravel()</code> the predicted values before I plot them).</p>
+
+<p>To do this I copied the <code>random_forest_error()</code> function from the source code, prepended <code>fci.</code> to its internal function calls and edited the region I showed above.</p>
+
+<p>Now the code will run properly, but I think something is still wrong. At some points the variance it reports is negative which is illogical. While reshaping the array might have stopped the computational error, I probably caused some of the calculations to become invalid. I don&rsquo;t know enough about their calculation technique to tell for sure what part is invalid. It&rsquo;s probably not worth trying to fix their implementation. In the meantime I opened an issue for it on the GitHub source.</p>
+
+<h4 id="confidence-intervals-vs-prediction-intervals">Confidence intervals vs Prediction intervals</h4>
+
+<p>It&rsquo;s important to differentiate between the two. <a href="http://www.graphpad.com/support/faqid/1506/">This page</a> does so in an understandable way. Prediction intervals are broader in that they account for both variance in the sample and variance in the predictions (as the page states, prediction intervals are larger than confidence intervals). I think for my purpose, prediction intervals would be more appropriate.</p>
+
+<h4 id="tweaking-the-old-method">Tweaking the old method</h4>
+
+<p>One thing I wanted to quickly verify was how representative the trees were of all possible predictions. I increased my forest size to 500 and plotted the distribution of predictions for a single output value (first element of the first output):</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/09/rf_500_kde.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/09/rf_500_kde.png alt="rf_500_kde.png not found" title = rf_500_kde.png />
+	</a>
+</div>
+
+
+
+
+<p>By no means a perfect normal distribution, but it looks better than the sparse distribution of my smaller 50 tree forest. I know that the parent RF estimator returns the mean of these values, so I could take their standard deviation as a way to estimate the population variance and assume normal distribution. Or could I continue with the percentile-based approach. The benefit of the newer method is that it has no size limit so it&rsquo;s fairer at large prediction intervals (i.e. 100% prediction interval is infinite)</p>
+
+<p>Here&rsquo;s the full threshold calculation:</p>
+
+<pre><code>pred = np.array([t.predict(X_test) for t in est])
+sd = np.std(pred,0).ravel()
+quantile = 0.95
+z_max = norm.ppf((quantile+1)/2)
+y_thresh = y_pred + z_max*sd
+</code></pre>
+
+<p>And here&rsquo;s a resulting plot with 100 trees:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/09/rf_95_pred_int.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/09/rf_95_pred_int.png alt="rf_95_pred_int.png not found" title = rf_95_pred_int.png />
+	</a>
+</div>
+
+
+
+
+<p>It&rsquo;s a bit different from the plot I had yesterday (the threshold has moved up in some areas). I&rsquo;m satisfied with it for now.</p>
+
+<p>In the future I may want to consider standardizing the residuals so that when I report the potential energy savings it&rsquo;s not overinflated in areas of high variance.</p>
+
+<h2 id="starting-the-abstraction">Starting the abstraction</h2>
+
+<p>My scripts have all been very specific but I want to start generalizing the functions.</p>
+
+<p>I spent the rest of today laying some groundwork for a function to create the RF model:</p>
+
+<pre><code>def make_model(target_vals,target_features,input_size,gap_size,output_size):   
+    n = len(target_vals)
+    ixs = np.array(range(n))
+    ix_windows = egz.rolling_window(ixs,
+                                input_size
+                                + gap_size
+                                + output_size,
+                                output_size)
+    X_ixs,_,y_ixs = np.split(ix_windows,[input_size,input_size+gap_size],1)
+    X = np.concatenate((np.array([target_vals[ixs] for ixs in X_ixs])[:,::int(egz.pp_day/24)],
+                    np.array([target_features[ix] for ix in y_ixs[:,0]]),
+                    ),1)
+    y = [target_vals[ixs] for ixs in y_ixs]
+    est = RandomForestRegressor(n_estimators = 50)
+    est.fit(X,y)
+    return est
+</code></pre>
+
+<p>I was trying to figure out how to simplify the creation of the feature matrix. Since there&rsquo;s two main sections (part based on previous results and part based on properties of the target day) I split up the parameters, one for the historical/output data (<code>target_vals</code>) and one for extra feature properties (<code>target_features</code>). I would just call them <code>vals</code> and <code>features</code> but the values have a dual usage, partly as features and partly as training targets.</p>
+
+<p>The setup could be used alongside a dataframe containing properties about each power entry (e.g. occupancy, time of day, month, etc.) although most of those properties could be calculated at runtime rather than storing them in advance.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
