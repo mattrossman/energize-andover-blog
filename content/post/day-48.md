@@ -31,7 +31,7 @@ To deal with the inconsistent column frequencies, once I select a region with on
 I did test this out by setting the column equal to a new DataFrame with the index as a `date_range` sampled at `td_output` and the data as the column with `Nan` values dropped. However I'm going to skip implementing this extra step since it's perhaps just as easy to just pass in an upsampled table upfront. That means the extra feature table can handle features at a higher frequency than the output window, but for features at a lower frequency it's up to the user to upsample the data.
 
 ## Making new predictions
-My initial attempt at next-prediction implementation returned a date for the day predicted along with an array of predicted values. I changed this to simply return a Series of predicted values with an appropriate DatetimeIndex. To make the predictions I have a `input_vector` function
+My initial attempt at next-prediction implementation returned a date for the day predicted along with an array of predicted values. I changed this to simply return a Series of predicted values with an appropriate DatetimeIndex. To make the predictions I have a `input_vector` function that generates the array of input values from a date.
 
 ## Today's result
 I made some good progress with the `RandomForestModel` class today. It's now a very straightforward to make a model from existing data and create the next prediction. I'll walk through an example of the process.
