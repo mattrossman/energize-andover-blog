@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-08-17
 title: Day 51
-description:
+description: Slice based windows, more tests, bugfixing, writing up documentation
 weight: 10
 ---
 
