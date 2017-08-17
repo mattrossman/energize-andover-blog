@@ -1,0 +1,207 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 51 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 51
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 17, 2017
+                    · 1053 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="resolving-yesterday-s-mystery">Resolving yesterday&rsquo;s mystery</h2>
+
+<p>After some testing I realized the only difference in the CSV-writing script&rsquo;s approach was that I had ommited temperature data, having come to the conclusion earlier that it hurt the prediction performance. That may have been the case for the particular day I was looking at, but on a larger scale (such as the 4-day test region) I guess it actually improved performance.</p>
+
+<p>When I added the temperature data back to the features table I got a more familiar result:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/17/with_temp.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/17/with_temp.png alt="with_temp.png not found" title = with_temp.png />
+	</a>
+</div>
+
+
+
+
+<p>Some columns still have difficulty with predictions, especially the Collins Center. This could be improved with more detailed occupancy data. This brings to my attention the possibility that some columns of a <code>MultiRFModel</code> may require specific extra features. I still want to keep some extra features communal (since all columns will likely depend on common factors like holidays or temperature), but if certain columns are only contained in specific parts of the school (with specific occupancy schedules) then all the other occupancy data would just add noise to the predictions. Perhaps the <code>MultiRFModel</code> could have an addition argument that contains a list of unique feature tables that apply uniquely to each column.</p>
+
+<p>I added it by creating a different <code>_get_training_arrays()</code> method for <code>MultiRFModel</code> that includes the additional <code>column_features</code> attribute. I also added some validation steps in the class initialization function to allow the user to only pass in additional tables for some columns, or for none at all.</p>
+
+<h4 id="inferring-data-frequency">Inferring data frequency</h4>
+
+<p>I made some changes to how data is handled to allow the user to pass in data with an unspecified frequency. I also learned that <code>pandas.read_csv()</code> has a <code>parse_dates</code> parameter that you can set to <code>[0]</code> to automatically parse the index column dates as datetime objects - pretty handy.</p>
+
+<h4 id="switching-to-slice-based-windows">Switching to slice based windows</h4>
+
+<p>At the moment the training windows contain a big list of index values. In reality I only need the start and end date of each window, and to use a slice with those endpoints. I&rsquo;ll start by getting this from just the <code>min()</code> and <code>max()</code> of the existing windows and making sure that it doesn&rsquo;t break anything. Then I&rsquo;m curious if I can rework the window generation step so that it doesn&rsquo;t need to store all the in-between dates (that might just be a waste of processing power and memory to store all those datetime objects).</p>
+
+<p>I got it working with slices with the min/max technique. As far as I can tell the in-between dates are only stored temporarily in the <code>_get_training_windows()</code> method before being reassigned by the slice endpoint indicies. Computationally it&rsquo;s not demanding to calculate them since it still uses NumPy strides. If anything, using slices runs the extra step of calculating the min/max of each window. However, the benefit of using slices as opposed to regular lists of indicies is that the slice indicies don&rsquo;t need to be contained in the target data index. That is, a feature table can be at a different frequency than the power value table without any errors being thrown. Even though previously you could pool feature columns that were at different frequencies, the entire table still had the be at the same frequency as the data (so there would just have to be a bunch of blank spaces). Now you can do without those blank spaces.</p>
+
+<h2 id="larger-scale-test">Larger scale test</h2>
+
+<p>This time I tried a test of the multi-model on all of the AHS data I have. I excluded the extra features since I don&rsquo;t have any future data for them. In practice there would only be a couple of extra features so the performance would not be very different. At a daily power sample frequency it took about 23 seconds to train the model. At a weekly sample frequency it took about 13 seconds.</p>
+
+<h4 id="sample-frequency-implementation">Sample frequency implementation</h4>
+
+<p>When I say sample frequency, I mean the way the model selects historical values to use as features. It can be pretty demanding to use every power sample from the past 4 weeks as a feature, so I instead take a power value from every hour or day. That ignores a lot of information though. I may be better off aggregating the values in each sample pool rather than dropping all but the first element. I&rsquo;ll start my taking the mean of each pool.</p>
+
+<h4 id="working-with-missing-power-data">Working with missing power data</h4>
+
+<p>Currently I&rsquo;ve been running a single pass of the sample data, filling in data from the week before where there are missing values. What if that&rsquo;s not enough to get rid of all the blank spots? Or what if the current implementation makes the model weaker by adding fake data? One way to counteract this is to have the model <em>not</em> train on windows that include missing values. That way it stays ignorant about topics it doesn&rsquo;t know about rather than being potentially misinformed. I&rsquo;m having some trouble implementing this (NumPy logic will make your head spin after looking at it too much) but I&rsquo;ll get back to it some other time. It only becomes an issue if you have lots of missing data and don&rsquo;t take precautions for it.</p>
+
+<h4 id="warm-starting">Warm starting?</h4>
+
+<p>Not an idea that I want to implement right now, but the <code>warm_start</code> argument of <code>sklearn.ensemble.RandomForestRegressor</code> would be a potential way to save a lot of processing power. Rather than building a new forest each time, it reuses the old forest and adds some more estimators to it. Since the only difference between nightly models is 1 day&rsquo;s worth of power data, it would save a ton of redundant calculations. Granted, making a new model every day ensures that the random forest is really random. Also I don&rsquo;t have to worry about keeping the same script running in the background all the time. It&rsquo;s not a big priority but maybe something I could check out in the future.</p>
+
+<h2 id="documentation">Documentation</h2>
+
+<p>I started documenting the classes at the start but I&rsquo;ve made a lot of changes since then. I&rsquo;m going to spend some time going through and documenting what the attributes and functions do so others can follow along.</p>
+
+<p>I finished documenting the <code>BaseModel</code> methods, and as I did so I caught a couple bugs. I also found areas I&rsquo;d like to improve next time, mainly with the training array generation step which is a bit messy at the moment.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
