@@ -1,0 +1,210 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 54 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 54
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 22, 2017
+                    · 1205 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="finishing-touches">Finishing touches</h2>
+
+<p>I considered moving all the model parameters over to the appropriate <code>train</code> methods since it seemed unecessary to lay out all the model settings at instantiation. Hoever, I thought some more and realized that many of those parameters are common to the <code>train</code> and <code>predict</code> processes, so it makes sense that they be tacked on to the object instances rather than passed as temporary arguments. Properties like the input/output/gap size are not just temporary uses for a model, they are defining characteristics for how that model is set up. Therefore it is somewhat intuitive to keep them as initialization parameters.</p>
+
+<p>If for some reason it is desired to reuse a trained model, I added <code>reload_data</code> methods to both classes. This allows the historical data and feature tables to be updated to allow the model to make predictions farther in the future as new data is recorded.</p>
+
+<h2 id="logging-predictions">Logging predictions</h2>
+
+<p>As predictions are made it would be helpful to have a log of what settings were used for each prediction.</p>
+
+<p>I added <code>BaseModel.to_string</code> which converts a range of value types into useful strings (e.g. reading the list of column names from a DataFrame, formatting dicts). Then the models have a <code>log</code> method that generates a Series of these formatted strings, indexed by attribute name from a big list of selected attributes. I also manually added some other data, like useful timestamps.</p>
+
+<p>Here&rsquo;s an example of a prediction log (I don&rsquo;t actually use those column features, I just wanted to demonstrate the formatting).</p>
+
+<pre><code>&gt;&gt;&gt; model.log()
+timestamp                                 2017-08-22 15:24:41
+pred_start                                2017-03-20 00:00:00
+pred_end                                  2017-03-20 23:45:00
+data_start                                2016-09-02 00:00:00
+data_end                                  2017-03-18 23:45:00
+n                                                       19008
+data_freq                                     0 days 00:15:00
+input_size                                   28 days, 0:00:00
+gap_size                                       1 day, 0:00:00
+output_size                                    1 day, 0:00:00
+sample_freq                                    1 day, 0:00:00
+sample_agg_method                                        mean
+time_attrs                               dayofyear, dayofweek
+extra_features                                 noschool, temp
+est_kwargs                        n_estimators:100, n_jobs:-1
+column_features      Main (kW):TMAX, Lighting (kW):TMIN, TMAX
+</code></pre>
+
+<p>The idea would be to add an entry like this (the left-hand side would be headers in a table, the right would be the actual log data) every time a prediction is made. Most likely this information would not change drastically day to day, but if administrators or future students decide to modify the prediction process then the old predictions will still have some context. Perhaps whatever script ends up performing the logging could check for duplicates in the columns to avoid storing redundant information.</p>
+
+<h2 id="quantifying-energy-savings">Quantifying energy savings</h2>
+
+<p>It may seem simple to quantify the surplus of data compared to its forecast. If you have a list of true values, and a list of predicted values, you would expect to just take the difference of the two.</p>
+
+<h4 id="studentized-residuals">Studentized residuals</h4>
+
+<p><a href="https://en.wikipedia.org/wiki/Normalization_(statistics)">According to Wikipedia</a>, studentizing residuals means <em>&ldquo;normalizing residuals when parameters are estimated, particularly across different data points in regression analysis.&rdquo;</em> This involves dividing each residual by its estimated standard deviation. Note that during regression I treat the output period like one big variable, but after that I treat each output point as a separate variable. I&rsquo;m not sure exactly how scikit-learn treats multi-output regression problems, but from what I understand standard procedure is to treat it like a bunch of smaller regression problems anyways.</p>
+
+<p>I want to break down the interpretations of different parts of the forecasting process. I&rsquo;ll focus on a single column of data. Each column has a random forest assigned to it. Within this forest there are many trees. Each tree tries to find optimal branching points among the input variables to reach different outputs. An output of the tree is a guess at the corresponsing true value based on its properties as learned from previous true cases. Each tree will arrive at a different conclusion based on how it was grown. With enough input data, and assuming the provided proprties are sufficient predictors of the output, then each tree should represent a valid potential outcome of the output variable. The variance of the forest&rsquo;s outcomes represents the uncertainty of a prediction based on the provided input properties. Nonetheless, it is expected that the true value would lie in the range of potential outcomes.</p>
+
+<p>Now I must pause to discuss another topic:</p>
+
+<h4 id="confidence-intervals">Confidence intervals</h4>
+
+<p>Consider a 95% confidence interval. This means that 95% of the time you make that interval it will contain the true value. Each time I train a model I get a new forest with a different confidence interval, but 95% of the time that interval should contain the true value. Hence when a value falls outside the interval, it is considered a rare occurence. But is the anomalous behavior coming from reality or from the model? I think it&rsquo;s safe to say that if the model has been trained on non-anomalous (say that 5 times fast) data, then the model is not to blame. That has been my assumptiont thusfar (I previously set a $2\sigma$ threshold as an identifier of power anomalies)</p>
+
+<p>The reason I talk about this is that when residuals are studentized, there&rsquo;s not an intuitive way to quantify them. They no longer have units of kW or kWh. One way to measure potential savings is to truncate values at the upper threshold of the confidence interval, and say that you&rsquo;re 95% sure that this should be the maximum usage for that period.</p>
+
+<p>I&rsquo;ve tried reading further into interpretations of studentized residuals but the language starts to get beyond me.</p>
+
+<p>Originally, the reason I didn&rsquo;t like regular residuals was the fact that you&rsquo;d have more &ldquo;potential savings&rdquo; from areas with high uncertainty, making the &ldquo;potential savings&rdquo; more of a measure of uncertainty than a truly conservative estimate of how much you could expect to save. On the other hand, it&rsquo;s intuitive to think that for conditions with large variability, it takes less effort to make big changes (basically the definition of variance). So my efforts to somehow scale the savings estimates may have been unecessary altogether. Assuming that all data above the prediction is bad usage would essentially correspond to a 0% confidence interval, assuming the intervals are centered.</p>
+
+<p>What if the intervals aren&rsquo;t centered though? For instance, can you say that the interval $(\infty,\mu)$ is a 50% confidence interval? I think so, and I think that would be an even better interval to use since I don&rsquo;t care about abnormally low power usage.</p>
+
+<p>At the moment, the best I can come up with is to have one idealistic sum of the &ldquo;potential savings&rdquo; (with the assumption that the building will perform exactly the same way under the same conditions) which just totals up the areas where the true values surpass the predicted ones, and then a second more conservative measure of &ldquo;expected savings&rdquo; that tells you the minimum savings you can expect at a certain confidence level. The downside of this conservative measure is that it ignores all potential savings from the data points that fall below the threshold. In the back of my mind I still feel there&rsquo;s something missing here though.</p>
+
+<p>As a side note, I think it would be better to calculate the z-thresholds using a t-distribution rather than a normal distribution since I&rsquo;m not using an infinite number of estimators with infinite possible outcomes (I think the degrees of freedom would just equal the number of estimators I have, I&rsquo;d have to verify that).</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
