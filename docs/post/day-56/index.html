@@ -1,0 +1,163 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 56 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 56
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 24, 2017
+                    · 312 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    <p>I spent part of today watching some basic Django tutorials since I have no knowledge of how it works. That made it a little easier to understand the directory structure of the existing project. After a while I wanted to try tackling yesterday&rsquo;s error.</p>
+
+<p>Some online sources suggest you can just wipe out the existing migrations and start fresh (I&rsquo;m just trying to get <em>anything</em> working at the moment). I gave that a shot, deleting the <code>migrations</code> directory from each of the app directories.</p>
+
+<p>Next I got an authentication error. This was coming from <code>development_settings.py</code>, where I had to change the database name, username, and password to the placeholder ones I set up yesterday with Kevin. It&rsquo;s a good thing I didn&rsquo;t forget them yet, I didn&rsquo;t know where I would need them.</p>
+
+<p>When running the server with <code>python manage.py runserver</code>, I was brought to a login page. I didn&rsquo;t know what the credentials were, so I tried the ones that I had just set (the placeholders from postgresql). No dice. I tried admin/password and some other common defaults, nothing was working. I eventually found that I had to use the <code>createsuperuser</code> command from <code>manage.py</code> to create an administrator account.</p>
+
+<p>I used these new credentials to login and&hellip; was brought to an error page.</p>
+
+<pre><code>django.db.utils.ProgrammingError: relation &quot;energize_andover_school&quot; does not exist
+LINE 1: ...hool&quot;.&quot;id&quot;, &quot;energize_andover_school&quot;.&quot;Name&quot; FROM &quot;energize_...
+</code></pre>
+
+<p>At this point it&rsquo;s getting beyond me as someone with no Django experience. I tried a quick Google search of my issue and found no clear solution. It&rsquo;s entirely possible that this is just stemming from my previous naive attempts at fixing my errors.</p>
+
+<p>I&rsquo;m going to see if Jordan is able to give some pointers. Ideally there would just be a list of steps you could run to get from the GitHub repo to a working server without having to jump through all these hoops.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>

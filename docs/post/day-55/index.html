@@ -1,0 +1,170 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 55 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 55
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 23, 2017
+                    · 361 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="ahs-meeting">AHS Meeting</h2>
+
+<p>I met with Anil and Kevin this morning at the AHS library. The usual work area is emptied out for cleaning, and there&rsquo;s furniture strewn around the library. I gave an overview of the forecasting process and how it can be merged with the existing server.</p>
+
+<h2 id="cloning-the-server">Cloning the server</h2>
+
+<p>Kevin started walking me through the process of copying the web server to my work laptop. First I installed PyCharm and <code>postgresql</code>. I then followed a guide he gave me to set up a database and user.</p>
+
+<p>I pulled the latest version of the web server&rsquo;s <a href="https://github.com/EnergizeAndover/energize_andover">GitHub repo</a> and moved to the <a href="https://github.com/EnergizeAndover/energize_andover/tree/Electrical_Mapping"><code>Electrical_Mapping</code></a> branch.</p>
+
+<p>We struggled to install all the required packages, and would often get errors for not having packages that we knew were installed. Part of the confusion arose from the presence of three different Python versions present on my system (a default 2.7 version, a 3.5 version, and Anaconda&rsquo;s 3.6 version). We weren&rsquo;t able to get it figured out before we had to leave.</p>
+
+<p>When I got home I was tried creating a clean Anaconda virtual environment and installing all the requirements from the <code>requirements.txt</code> file. Anaconda only had some of the packages available, so the rest I installed with <code>pip</code>. The ultimate goal was to run</p>
+
+<pre><code>$ python3 managy.py makemigrations
+</code></pre>
+
+<p>When I tried it this time, I saw that I needed to install the <code>bacpypes</code> package, which I did with <code>pip</code>.</p>
+
+<p>The next time the commmand took longer to run, and I got an error about a &ldquo;nonexistent parent node&rdquo;. I don&rsquo;t know how migrations function in Django, but from what I gather there should be a file called <code>0001_initial.py</code> in my <code>energize_andover/migrations/</code> directory (like there is for <code>bacnet/migrations/</code>). When I removed the dependency entry for this missing <code>energize_andover/migrations/0001_initial.py</code> file from the <code>bacnet/migrations/0001_initial.py</code> file, the error message was replaced with <code>No changes detected</code>. It&rsquo;s good that I&rsquo;m not having an error at least. On the other hand, it&rsquo;s possible that I just told the <code>makemigrations</code> command to do nothing.</p>
+
+<p>I&rsquo;m going to see what Kevin has to say about this progress since I have next to no knowledge about how this is all supposed to work.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
