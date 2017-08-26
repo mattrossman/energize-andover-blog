@@ -1,0 +1,245 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 57 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 57
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 25, 2017
+                    · 707 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="finally-working">Finally working</h2>
+
+<p>With the suggestions from Jordan I was able to get the server running locally on my system.</p>
+
+<p>Some things I did differently (starting from the latest version on GitHub):</p>
+
+<ul>
+<li>I set the admin password for the default <code>postgres</code> account and used those credentials in the development settings file rather than the credentials for the <code>myusername</code> user account that Kevin had me make on Wed.</li>
+<li>I dropped the existing database and made a new one.</li>
+<li>I still had to delete the existing migrations folders, but this time I individually ran <code>makemigrations</code> for <code>energize_andover</code> and then <code>bacnet</code> followed by a generic <code>migrate</code> command.</li>
+<li>I ran <code>python manage.py setup</code> to create the admin account rather than using <code>createsuperuser</code>.</li>
+</ul>
+
+<p><br>
+After this I was able to <code>python manage.py runserver</code> and log in successfully. I&rsquo;ve never used this interface myself but from the demos I&rsquo;ve seen I generally knew how to add a school from the provided CSV files. I still get an error from some processes like the QR generator.</p>
+
+<h2 id="poking-around">Poking around</h2>
+
+<p>I started looking around the source files to see how things work. The realtime grapher is the main source of interest for me.</p>
+
+<p>The process consists of two parts. One is using BACnet to make a log of values in a CSV file, the other is to use that CSV file to plot the recorded values on the webpage.</p>
+
+<p>That sounds promising (if the page can plot the recorded values it can plot the predictions), but one difficulty is a discrepancy of formatting. The CSV log currently is a big stream of recordings with the panel, units, and school name as labels attached to each measurement.</p>
+
+<p>The files that I&rsquo;ve been working with have the panel and units as headers and each entry is just logged along with a timestamp. I can see how the former approach is easier to implement, but it makes things a little messy and I can&rsquo;t plug that kind of file into the forecast model.</p>
+
+<p>It does seem that this involves storing a lot of redundant information. Every entry stores &ldquo;Andover High School&rdquo; as the associated school name, it would seem cleaner to just store this value once and associate the name with the filename.</p>
+
+<h4 id="solutions">Solutions</h4>
+
+<p>I see a couple of approaches:</p>
+
+<ul>
+<li>Directly change the format of the recorded data sheet.</li>
+<li>Parse the existing data sheet into a different format.</li>
+</ul>
+
+<p><br>
+I will have to discuss this with Kevin and see what he thinks. Another thing, we&rsquo;re only logging values for AHS at the moment so it doesn&rsquo;t seem necessary yet to include the school name with data points (the AHS name is currently hardcoded into the logging script).</p>
+
+<p>I think the idea is that the <code>trend.csv</code> file will hold all the trend data for every school. Another approach would be to make seperate trend files for each school to keep things organized.</p>
+
+<p>Here&rsquo;s an idea of the structure I had in mind:
+<pre><code class="nohighlight">trends
+ |___ 1
+ |    |___ trend.csv
+ |    |___ pred_vals.csv
+ |    |___ pred_stds.csv
+ |
+ |___ 2
+ |    |___ trend.csv
+ |    |___ pred_vals.csv
+ |    |___ pred_stds.csv
+ |
+ |___ 3
+      |___ trend.csv
+      |___ pred_vals.csv
+      |___ pred_stds.csv
+</code></pre></p>
+
+<p>Each number corresponds to a school ID. I know that this system is already in place since it is used to create the grapher URL (e.g. Graph1 is for AHS). And the <code>trend.csv</code> file would look more like:</p>
+
+<table>
+<thead>
+<tr>
+<th>Timestamp</th>
+<th>Main (kW)</th>
+<th>DHB (kW)</th>
+<th>DG (kW)</th>
+<th>DE (kW)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>2017-08-04 16:45:00</td>
+<td>112.019</td>
+<td>62.227</td>
+<td>49.937</td>
+<td>32.541</td>
+</tr>
+
+<tr>
+<td>2017-08-04 17:00:00</td>
+<td>110.128</td>
+<td>61.847</td>
+<td>56.039</td>
+<td>31.119</td>
+</tr>
+</tbody>
+</table>
+
+<p>and so on (those are mostly just random numbers).</p>
+
+<p>Then I could plug <code>trend.csv</code> into a <code>MultiRFModel</code> to create <code>pred_vals.csv</code> and <code>pred_stds.csv</code> for each school. This would imply that every type of information being recorded would be modeled and predicted. This may not be necessary, so perhaps I should add a parameter to the models to restrict which columns are modeled and predicted.</p>
+
+<p>Another thing that worries me is the fact that currently, <code>trend.csv</code> is not at strict 15-minute marks. The points are more or less 15 minutes apart, but they are not precisely stored at 00:00, 00:15, 00:30, etc. Instead it&rsquo;s more like 2017-08-10 11:44:16. The model would be pretty strict about having perfect data freqeuncy so we&rsquo;ll want to round the timestamps to the nearest 15-minute mark.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
