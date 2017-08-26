@@ -1,0 +1,6 @@
+<!-- This shortcode lets me reference some repos by nickname in case they get renamed -->
+
+{{ $.Scratch.Add "name" (.Get 0) }}
+{{ if eq ($.Scratch.Get "name") "energize" }}
+	https://github.com/mattrossman/andover-energy-analysis
+{{ end }}
