@@ -1,0 +1,180 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 60 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 60
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 29, 2017
+                    · 417 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="ahs-meeting">AHS Meeting</h2>
+
+<p>I met with Frank and Ajay at AHS this morning. They had been having trouble installing Pycharm so I showed them how to install it. Then I walked through the process of cloning the web server repo, creating an Anaconda environment, installing all the requirements with Anaconada/Pip, installing PostgreSQL, making the database, and configuring the server. At this point they are all caught up to the degree of functionality that I&rsquo;ve gotten the server to.</p>
+
+<h2 id="testing-the-logging">Testing the logging</h2>
+
+<p>As I feared, I immediately encountered errors when trying to run any of the data logging scripts. The primary issue was an <code>ImportError</code> where the <code>mysite</code> module is not being found. I think this has something to do with the working directory not appearing in <code>sys.path</code>. I was playing around in an interactive console located in one of the subdirectories and found I was unable to <code>import mysite</code> until I appended the working directory to <code>sys.path</code>. I suspect that somewhere in the code this step is missing&hellip;</p>
+
+<h4 id="possible-connection">Possible connection</h4>
+
+<p>After playing around with the python shell for a while I noticed a similar issue when I ran tried running certain scripts from different locations. The <code>mysite/wsig.py</code> script is the one I was experiencing an issue from. When I ran <code>python mysite/wsig.py</code> from the main directory I had no issues, although I found it odd that the <code>project</code> and <code>workspace</code> variables were storing empty strings. Still, I was able to import <code>energize_andover.models</code> just fine.</p>
+
+<p>However when <code>python wsig.py</code> from within the mysite directory I got the same error as I got from the data logging script (about the <code>mysite</code> module not being found). When I added</p>
+
+<pre><code>sys.path.append('/home/matt/PycharmProjects/EnergizeAndover')
+</code></pre>
+
+<p>which is my project directory, the error stopped. I tried adding that line to <code>NAEInteract1.py</code> and I was able to run that too.</p>
+
+<p>I knew it wouldn&rsquo;t work off the network but I ran <code>findNAE()</code> and got</p>
+
+<pre><code>RuntimeError: INI file with BACpypes section required
+</code></pre>
+
+<p>There is a <code>BACpypes.ini</code> file in the same directory. I navigated to the actual <code>bacnet/script/</code> directory before running the Python code this time and got a different error:</p>
+
+<pre><code>OSError: [Errno 99] Cannot assign requested address
+</code></pre>
+
+<p>The address that it&rsquo;s requesting is <code>b'\x0A\x0C\x00\xFA\xba\xc0'</code>. The <code>b</code> means it&rsquo;s a bytes literal. The <code>\x</code> escape character is used to preced a two-digit hex value (i.e. an octet). Thus this byte notation corresponds to the IPv4 address <code>10.12.0.250</code>.</p>
+
+<p>Maybe that&rsquo;s just the error you get when you&rsquo;re off the network. I&rsquo;ll get a better idea tomorrow when I&rsquo;m back on AndoverNet.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
