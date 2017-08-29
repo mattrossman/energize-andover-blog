@@ -2,7 +2,7 @@
 author: "Matt Rossman"
 date: 2017-08-28
 title: Day 59
-description:
+description: Drafting a new data logging script, testing out APScheduler
 weight: 10
 ---
 
