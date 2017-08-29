@@ -1,0 +1,332 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 59 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 59
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Aug 28, 2017
+                    · 1067 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="data-recording">Data recording</h2>
+
+<p>My top priority is getting the prediction system in place, even if the web app can&rsquo;t graph the resulting data. Before I can let <code>MultiRFModel</code> do its magic I need properly formatted data.</p>
+
+<h3 id="current-system">Current system</h3>
+
+<p>The current data logging system takes place in <code>/bacnet/script/</code>. The logging task is in <code>NAEInteract1.py</code> and it&rsquo;s scheduled to run every 15 minutes in <code>NAEMonitoring.py</code> (although I also see some scheduling framework in <code>tasks.py</code>).</p>
+
+<p>I won&rsquo;t try to decode how most of the bacpypes library works, but I generally understand that sensor IDs such as <code>3007360</code> (for the &ldquo;Main (kW)&rdquo; value) are used to make a  <code>ReadPropertyRequest</code> from BACnet.</p>
+
+<p>The <code>NAEInteract1.write()</code> method is where the <code>trend.csv</code> file is built. This line:</p>
+
+<pre><code>csv.write(str(count) + &quot;,&quot; + str(datetime.now()) + &quot;,&quot; + name + &quot;,&quot; + str(value) + &quot;,&quot; + school + &quot;,\n&quot;)
+</code></pre>
+
+<p>writes the table entries. The call to <code>datetime.now()</code> is part of what&rsquo;s causing the imperfect timestamps (since there&rsquo;s a small bit of processing time between the scheduled task and when the task is ready to write to the CSV file). It&rsquo;s possible that some of the blame also lies in the <code>sched.scheduler</code> accuracy. I don&rsquo;t have experience with the <code>sched</code> library I can&rsquo;t speak for how &ldquo;perfect&rdquo; its scheduling works. I met as well find that out right now.</p>
+
+<p>I scheduled a basic task that adds the current time to a list every second for ten iterations.</p>
+
+<pre><code>x = list()
+
+def task():
+    x.append(datetime.now())
+
+def pull_data():
+    s = sched.scheduler(time.time, time.sleep)
+    for i in range(10):
+        s.enter(1, 1, task, ())
+        s.run()
+</code></pre>
+
+<p>Afterwards I turned that list into a Series and found the average time difference between its values:</p>
+
+<pre><code>&gt;&gt;&gt; pd.Series(x).diff().mean()
+Timedelta('0 days 00:00:01.001250')
+</code></pre>
+
+<p>The table recorded values slighter longer than a second&rsquo;s frequency. That&rsquo;s not gonna fly. It&rsquo;s not totally unusable - the miniscule time delay won&rsquo;t invalidate the recorded data, it just will upset the prediction model. I could just have the CSV writer round the current time to the nearest 15-minute interval. But I&rsquo;d rather have a system that I can put more confidence in.</p>
+
+<p>One other issue is that I think scheduled times are not centered in any way on even 15-minute marks. Even though entries will be 15-minutes apart, they may fall between th <em>00/15/30/45</em> marks. The sample <code>trend.csv</code> appears to be pretty close, but I don&rsquo;t see any calls to <code>NAEMonitoring.py</code> in other scripts so I imagine that the recording script has to be manually started (potentially at the wrong time of the hour).</p>
+
+<p>I think the crontab file I discussed a couple weeks ago would be better suited to schedule tasks according to clock time rather than elapsed time. I saw at least one reference to crontab from the <code>celery</code> library that Jordan noted he had briefly tried implementing. That may be an area I could look into completing (or we could just manually add a recording task to the crontab file). I&rsquo;m just going to do some research on task scheduling in Python and see what comes up.</p>
+
+<h3 id="schedule-py">Schedule.py</h3>
+
+<p>The schedule module is supposed to offer cron-like functionality but I can&rsquo;t see how to use it to run a task every 15 minute mark. It looks like it can only run at specific times of day, not times of the hour.</p>
+
+<h3 id="apscheduler">APScheduler</h3>
+
+<p>I found it from <a href="https://stackoverflow.com/questions/22715086/scheduling-python-script-to-run-every-hour-accurately">this post</a>. It can use <code>'cron'</code> as a trigger so it should offer the functionality I need. In my case I want the trigger parameter to be <code>minute='*/15'</code></p>
+
+<p>I tried a similar test from before:</p>
+
+<pre><code>from apscheduler.schedulers.blocking import BlockingScheduler
+
+s = BlockingScheduler()
+x = list()
+
+@s.scheduled_job('cron', second=('*'))
+def task():
+    time = datetime.now()
+    print(time)
+    x.append(time)
+
+def start():
+    try:
+        s.start()
+    except(KeyboardInterrupt):
+        s.shutdown()
+</code></pre>
+
+<p>and got a smaller delay when letting it run for a few cycles:</p>
+
+<pre><code>&gt;&gt;&gt; pd.Series(x).diff().mean()
+Timedelta('0 days 00:00:01.000427')
+</code></pre>
+
+<p>The benefit is that my cycles are practically centered on my desired trigger times. I will need to apply some kind of rounding to the times to ensure that they are compatible with the model.</p>
+
+<h2 id="rounding-datetimes">Rounding datetimes</h2>
+
+<p>I made this rounding function that will round a <code>datetime</code> object by a desired <code>timedelta</code> resolution.</p>
+
+<pre><code>def round_datetime(dt, res):
+    td = dt - datetime.min
+    td_round = res*round(td/res)
+    return td_round + datetime.min
+</code></pre>
+
+<p>Using that function on a new set of rounded data yields the following:</p>
+
+<pre><code>&gt;&gt;&gt; pd.Series(x).diff().mean()
+Timedelta('0 days 00:00:01')
+</code></pre>
+
+<p>Perfect 1 second intervals. In the final code we&rsquo;ll be using <code>timedelta(minutes=15)</code> as the rounded and scheduled intervals.</p>
+
+<h2 id="new-recording-system">New recording system</h2>
+
+<p>Rather than making and writing a bunch of seperate data requests, I want to make all the data requests in a tight loop and write all the results at once.</p>
+
+<p>To do this I made a <code>pandas.DataFrame</code> of properties that are desired to be recorded. I&rsquo;m ommiting the school name for now since this script will just be for recording AHS data.</p>
+
+<pre><code>AHS_props = pd.DataFrame(
+        [(&quot;Main (kW)&quot;,3007360),
+         (&quot;DHB (kW)&quot;,3017359),
+         (&quot;DG (kW)&quot;,3017523),
+         (&quot;DE (kW)&quot;,3017605),
+         (&quot;DL (kW)&quot;,3017769),
+         (&quot;M1 (kW)&quot;,3017441),
+         (&quot;AMDP (kW)&quot;,3017687),
+         (&quot;Main (kWh)&quot;,3007361),
+         (&quot;DHB (kWh)&quot;,3017360),
+         (&quot;DG (kWh)&quot;,3017524),
+         (&quot;DE (kWh)&quot;,3017606),
+         (&quot;DL (kWh)&quot;,3017770),
+         (&quot;M1 (kWh)&quot;,3017442),
+         (&quot;AMDP (kWh)&quot;,3017688)],
+         columns=['Name','Identifier'])
+</code></pre>
+
+<p>Next I wrote some functions that work with the property table:</p>
+
+<pre><code>def init_csv(props):
+    with open('trend.csv','w') as csv:
+        csv.write(','.join(['Timestamp']+list(props.keys())) + '\n')
+
+def get_value(identifier):
+    return random.uniform(0,10000)
+
+def write_prop_values(props):
+    resp = [str(get_value(id_)) for id_ in props['Identifier']]
+    now = round_datetime(datetime.now(),timedelta(seconds=1))
+    with open('trend.csv', 'a') as csv:
+        csv.write(','.join([str(now)]+resp) + '\n')
+</code></pre>
+
+<p>You&rsquo;ll notice that the <code>get_value</code> method just returns a random number. Eventually, this will look more like a modified version of <code>analog_value_request</code> where it returns the BACnet response value (and not writing it straight away).</p>
+
+<p>The <code>init_csv()</code> method just sets up the initial column headers and <code>write_prop_values()</code> requests the data and appends a new entry.</p>
+
+<p>I modified my testing <code>task()</code> function from earlier to just make a call to <code>write_prop_values(AHS_props)</code> every second. Sure enough, after letting the job run for a few seconds I got a nicely formatted trend file:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/08/28/trend.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/08/28/trend.png alt="trend.png not found" title = trend.png />
+	</a>
+</div>
+
+
+
+
+<p>All that&rsquo;s left is to hook <code>get_value</code> up to the proper return value (which may be easier said than done since I&rsquo;ve never used the <code>NAEInteract1.py</code> script on AndoverNET, for all I know it could just throw errors.</p>
+
+<pre><code>def get_value(identifier):
+    &quot;&quot;&quot;Request the current analog value of the name/ID property pair
+
+    Parameters
+    ----------
+    identifier : int
+        The identifier number of the sensor from which the
+        reading will be taken
+    &quot;&quot;&quot;
+    global object_destination
+    global value
+    new_request = ReadPropertyRequest(
+        objectIdentifier=(&quot;analogInput&quot;, identifier),
+        propertyIdentifier=&quot;presentValue&quot;)
+    new_request.pduDestination = object_destination
+    this_application.request(new_request)
+    run()
+    return value
+</code></pre>
+
+<p>This is what I imagine the method should look like. Tomorrow I&rsquo;ll be at the school to see how it works.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
