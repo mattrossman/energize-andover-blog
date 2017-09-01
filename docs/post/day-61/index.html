@@ -1,0 +1,191 @@
+    <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Energize Andover Summer 2017 Blog">
+		<meta name="description" content="Blog Description">
+		<meta name="generator" content="Hugo 0.21" />
+		<title>Day 61 &middot; Energize Andover Summer 2017 Blog</title>
+		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+
+	
+	
+		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	
+	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Day 61
+                    </h1>
+                    <h2 class="headline">
+                    
+                    Sep 1, 2017
+                    · 537 words
+
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<h2 id="wednesday">Wednesday</h2>
+
+<p>The past two days weren&rsquo;t productive enough to warrant their own posts. Wednesday I met Kevin and the rest of the team at MHL hoping to gain insight on how to use the logging scripts. Unfortunately, Jordan is pretty much the only one who really knows how to use them. I had hoped that the address error would go away on AndoverNet but it persisted.</p>
+
+<p>I emailed Jordan looking for guidance, and he said that I would have to change the IP address listed in <code>BACpypes.ini</code> to the one of my own computer. At this point I was off the network, but even on my home network I noticed that this made the error go away. Instead I was stuck unable to interact with the iPython console.</p>
+
+<h2 id="today">Today</h2>
+
+<p>I tried this on AndoverNet at AHS, and instead of the terminal locking up it spat out some confirmation of the configured settings before granting me control. And when I made a call to <code>analog_value_request</code>, I actually got a value back!</p>
+
+<p>Then I tried using my draft modified logging script and it worked great, just like it did when hooked up to the random value generator. Since I don&rsquo;t want to spend a ton of time testing, I added in a <code>BlockingScheduler</code> set to a <code>cron</code> trigger every 15 seconds. I let it run for a while, and here&rsquo;s what I got:</p>
+
+
+
+
+
+
+
+    
+
+
+<div align="center">
+	<a href=https://mattrossman.github.io/energize-andover-blog/images/09/01/trend_test.png>
+	   <img src=https://mattrossman.github.io/energize-andover-blog/images/09/01/trend_test.png alt="trend_test.png not found" title = trend_test.png />
+	</a>
+</div>
+
+
+
+
+<p>You may notice that there are some entries where the values appear to be duplicates. This is probably just a result of the update rate of the sensors. At a broader resolution (e.g. 15 minutes) this will not pose an issue.</p>
+
+<p>There&rsquo;s a bit of a hiccup when trying to re-run the scheduling script. BACpypes throws an error about the address already being in use, but re-starting the kernel solves this.</p>
+
+<p>I&rsquo;m going to run the scheduler script in the background for a while at a one-minute resolution to double check that it&rsquo;s working alright.</p>
+
+<h4 id="testing-the-predictions">Testing the predictions</h4>
+
+<p>You wouldn&rsquo;t normally make a forecast with such a small data set, but after 20 minutes I wanted to try out the prediction model. I set the input, gap, and output size to 5 minutes and used minutes as a time attribute (though I doubt adding that had any predictive power). Training and prediction went smoothly, but one odd thing about the output tables was that the columns were out of order. It looked vaguely alphabetical but not completely.</p>
+
+<p>I fixed this by switching to using an <code>OrderedDict</code> rather than a regular <code>dict</code> to store the models. I had to change this during model construction as well as after the multi-core training process. Regular dicts will try to alphabetize their returned <code>keys()</code> or <code>values()</code> lists, which I don&rsquo;t want to happen when I&rsquo;m iterating over them.</p>
+
+<p>Going forward, it&rsquo;s entirely possible to continue performing the data logging this way. I&rsquo;ll probably leave the team with my draft copies of the modified logging and schedule scripts. There&rsquo;s no point writing a particular prediction script yet since the real server isn&rsquo;t available to start the data logging. Future work will also have to be done to allow the server to graph the newly formatted data logs and corresponding prediction values.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'energize-andover-blog';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+		
+            
+
+            
+
+            <footer id="footer">
+    
+	<div align="center">
+	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
+        	<i class="fa fa-github-square"></i>
+		Page Source
+	</a>
+	</div>
+    <p class="small">
+    
+       © Copyright 2017 
+    
+
+    </p>
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
+<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-86883080-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']],processEscapes:true}
+	});
+</script>
+
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+    </body>
+</html>
