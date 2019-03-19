@@ -1,4 +1,5 @@
 <h3 id="query-label" style="display:none">Search results for</h3>
+<button id="btnFeaturedPosts">Showing <div style="display: inline" id="post-list-status">all posts</div></button>
 <ul id="post-list">
     {{ range where .Data.Pages "Params.hidden" "ne" "true" }}
     {{ $url := replace .Permalink .Site.BaseURL "" }}
