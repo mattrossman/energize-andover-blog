@@ -3,7 +3,7 @@
     {{ range where .Data.Pages "Params.hidden" "ne" "true" }}
     {{ $url := replace .Permalink .Site.BaseURL "" }}
         {{ if ne $url "about/" }}
-            <li id={{- .File.BaseFileName -}}>
+        <li id="{{- .File.BaseFileName -}}" class={{ if .Params.featured }}"featured"{{ else }}"not-featured"{{ end }}>
                 <a href='{{ .Permalink }}'><aside class="dates">{{ .Date.Format "Jan 2" }}</aside></a>
                 <a href='{{ .Permalink }}'>
                     {{ .Title }} <h2>{{ .Description | markdownify }} </h2>
