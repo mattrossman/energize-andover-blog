@@ -963,3 +963,7 @@ a.symbol:hover {
 #site-search {
     width:70%;
 }
+
+.feature-star {
+    color: gold;
+}
