@@ -4,6 +4,7 @@ date: 2017-08-08
 title: Day 45
 description: Presentation, generalizing data frequency, quantile-based prediction intervals as threshold
 weight: 10
+featured: true
 ---
 
 ## Presentation

@@ -4,6 +4,7 @@ date: 2017-07-18
 title: Day 30
 description: The holy grail of smart energy resources
 weight: 10
+featured: true
 ---
 
 ## An exciting find

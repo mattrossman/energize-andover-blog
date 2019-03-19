@@ -4,6 +4,7 @@ date: 2017-08-21
 title: Day 53
 description: Multi-core processing for a performance boost
 weight: 10
+featured: true
 ---
 
 ## Function decorators

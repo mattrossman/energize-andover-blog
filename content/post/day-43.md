@@ -4,6 +4,7 @@ date: 2017-08-04
 title: Day 43
 description: Preparing the inputs/output matricies, testing the RF fit with median APE using different input/output/gap sizes, starting improvements to train speed
 weight: 10
+featured: true
 ---
 
 ## Setting up the input/output

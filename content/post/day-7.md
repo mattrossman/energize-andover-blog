@@ -4,6 +4,7 @@ date: 2017-06-14
 title: Day 7
 description: Generating complex time ranges with ical files, and improvements to time filtering
 weight: 10
+featured: true
 ---
 
 For institutions with very complex schedules, the basic filtering I created yesterday probably won't suffice. Instead, it may be nicer to let the user set their desired schedules in a graphical environment and use that as a time filter in the application.
