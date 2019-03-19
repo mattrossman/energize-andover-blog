@@ -9,7 +9,4 @@ $(document).ready(function() {
     
     // configure btn handler
     btnFeaturedPosts.click(toggleFeatured);
-
-    // click once on page load (start with only showing featured)
-    btnFeaturedPosts.click();
 });
