@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Energize Andover Summer 2017 Blog">
 		<meta name="description" content="Blog Description">
-		<meta name="generator" content="Hugo 0.21" />
+		<meta name="generator" content="Hugo 0.50" />
 		<title>Day 14 - Summary &middot; Energize Andover Summer 2017 Blog</title>
 		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
 		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
@@ -18,6 +18,9 @@
 		
 
 		
+
+        
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 	</head>
 
     <body>
@@ -91,7 +94,7 @@
 
 <p>This makes it easier to look at a very specific subset of the data in just one step.</p>
 
-<p>Details in [Day 6&rsquo;s](https://mattrossman.github.io/energize-andover-blog/post/day-6/ and [Day 7&rsquo;s](https://mattrossman.github.io/energize-andover-blog/post/day-7/ posts.</p>
+<p>Details in <a href="https://mattrossman.github.io/energize-andover-blog/post/day-6/">Day 6&rsquo;s</a> and <a href="https://mattrossman.github.io/energize-andover-blog/post/day-7/">Day 7&rsquo;s</a> posts.</p>
 
 <h2 id="ical-parsing">iCal Parsing</h2>
 
@@ -101,13 +104,13 @@
 
 <p>This makes it easier for a user to create date ranges for the time filter function. For instance, I loaded the Andover Public Schools academic calendar into Google Calendar and exported the <code>.ics</code> file to easily filter out days when there was no school.</p>
 
-<p>For more details, read [Day 7&rsquo;s](https://mattrossman.github.io/energize-andover-blog/post/day-7/</p>
+<p>For more details, read <a href="https://mattrossman.github.io/energize-andover-blog/post/day-7/">Day 7&rsquo;s</a></p>
 
 <h2 id="temperature-data">Temperature Data</h2>
 
 <p>One factor that could influence power usage is the outside temperature. Most weather APIs do not provide historical data, but I was able to download a report from the <a href="https://www.ncdc.noaa.gov/cdo-web/datatools/findstation">NOAA website</a> with air temperature data from the nearby town of Lawrence. Using this data we can look for patterns between temperature and power usage.</p>
 
-<p>More details in [Day 12&rsquo;s](https://mattrossman.github.io/energize-andover-blog/post/day-12/</p>
+<p>More details in <a href="https://mattrossman.github.io/energize-andover-blog/post/day-12/">Day 12&rsquo;s</a></p>
 
 <p>I would like to find a better weather source in the future since this method requires waiting a day for the report to be delivered via email.</p>
 
@@ -188,13 +191,13 @@
     
 	<div align="center">
 	<a class="small" href="https://github.com/mattrossman/energize-andover-blog/">
-        	<i class="fa fa-github-square"></i>
+        	<i class="fab fa-github-square"></i>
 		Page Source
 	</a>
 	</div>
     <p class="small">
     
-       © Copyright 2017 
+       © Copyright 2019 
     
 
     </p>
@@ -204,7 +207,7 @@
 
         </section>
 
-        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-2.2.4.min.js"></script>
+        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-3.3.1.min.js"></script>
 <script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
 <script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
@@ -213,14 +216,17 @@
 
 
   
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-86883080-2', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-86883080-2', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
 
@@ -239,6 +245,9 @@ ga('send', 'pageview');
 
 
 <script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+
+
+<script src="https://mattrossman.github.io/energize-andover-blog/js/featured-posts.js"></script>
 
     </body>
 </html>
