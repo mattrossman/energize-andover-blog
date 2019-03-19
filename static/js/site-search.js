@@ -33,14 +33,18 @@ function submitSearch(){
 	
 	if (queries[0]=='') {
 		setAllDisplay('block');
-		queryLabel.style.display = 'none'
+		// queryLabel.style.display = 'none'
+        $(".search-include").hide();
+        $(".search-exclude").show();
 	}
 	else {
+        $(".search-include").show();
+        $(".search-exclude").hide();
 		setAllDisplay('none');
 		var results = queries.map(siteSearch).reduce(intersect)
 		var num = results.length
 		displayPosts(results);
-		queryLabel.style.display = 'block'
+		// queryLabel.style.display = 'block'
 		queryLabel.innerHTML = num + ' result' + ((num==1) ? '' : 's') + ' for "' + queries.join('" and "') + '":';
 	}
 }
