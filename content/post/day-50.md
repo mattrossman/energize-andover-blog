@@ -4,6 +4,7 @@ date: 2017-08-16
 title: Day 50
 description: Restructuring the classes, predictions on multiple columns, outputting a CSV file, trial run
 weight: 10
+featured: true
 ---
 
 Assigning the same data to various objects shouldn't pose a memory issue, as in Python variables store references to data so only one instance of the source data is actually stored. You can verify this with the built-in `id()` method to see where variables point to. There are still some areas I've have to optimize in the multi-column model though.

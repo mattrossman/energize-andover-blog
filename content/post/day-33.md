@@ -4,6 +4,7 @@ date: 2017-07-21
 title: Day 33
 description: Regression on higher dimensional input, 3D plotting with mplot3d
 weight: 10
+featured: true
 ---
 
 ### Polynomial regression as linear regression

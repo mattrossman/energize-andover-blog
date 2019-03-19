@@ -1,12 +1,13 @@
-<h3 id="query-label" style="display:none">Search results for</h3>
+<h3 id="query-label" class="search-include" style="display:none">Search results for</h3>
+<button id="btn-featured" class="search-exclude">Showing <div style="display: inline" id="post-list-status" class="featured-filter"></div></button>
 <ul id="post-list">
     {{ range where .Data.Pages "Params.hidden" "ne" "true" }}
     {{ $url := replace .Permalink .Site.BaseURL "" }}
         {{ if ne $url "about/" }}
-            <li id={{- .File.BaseFileName -}}>
+        <li id="{{- .File.BaseFileName -}}" class="featured-filter {{ if .Params.featured }}featured{{ else }}not-featured{{ end }}">
                 <a href='{{ .Permalink }}'><aside class="dates">{{ .Date.Format "Jan 2" }}</aside></a>
                 <a href='{{ .Permalink }}'>
-                    {{ .Title }} <h2>{{ .Description | markdownify }} </h2>
+                    {{ .Title }} {{ if .Params.featured }}<i class="fas fa-star feature-star"></i>{{ end }} <h2>{{ .Description | markdownify }} </h2>
 		    <font color="#505050">
 			<h6 class="read-more-handle">. . . (read more) </h6>
 			<h6 class="disqus-comment-count" data-disqus-url="{{ .Permalink }}"> <br> </h6>

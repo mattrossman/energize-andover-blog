@@ -4,6 +4,7 @@ date: 2017-06-19
 title: Day 10
 description: Rolling MAD, switching to time based windows
 weight: 10
+featured: true
 ---
 
 The pandas `rolling` object has a few built in commands that I have already made use of, like `.median()`. But for broader scenarios, you can use the `.apply()` function to, as the name suggests, apply your own function across the windows.

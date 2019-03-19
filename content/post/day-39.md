@@ -4,6 +4,7 @@ date: 2017-07-31
 title: Day 39
 description: Research papers on power usage forecasting, residual plots of more data sets
 weight: 10
+featured: true
 ---
 
 Last time I noted that the variance in the power vs. temperature residuals fanned out quite a bit at higher temperature values. I'm curious if other data sets behave similarly. One thing to consider: is the changing variance truly an issue of randomness, or is there another variable at play here? The more variables you consider, the less you leave up to chance.
