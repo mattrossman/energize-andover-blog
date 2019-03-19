@@ -967,3 +967,19 @@ a.symbol:hover {
 .feature-star {
     color: gold;
 }
+
+.search-list:not(.search-result) {
+    display:none;
+}
+
+.featured-filter.not-featured:not(.search-list) {
+    display:none;
+}
+
+.featured-filter#post-list-status::after {
+    content: "only featured posts"
+}
+
+:not(.featured-filter)#post-list-status::after {
+    content: "all posts"
+}
