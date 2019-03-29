@@ -1,7 +1,7 @@
 <h3 id="query-label" class="search-include" style="display:none">Search results for</h3>
 <button id="btn-featured" class="search-exclude">Showing <div style="display: inline" id="post-list-status" class="featured-filter"></div></button>
 <ul id="post-list">
-    {{ range where .Data.Pages "Params.hidden" "ne" "true" }}
+    {{ range where .Data.Pages.ByDate "Params.hidden" "ne" "true" }}
     {{ $url := replace .Permalink .Site.BaseURL "" }}
         {{ if ne $url "about/" }}
         <li id="{{- .File.BaseFileName -}}" class="featured-filter {{ if .Params.featured }}featured{{ else }}not-featured{{ end }}">
