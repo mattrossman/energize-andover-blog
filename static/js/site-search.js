@@ -3,7 +3,7 @@ var siteJSON;
 var searchBox = document.getElementById('site-search');
 var queryLabel = document.getElementById('query-label');
 
-$.getJSON('/energize-andover-blog/index.json',jsonCallback);
+$.getJSON('/index.json',jsonCallback);
 
 searchBox.onchange = submitSearch;
 
