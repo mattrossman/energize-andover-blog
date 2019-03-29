@@ -977,9 +977,9 @@ a.symbol:hover {
 }
 
 .featured-filter#post-list-status::after {
-    content: "only featured posts"
+    content: "Show all posts"
 }
 
 :not(.featured-filter)#post-list-status::after {
-    content: "all posts"
+    content: "Filter featured posts"
 }
