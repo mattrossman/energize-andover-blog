@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Appendixes on Energize Andover Summer 2017 Blog</title>
-    <link>https://mattrossman.github.io/energize-andover-blog/appendix/</link>
+    <link>https://energize.mattrossman.com/appendix/</link>
     <description>Recent content in Appendixes on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 23 Jun 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://mattrossman.github.io/energize-andover-blog/appendix/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://energize.mattrossman.com/appendix/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Making Your Own GitHub Pages Blog</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/appendix/how-to/</link>
+      <link>https://energize.mattrossman.com/appendix/how-to/</link>
       <pubDate>Fri, 23 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/appendix/how-to/</guid>
+      <guid>https://energize.mattrossman.com/appendix/how-to/</guid>
       <description>Guide Contents:  Introduction Hugo    Description Setup Picking a Theme Adding content Generating the Static Files  GitHub Pages  Setting up your Git Repo Pushing your changes  More to Consider Further Customization    Introduction This guide explains how I went about hosting this blog.
 At the time of this posting, I am running 64-bit Ubuntu 16.04 LTS on an HP EliteBook 8460p.</description>
     </item>

@@ -8,13 +8,13 @@
 		<meta name="description" content="Blog Description">
 		<meta name="generator" content="Hugo 0.50" />
 		<title>Day 23 &middot; Energize Andover Summer 2017 Blog</title>
-		<link rel="shortcut icon" href="https://mattrossman.github.io/energize-andover-blog/images/favicon.ico">
-		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/style.css">
-		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/highlight.css">
+		<link rel="shortcut icon" href="https://energize.mattrossman.comimages/favicon.ico">
+		<link rel="stylesheet" href="https://energize.mattrossman.comcss/style.css">
+		<link rel="stylesheet" href="https://energize.mattrossman.comcss/highlight.css">
 		
 
 		
-		<link rel="stylesheet" href="https://mattrossman.github.io/energize-andover-blog/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://energize.mattrossman.comcss/font-awesome.min.css">
 		
 
 		
@@ -29,11 +29,11 @@
 
 	
 	
-		<a href='https://mattrossman.github.io/energize-andover-blog/'> <span class="arrow">←</span>Home</a>
+		<a href='https://energize.mattrossman.com'> <span class="arrow">←</span>Home</a>
 	
-	<a href='https://mattrossman.github.io/energize-andover-blog/post'>All Posts</a>
+	<a href='https://energize.mattrossman.compost'>All Posts</a>
 	
-	<a href='https://mattrossman.github.io/energize-andover-blog/about'>About</a>
+	<a href='https://energize.mattrossman.comabout'>About</a>
 
 	
 
@@ -93,8 +93,8 @@ A lot of these rely on already having a fitted distribution, so that was our goa
 
 
 <div align="center">
-	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/07/scipy_fit.png>
-	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/07/scipy_fit.png alt="scipy_fit.png not found" title = scipy_fit.png />
+	<a href=https://energize.mattrossman.comimages/07/07/scipy_fit.png>
+	   <img src=https://energize.mattrossman.comimages/07/07/scipy_fit.png alt="scipy_fit.png not found" title = scipy_fit.png />
 	</a>
 </div>
 
@@ -115,15 +115,15 @@ A lot of these rely on already having a fitted distribution, so that was our goa
 
 
 <div align="center">
-	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit.png>
-	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit.png alt="estimated_fit.png not found" title = estimated_fit.png />
+	<a href=https://energize.mattrossman.comimages/07/07/estimated_fit.png>
+	   <img src=https://energize.mattrossman.comimages/07/07/estimated_fit.png alt="estimated_fit.png not found" title = estimated_fit.png />
 	</a>
 </div>
 
 
 
 
-<p>Already looking a lot better. This is pretty much where things were left off on <a href="https://mattrossman.github.io/energize-andover-blog/post/day-13/">Day 13</a>. It&rsquo;s still a bit off center though. The center we really want is essentially the peak of the KDE plot. To find this, we converted the KDE value array into a Series and found the <code>.max()</code>. Then based on the index of that max, we found the corresponding x value in the x-array by converting that to a Series as well. The end code is pretty ugly, but it gets the job done:</p>
+<p>Already looking a lot better. This is pretty much where things were left off on <a href="https://energize.mattrossman.com/post/day-13/">Day 13</a>. It&rsquo;s still a bit off center though. The center we really want is essentially the peak of the KDE plot. To find this, we converted the KDE value array into a Series and found the <code>.max()</code>. Then based on the index of that max, we found the corresponding x value in the x-array by converting that to a Series as well. The end code is pretty ugly, but it gets the job done:</p>
 
 <pre><code>x = pd.Series(np.linspace(log_school_main.min(), log_school_main.max(), 10000))
 kde = stats.gaussian_kde(log_school_main)
@@ -147,8 +147,8 @@ est_mu = x[kde_pdf[kde_pdf == kde_pdf.max()].index].iloc[0]
 
 
 <div align="center">
-	<a href=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit_center.png>
-	   <img src=https://mattrossman.github.io/energize-andover-blog/images/07/07/estimated_fit_center.png alt="estimated_fit_center.png not found" title = estimated_fit_center.png />
+	<a href=https://energize.mattrossman.comimages/07/07/estimated_fit_center.png>
+	   <img src=https://energize.mattrossman.comimages/07/07/estimated_fit_center.png alt="estimated_fit_center.png not found" title = estimated_fit_center.png />
 	</a>
 </div>
 
@@ -220,9 +220,9 @@ Out[16]: 86.532858530268697
 
         </section>
 
-        <script src="https://mattrossman.github.io/energize-andover-blog/js/jquery-3.3.1.min.js"></script>
-<script src="https://mattrossman.github.io/energize-andover-blog/js/main.js"></script>
-<script src="https://mattrossman.github.io/energize-andover-blog/js/highlight.min.js"></script>
+        <script src="https://energize.mattrossman.comjs/jquery-3.3.1.min.js"></script>
+<script src="https://energize.mattrossman.comjs/main.js"></script>
+<script src="https://energize.mattrossman.comjs/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
 
@@ -257,10 +257,10 @@ if (!doNotTrack) {
 <script src="https://unpkg.com/lunr/lunr.js"></script>
 
 
-<script src="https://mattrossman.github.io/energize-andover-blog/js/site-search.js"></script>
+<script src="https://energize.mattrossman.comjs/site-search.js"></script>
 
 
-<script src="https://mattrossman.github.io/energize-andover-blog/js/featured-posts.js"></script>
+<script src="https://energize.mattrossman.comjs/featured-posts.js"></script>
 
     </body>
 </html>

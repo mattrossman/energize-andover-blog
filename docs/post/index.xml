@@ -2,60 +2,60 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Energize Andover Summer 2017 Blog</title>
-    <link>https://mattrossman.github.io/energize-andover-blog/post/</link>
+    <link>https://energize.mattrossman.com/post/</link>
     <description>Recent content in Posts on Energize Andover Summer 2017 Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 01 Sep 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://mattrossman.github.io/energize-andover-blog/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://energize.mattrossman.com/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Day 61</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-61/</link>
+      <link>https://energize.mattrossman.com/post/day-61/</link>
       <pubDate>Fri, 01 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-61/</guid>
+      <guid>https://energize.mattrossman.com/post/day-61/</guid>
       <description>Wednesday The past two days weren&amp;rsquo;t productive enough to warrant their own posts. Wednesday I met Kevin and the rest of the team at MHL hoping to gain insight on how to use the logging scripts. Unfortunately, Jordan is pretty much the only one who really knows how to use them. I had hoped that the address error would go away on AndoverNet but it persisted.
 I emailed Jordan looking for guidance, and he said that I would have to change the IP address listed in BACpypes.</description>
     </item>
     
     <item>
       <title>Day 60</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-60/</link>
+      <link>https://energize.mattrossman.com/post/day-60/</link>
       <pubDate>Tue, 29 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-60/</guid>
+      <guid>https://energize.mattrossman.com/post/day-60/</guid>
       <description>AHS Meeting I met with Frank and Ajay at AHS this morning. They had been having trouble installing Pycharm so I showed them how to install it. Then I walked through the process of cloning the web server repo, creating an Anaconda environment, installing all the requirements with Anaconada/Pip, installing PostgreSQL, making the database, and configuring the server. At this point they are all caught up to the degree of functionality that I&amp;rsquo;ve gotten the server to.</description>
     </item>
     
     <item>
       <title>Day 59</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-59/</link>
+      <link>https://energize.mattrossman.com/post/day-59/</link>
       <pubDate>Mon, 28 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-59/</guid>
+      <guid>https://energize.mattrossman.com/post/day-59/</guid>
       <description>Data recording My top priority is getting the prediction system in place, even if the web app can&amp;rsquo;t graph the resulting data. Before I can let MultiRFModel do its magic I need properly formatted data.
 Current system The current data logging system takes place in /bacnet/script/. The logging task is in NAEInteract1.py and it&amp;rsquo;s scheduled to run every 15 minutes in NAEMonitoring.py (although I also see some scheduling framework in tasks.</description>
     </item>
     
     <item>
       <title>Day 58</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-58/</link>
+      <link>https://energize.mattrossman.com/post/day-58/</link>
       <pubDate>Sat, 26 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-58/</guid>
+      <guid>https://energize.mattrossman.com/post/day-58/</guid>
       <description>As my final work week approaches, it&amp;rsquo;s becoming more apparent that we might not have enough time to fully integrate the prediction system with the web app unless other people are able to keep working on it during the next few weeks.
 As a precaution I want to ensure that I have enough documentation of the system I have in mind. Today I wrote a README guide for my GitHub repo that generally goes over how to use the modeling system and a bit about how it works.</description>
     </item>
     
     <item>
       <title>Day 57</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-57/</link>
+      <link>https://energize.mattrossman.com/post/day-57/</link>
       <pubDate>Fri, 25 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-57/</guid>
+      <guid>https://energize.mattrossman.com/post/day-57/</guid>
       <description>Finally working With the suggestions from Jordan I was able to get the server running locally on my system.
 Some things I did differently (starting from the latest version on GitHub):
  I set the admin password for the default postgres account and used those credentials in the development settings file rather than the credentials for the myusername user account that Kevin had me make on Wed. I dropped the existing database and made a new one.</description>
@@ -63,99 +63,99 @@ Some things I did differently (starting from the latest version on GitHub):
     
     <item>
       <title>Day 56</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-56/</link>
+      <link>https://energize.mattrossman.com/post/day-56/</link>
       <pubDate>Thu, 24 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-56/</guid>
+      <guid>https://energize.mattrossman.com/post/day-56/</guid>
       <description>I spent part of today watching some basic Django tutorials since I have no knowledge of how it works. That made it a little easier to understand the directory structure of the existing project. After a while I wanted to try tackling yesterday&amp;rsquo;s error.
 Some online sources suggest you can just wipe out the existing migrations and start fresh (I&amp;rsquo;m just trying to get anything working at the moment). I gave that a shot, deleting the migrations directory from each of the app directories.</description>
     </item>
     
     <item>
       <title>Day 55</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-55/</link>
+      <link>https://energize.mattrossman.com/post/day-55/</link>
       <pubDate>Wed, 23 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-55/</guid>
+      <guid>https://energize.mattrossman.com/post/day-55/</guid>
       <description>AHS Meeting I met with Anil and Kevin this morning at the AHS library. The usual work area is emptied out for cleaning, and there&amp;rsquo;s furniture strewn around the library. I gave an overview of the forecasting process and how it can be merged with the existing server.
 Cloning the server Kevin started walking me through the process of copying the web server to my work laptop. First I installed PyCharm and postgresql.</description>
     </item>
     
     <item>
       <title>Day 54</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-54/</link>
+      <link>https://energize.mattrossman.com/post/day-54/</link>
       <pubDate>Tue, 22 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-54/</guid>
+      <guid>https://energize.mattrossman.com/post/day-54/</guid>
       <description>Finishing touches I considered moving all the model parameters over to the appropriate train methods since it seemed unecessary to lay out all the model settings at instantiation. Hoever, I thought some more and realized that many of those parameters are common to the train and predict processes, so it makes sense that they be tacked on to the object instances rather than passed as temporary arguments. Properties like the input/output/gap size are not just temporary uses for a model, they are defining characteristics for how that model is set up.</description>
     </item>
     
     <item>
       <title>Day 53</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-53/</link>
+      <link>https://energize.mattrossman.com/post/day-53/</link>
       <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-53/</guid>
+      <guid>https://energize.mattrossman.com/post/day-53/</guid>
       <description>Function decorators In python you can put function decorators in front of methods to apply some overarching steps to them. In my case I want to time each method call using time.perf_counter(). I can either apply a wrapper to every method of a class as explained here or just decorate specific methods within my classes.
 def time_func(func): @wraps(func) def wrapper(*args, **kw): start = time.perf_counter() try: res = func(*args, **kw) finally: end = time.</description>
     </item>
     
     <item>
       <title>Day 52</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-52/</link>
+      <link>https://energize.mattrossman.com/post/day-52/</link>
       <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-52/</guid>
+      <guid>https://energize.mattrossman.com/post/day-52/</guid>
       <description>Last time, I left the SingleRFModel and MultiRFModel implementation as a rather tangled collection of methods. I wasn&amp;rsquo;t satisfied with the organization of everything. I also didn&amp;rsquo;t like the disjointedness between the process of training old sets and the process of predicting new ones.
 Old setup  All training feature matricies are created independently from the X and y window lists The training features matricies are merged along the column axis Prediction inputs are created as a whole feature matrix from a single point in time  Proposed setup  Prediction inputs are created as a whole feature matrix from a single point in time Training feature matricies are created using the above method</description>
     </item>
     
     <item>
       <title>Day 51</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-51/</link>
+      <link>https://energize.mattrossman.com/post/day-51/</link>
       <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-51/</guid>
+      <guid>https://energize.mattrossman.com/post/day-51/</guid>
       <description>Resolving yesterday&amp;rsquo;s mystery After some testing I realized the only difference in the CSV-writing script&amp;rsquo;s approach was that I had ommited temperature data, having come to the conclusion earlier that it hurt the prediction performance. That may have been the case for the particular day I was looking at, but on a larger scale (such as the 4-day test region) I guess it actually improved performance.
 When I added the temperature data back to the features table I got a more familiar result:</description>
     </item>
     
     <item>
       <title>Day 50</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-50/</link>
+      <link>https://energize.mattrossman.com/post/day-50/</link>
       <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-50/</guid>
+      <guid>https://energize.mattrossman.com/post/day-50/</guid>
       <description>Assigning the same data to various objects shouldn&amp;rsquo;t pose a memory issue, as in Python variables store references to data so only one instance of the source data is actually stored. You can verify this with the built-in id() method to see where variables point to. There are still some areas I&amp;rsquo;ve have to optimize in the multi-column model though.
 As I pointed out yesterday, I don&amp;rsquo;t need to run the window calculations for every column.</description>
     </item>
     
     <item>
       <title>Day 49</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-49/</link>
+      <link>https://energize.mattrossman.com/post/day-49/</link>
       <pubDate>Tue, 15 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-49/</guid>
+      <guid>https://energize.mattrossman.com/post/day-49/</guid>
       <description>Getting the variance For clarity&amp;rsquo;s sake I think I&amp;rsquo;ll keep the variance output seperate from the prediction output. They should be stored in two seperate tables, one for predictions and one for variance. However instead of making two seperate functions (which would have some overlap of calculactions) I can run the calculations in the same function and return a tuple of the two Series.
 I&amp;rsquo;ll use the same technique from before, getting the standard deviation of the residuals of the forest&amp;rsquo;s decision trees:</description>
     </item>
     
     <item>
       <title>Day 48</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-48/</link>
+      <link>https://energize.mattrossman.com/post/day-48/</link>
       <pubDate>Mon, 14 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-48/</guid>
+      <guid>https://energize.mattrossman.com/post/day-48/</guid>
       <description>Today&amp;rsquo;s plan I&amp;rsquo;m mainly ironing out the details of the model implementation today. Rather than copying all the code here, I&amp;rsquo;ve moved the model class (now called RandomForestModel) into the energize module.
 I had a brief scare today when I thought my window calculations were all wrong, but I realized it was a simple mistake of limiting my working data to start at egz.df_school.index.min() when it should have been egz.</description>
     </item>
     
     <item>
       <title>Day 47</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-47/</link>
+      <link>https://energize.mattrossman.com/post/day-47/</link>
       <pubDate>Thu, 10 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-47/</guid>
+      <guid>https://energize.mattrossman.com/post/day-47/</guid>
       <description>Very brief post today as I am really short on time.
 Our team met at AHS today but we quickly realized without access to the logged power data there&amp;rsquo;s not a whole lot we can do to start integrating the predictions.
 I spent today starting to move the prediction process into it&amp;rsquo;s own class. My goal is to make the prediction process as clean and simple as possible. This is actually my first time using Python classes so it&amp;rsquo;s probably not very elegant.</description>
@@ -163,10 +163,10 @@ I spent today starting to move the prediction process into it&amp;rsquo;s own cl
     
     <item>
       <title>Day 46</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-46/</link>
+      <link>https://energize.mattrossman.com/post/day-46/</link>
       <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-46/</guid>
+      <guid>https://energize.mattrossman.com/post/day-46/</guid>
       <description>Scrutinizing yesterday&amp;rsquo;s approach The method yesterday took a quantile approach at creating a prediction interval. I read the blogger&amp;rsquo;s explanation a bit further and I finally have some trust in his approach.
 This statement still bothers me though:
  A prediction interval is an estimate of an interval into which the future observations will fall with a given probability. In other words, it can quantify our confidence or certainty in the prediction</description>
@@ -174,10 +174,10 @@ This statement still bothers me though:
     
     <item>
       <title>Day 45</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-45/</link>
+      <link>https://energize.mattrossman.com/post/day-45/</link>
       <pubDate>Tue, 08 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-45/</guid>
+      <guid>https://energize.mattrossman.com/post/day-45/</guid>
       <description>Presentation This morning Jordan, Peter and I presented our work to a group of AHS electricians and Janet. We got some valuable feedback about how we can best serve their needs.
 I was pleased to hear that somewhere out there is occupancy information for the thermostats, which I could tap into and use as a replacement for my current holiday/half-day variables.
 Putting the model to use I&amp;rsquo;ve gotten the model to a point that I think it could be useful.</description>
@@ -185,135 +185,135 @@ Putting the model to use I&amp;rsquo;ve gotten the model to a point that I think
     
     <item>
       <title>Day 44</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-44/</link>
+      <link>https://energize.mattrossman.com/post/day-44/</link>
       <pubDate>Mon, 07 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-44/</guid>
+      <guid>https://energize.mattrossman.com/post/day-44/</guid>
       <description>Adding features Index windows In order to avoid doing extra work I wanted to switch to using value indexes for my windows as opposed to rolling across the raw data. This way I can reuse the indexes of these windows later to pull other information from the same sections of the data (things like day of the year, day of the week, etc).
 Here&amp;rsquo;s an example of adding day of the week features (about the target values) to my input array.</description>
     </item>
     
     <item>
       <title>Day 43</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-43/</link>
+      <link>https://energize.mattrossman.com/post/day-43/</link>
       <pubDate>Fri, 04 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-43/</guid>
+      <guid>https://energize.mattrossman.com/post/day-43/</guid>
       <description>Setting up the input/output Cluttered approach First I split the data up into hourly chunks with the rolling_window method. Then I run a 2D rolling window to pull enough hours to include both my predictor value and response values. Note that there&amp;rsquo;s extra data in the middle. I drop this middle section and assign the X and y arrays via np.split(). Then I reshape the arrays so that the hours are no longer divided.</description>
     </item>
     
     <item>
       <title>Day 42</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-42/</link>
+      <link>https://energize.mattrossman.com/post/day-42/</link>
       <pubDate>Thu, 03 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-42/</guid>
+      <guid>https://energize.mattrossman.com/post/day-42/</guid>
       <description>Yesterday I performed a regression using decision trees because it&amp;rsquo;s the most straightforward sklearn estimator that support multiple outputs. It turns out the use case for them is pretty similar to that of artificial neural networks.
 First thing to address is decision trees vs random forests. Random forests are an ensemble of decision trees so they create a better, more generalized model (note that in yesterday&amp;rsquo;s examples the decision tree model looked like a better fit, but the random forest had a much better score overall).</description>
     </item>
     
     <item>
       <title>Day 41</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-41/</link>
+      <link>https://energize.mattrossman.com/post/day-41/</link>
       <pubDate>Wed, 02 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-41/</guid>
+      <guid>https://energize.mattrossman.com/post/day-41/</guid>
       <description>Multi-step forecasting I quickly corrected it after posting, but I mistakenly thought I had struck gold last time when working with lagged features. In reality, I was violating the rules of predictions by including data about the future in my testing inputs (I was performing a bunch of one-step-ahead forecasts which made it look like my overally forecast was really strong).
 When I tried recursively generating lagged predictions for my inputs, I got a much weaker model.</description>
     </item>
     
     <item>
       <title>Day 40</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-40/</link>
+      <link>https://energize.mattrossman.com/post/day-40/</link>
       <pubDate>Tue, 01 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-40/</guid>
+      <guid>https://energize.mattrossman.com/post/day-40/</guid>
       <description>To follow up on a note I made yesterday about the research paper Early-warning application for real-time detection of energy consumption anomalies in buildings, I found another paper published by some of the same authors that goes deeper into the techniques they used.
 Here is another paper that reviews a variety of forecasting techniques for time series data. It&amp;rsquo;s actually incredibly detailed and includes topics like moving averages (similar to the rolling medians I tried early on), SVMs, ARIMA, Artificial Neural Networks, and many more.</description>
     </item>
     
     <item>
       <title>Day 39</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-39/</link>
+      <link>https://energize.mattrossman.com/post/day-39/</link>
       <pubDate>Mon, 31 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-39/</guid>
+      <guid>https://energize.mattrossman.com/post/day-39/</guid>
       <description>Last time I noted that the variance in the power vs. temperature residuals fanned out quite a bit at higher temperature values. I&amp;rsquo;m curious if other data sets behave similarly. One thing to consider: is the changing variance truly an issue of randomness, or is there another variable at play here? The more variables you consider, the less you leave up to chance.
 Previously I was looking at the school-time data, but you can see the same fanning occuring in the night data (where there is also an annoying flare on the right):</description>
     </item>
     
     <item>
       <title>Day 38</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-38/</link>
+      <link>https://energize.mattrossman.com/post/day-38/</link>
       <pubDate>Fri, 28 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-38/</guid>
+      <guid>https://energize.mattrossman.com/post/day-38/</guid>
       <description>Today is a shorter post as I have to leave this afternoon.
 Testing the cross validated results Last time I noted that the initial scores I was seeing didn&amp;rsquo;t appear high. Today I&amp;rsquo;m going to look deeper into how to interpret the results. I think last time I was just looking at night data but today I&amp;rsquo;m going to use the school data (which gets an even lower score on the testing set, below 30%)</description>
     </item>
     
     <item>
       <title>Day 37</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-37/</link>
+      <link>https://energize.mattrossman.com/post/day-37/</link>
       <pubDate>Thu, 27 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-37/</guid>
+      <guid>https://energize.mattrossman.com/post/day-37/</guid>
       <description>Side note I found this neat flowchart on the scikit-learn site that guides you through picking an estimator. It basically guided me down the path I expected (on the regression side of things), although it brought to my attention that it may be better to use a Lasso or ElasticNet-based estimator (Huber is closer to Ridge) due to its preference for feature sparsity. That may be beneficial once I start working with mugh higher dimensional inputs.</description>
     </item>
     
     <item>
       <title>Day 36</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-36/</link>
+      <link>https://energize.mattrossman.com/post/day-36/</link>
       <pubDate>Wed, 26 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-36/</guid>
+      <guid>https://energize.mattrossman.com/post/day-36/</guid>
       <description>Normalization strikes again I thought I had found the solution yesterday to my normalization problem since the plot looked much better. Today I tried running the whole plot (with the residuals and everything) where I saw my first red flag - the residuals were not displaying properly. After some time debugging, I noticed that my regression&amp;rsquo;s predict function was returning different values for the same inputs depending on how many samples you passed in - not good!</description>
     </item>
     
     <item>
       <title>Day 35</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-35/</link>
+      <link>https://energize.mattrossman.com/post/day-35/</link>
       <pubDate>Tue, 25 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-35/</guid>
+      <guid>https://energize.mattrossman.com/post/day-35/</guid>
       <description>EDIT: as a disclaimer, this post&amp;rsquo;s use of normalization is flawed. The subsequent post revises this error.
 How much error is acceptable? Before I get much further refining the regression technique, it&amp;rsquo;d be good idea to spend some time figuring out how I&amp;rsquo;m going to end up using it. The obvious use of regressions is to allow me to find an expected value given certain arguments, but I&amp;rsquo;m not expecting the sample to fit these predictions exactly.</description>
     </item>
     
     <item>
       <title>Day 34</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-34/</link>
+      <link>https://energize.mattrossman.com/post/day-34/</link>
       <pubDate>Mon, 24 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-34/</guid>
+      <guid>https://energize.mattrossman.com/post/day-34/</guid>
       <description>Blog update - site search As my blog has grown, it&amp;rsquo;s gotten harder to find specific posts from the archive. This weekend I had some free time on my hands so I got to implement client-side search on the site. I&amp;rsquo;m using Hugo&amp;rsquo;s output configuration parameter and an index.json template to create a search index of my posts. Lunr.js performs the necessary search algorithms in my search script. The result is a lighting-quick site search that doesn&amp;rsquo;t need to even reload the page - try it out on the home page.</description>
     </item>
     
     <item>
       <title>Day 33</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-33/</link>
+      <link>https://energize.mattrossman.com/post/day-33/</link>
       <pubDate>Fri, 21 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-33/</guid>
+      <guid>https://energize.mattrossman.com/post/day-33/</guid>
       <description>Polynomial regression as linear regression There is no specific polynomial regression estimator in sklearn. Zico Kolter goes over this in his lecture, but polynomial regression is really an extension of linear regression because the additional feature terms ($x^2$, $x^3$, &amp;hellip; $x^n$) can be thought of as regular variables with linear coefficients. Scikit-learn has you making a PolynomialFeatures object of a particular degree, then using its fit_transform method to generate the feature matrix.</description>
     </item>
     
     <item>
       <title>Day 32</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-32/</link>
+      <link>https://energize.mattrossman.com/post/day-32/</link>
       <pubDate>Thu, 20 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-32/</guid>
+      <guid>https://energize.mattrossman.com/post/day-32/</guid>
       <description>Quick Disclaimer on Validation For now I&amp;rsquo;m testing models using all the data available. Later on I will worry about proper validation / cross-validation procedures.
 Power vs. Time of Day I have already looked at the load profile of the school throughout the day (see Day 17), but that was using a fairly simple method that relied on the fact that the data is being sampled at the same 15-minute intervals every day.</description>
     </item>
     
     <item>
       <title>Day 31</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-31/</link>
+      <link>https://energize.mattrossman.com/post/day-31/</link>
       <pubDate>Wed, 19 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-31/</guid>
+      <guid>https://energize.mattrossman.com/post/day-31/</guid>
       <description>Continuing with the lectures I skimmed over the 4th and 5th lectures, as they started getting into more specific linear algebra topics that I can delve into later if necessary.
 Lecure 6 discussed how you can take the concept of minimizing the cost function using linear features and simply add in non-linear features to fit a model more closely to non-linear data.
 Prof. Kolter showed two main approaches here. The first is adding polynomial terms to the feature vector, and the other is using a number of Radial Basis Functions (RBFs).</description>
@@ -321,19 +321,19 @@ Prof. Kolter showed two main approaches here. The first is adding polynomial ter
     
     <item>
       <title>Day 30</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-30/</link>
+      <link>https://energize.mattrossman.com/post/day-30/</link>
       <pubDate>Tue, 18 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-30/</guid>
+      <guid>https://energize.mattrossman.com/post/day-30/</guid>
       <description>An exciting find I ended yesterday with a CMU lecture on nonlinear regression that looked eerily similar to the work we&amp;rsquo;re doing. After sharing it with the team, Frank noticed that it&amp;rsquo;s actually part of an entire course called Computational Methods for the Smart Grid. All of the resources (lecture videos, slides, notes) are freely availabe online. The course teaches how to do precisely what we&amp;rsquo;ve been trying to accomplish this whole summer.</description>
     </item>
     
     <item>
       <title>Day 29</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-29/</link>
+      <link>https://energize.mattrossman.com/post/day-29/</link>
       <pubDate>Mon, 17 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-29/</guid>
+      <guid>https://energize.mattrossman.com/post/day-29/</guid>
       <description>Today I&amp;rsquo;ll be taking a look at the new Bancroft school data. Bancroft is supposed to be a very energy efficient building so it&amp;rsquo;ll be ineresting to compare the energy usage patterns to AHS.
 The simplest filter to compare would be night data. Some activities may go on during the summer or weekends, but most buildings will not be operating at night.
   Interestingly we&amp;rsquo;re seeing a bimodal shape in the night-time distribution.</description>
@@ -341,38 +341,38 @@ The simplest filter to compare would be night data. Some activities may go on du
     
     <item>
       <title>Day 28</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-28/</link>
+      <link>https://energize.mattrossman.com/post/day-28/</link>
       <pubDate>Fri, 14 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-28/</guid>
+      <guid>https://energize.mattrossman.com/post/day-28/</guid>
       <description>Met with the team today at the library. I gave an update on the status of the fitting process. Frank had looked into the Poisson regression and was having some trouble so I wanted to take a stab at it.
 I too was unable to see a clear application of the theory to our scenario. From what I understand, a Poisson distribution is used for counts of event occurences. Our data doesn&amp;rsquo;t immediately apply to this since we are measuring a continuous value, but you can tweak it by, for instance, measuring the counts of data points that lie between 400-450 kW.</description>
     </item>
     
     <item>
       <title>Day 27</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-27/</link>
+      <link>https://energize.mattrossman.com/post/day-27/</link>
       <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-27/</guid>
+      <guid>https://energize.mattrossman.com/post/day-27/</guid>
       <description>This morning I joined Anil on a guided tour of Andover High School. He pointed out key parts of the electric and heating framework for the building. Starting with the main power switch and working down to the sub-panels distributed throughout the school it became easier to visualize the tree structure of the circuitry. It also became appart how challenging it is to navigate the electrical map, so it&amp;rsquo;s good that the other team(s) are working on improving this.</description>
     </item>
     
     <item>
       <title>Day 26</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-26/</link>
+      <link>https://energize.mattrossman.com/post/day-26/</link>
       <pubDate>Wed, 12 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-26/</guid>
+      <guid>https://energize.mattrossman.com/post/day-26/</guid>
       <description>Wrapping up from yesterday Before I go on, I was thinking more about the importance of the quantile residual plot. The benefit of using the local extrema of this chart is that they identify the points of greatest dissonance between the sample and model. On Day 23 we picked the 95th percentile of the model and found it correlated to the 86th percentile of the sample. But that was just a nice sounding threshold.</description>
     </item>
     
     <item>
       <title>Day 25</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-25/</link>
+      <link>https://energize.mattrossman.com/post/day-25/</link>
       <pubDate>Tue, 11 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-25/</guid>
+      <guid>https://energize.mattrossman.com/post/day-25/</guid>
       <description>Plotting the Quartiles scipy.stats.probplot is a method for comparing data quantiles to a distribution.
 stats.probplot(school_main,egz.lognorm_params(school_main),&#39;lognorm&#39;, plot=plt)    For some reason even if I set fit=False it still shows the regression line. This visual doesn&amp;rsquo;t interest me too much because I can&amp;rsquo;t see the actual percentage values, I&amp;rsquo;d rather have a plot comparing the percentile ranks
 I can see this happening two ways:
@@ -381,20 +381,20 @@ I can see this happening two ways:
     
     <item>
       <title>Day 24</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-24/</link>
+      <link>https://energize.mattrossman.com/post/day-24/</link>
       <pubDate>Mon, 10 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-24/</guid>
+      <guid>https://energize.mattrossman.com/post/day-24/</guid>
       <description>Improving the maximization Last time I mentioned how I wanted to find a better way to find the peak of the Kernel Density Estimation. Previously we were evaluating the KDE probability at 10,000 sample points within the region and letting Pandas find the max of that set. I wanted to see if there was a more direct, precise way to do this.
 Numpy has a gradient function for calculating partial derivatives, but it only applies to arrays of sample points.</description>
     </item>
     
     <item>
       <title>Day 23</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-23/</link>
+      <link>https://energize.mattrossman.com/post/day-23/</link>
       <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-23/</guid>
+      <guid>https://energize.mattrossman.com/post/day-23/</guid>
       <description>The team met at the library today. I started by making a list of the items that we may want to consider working on:
  fitting a log-normal distribution to the data marking values past a certain percentile of that PDF translating data sample to match the fitted estimation doing something with the temperature data Poisson regressions likelihood estimation calculation, alternatively SSE  
 A lot of these rely on already having a fitted distribution, so that was our goal for today.</description>
@@ -402,10 +402,10 @@ A lot of these rely on already having a fitted distribution, so that was our goa
     
     <item>
       <title>Day 22</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-22/</link>
+      <link>https://energize.mattrossman.com/post/day-22/</link>
       <pubDate>Thu, 06 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-22/</guid>
+      <guid>https://energize.mattrossman.com/post/day-22/</guid>
       <description>Another brief post today. I spent another session going over the remainder of the energize module (unstack_by_time, plot_normal and trapz).
 I also went over python features like lambda, map, filter, and list comprehension.
 That&amp;rsquo;s all I can really think of that needs to be covered, so tomorrow we&amp;rsquo;re going to meet at the library to start planning the actual work that needs to get done.</description>
@@ -413,10 +413,10 @@ That&amp;rsquo;s all I can really think of that needs to be covered, so tomorrow
     
     <item>
       <title>Day 21</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-21/</link>
+      <link>https://energize.mattrossman.com/post/day-21/</link>
       <pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-21/</guid>
+      <guid>https://energize.mattrossman.com/post/day-21/</guid>
       <description>Not much new to post about today. I worked with Frank and Ajay this morning to go over a detailed explaination of how to perform some core pandas operations.
 We covered how to read in the CSV file, how to use the ical_ranges and time_filter functions in the energize module, various visualization methods like line plots and histograms, and data indexing methods.
 We&amp;rsquo;re going to go over some more examples tomorrow, and hopefully by the end of the week we&amp;rsquo;ll be ready to get back to work on the actual problem statement.</description>
@@ -424,10 +424,10 @@ We&amp;rsquo;re going to go over some more examples tomorrow, and hopefully by t
     
     <item>
       <title>Day 20</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-20/</link>
+      <link>https://energize.mattrossman.com/post/day-20/</link>
       <pubDate>Mon, 03 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-20/</guid>
+      <guid>https://energize.mattrossman.com/post/day-20/</guid>
       <description>Note: Today I uploaded my main Python module here for others to reference
  Meeting Today I had a meeting with Frank, Ajay, and Anil&amp;rsquo;s son Viraj. Viraj is experienced both with statistics and the programming tools we are using so he was able to offer some useful insights. I&amp;rsquo;ll go over some of the main points:
 Expected Distributions On Day 18 I ran a script to calculate the best fitting distribution of our data, but theoretically this isn&amp;rsquo;t a good model to &amp;ldquo;expect&amp;rdquo; of our data since it just happened to be the distribution of our sample.</description>
@@ -435,40 +435,40 @@ Expected Distributions On Day 18 I ran a script to calculate the best fitting di
     
     <item>
       <title>Day 19</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-19/</link>
+      <link>https://energize.mattrossman.com/post/day-19/</link>
       <pubDate>Fri, 30 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-19/</guid>
+      <guid>https://energize.mattrossman.com/post/day-19/</guid>
       <description>Power → Energy To gain a meaningful understanding of the difference between sets of power data, it would be helpful to know how much energy was used. Energy is the resource being consumed, and small changes in power usage can accumulate significant differences in energy consumption. It also enables a smoother conversion into dollars spent or saved.
 Energy is represented by the area under the power plot. A very basic approximation of this can be calculated with a Reimann sum, which multiplies the power value at one point by the span of time it represents (either spanning to the right or left).</description>
     </item>
     
     <item>
       <title>Day 18</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-18/</link>
+      <link>https://energize.mattrossman.com/post/day-18/</link>
       <pubDate>Thu, 29 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-18/</guid>
+      <guid>https://energize.mattrossman.com/post/day-18/</guid>
       <description>The primary library in Anaconda for performing complex scientific calculations is scipy. It includes 82 built-in distribution functions. You can test how well a distribution applies to a sample using the fit() function.
 Someone online was nice enough to write a script that iterates over every included distribution function and finds the best fitting one. This calculation takes quite a while to run. I tried running it on the Main power data with my school hours filter:</description>
     </item>
     
     <item>
       <title>Day 17</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-17/</link>
+      <link>https://energize.mattrossman.com/post/day-17/</link>
       <pubDate>Wed, 28 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-17/</guid>
+      <guid>https://energize.mattrossman.com/post/day-17/</guid>
       <description>Before I get sidetracked, here&amp;rsquo;s a nice resource of statistical tests and their use cases. I also really like this site which goes into great detail on not only how to perform various statistical measures, but also situations when you should (and more importantly shouldn&amp;rsquo;t) use them.
 Daily power models I don&amp;rsquo;t want to ignore the fact that we&amp;rsquo;re dealing with time series data. Most statistical tests are based around random samples with no inherent ordering, but our data has the added factor of ordered time stamps.</description>
     </item>
     
     <item>
       <title>Day 16</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-16/</link>
+      <link>https://energize.mattrossman.com/post/day-16/</link>
       <pubDate>Tue, 27 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-16/</guid>
+      <guid>https://energize.mattrossman.com/post/day-16/</guid>
       <description>Sample Data Makeup So far I&amp;rsquo;ve not been very particular about what kind of data sample I&amp;rsquo;m getting. I&amp;rsquo;ve mentioned that the sampling rate is not consistent and there&amp;rsquo;s lots of empty entries but it hasn&amp;rsquo;t been a concern yet.
 Now I need to pay attention to these details. I&amp;rsquo;m going to set the record straight on what the sample data looks like by asking myself two questions:
 1. Where are the null entries occuring?</description>
@@ -476,30 +476,30 @@ Now I need to pay attention to these details. I&amp;rsquo;m going to set the rec
     
     <item>
       <title>Day 15</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-15/</link>
+      <link>https://energize.mattrossman.com/post/day-15/</link>
       <pubDate>Mon, 26 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-15/</guid>
+      <guid>https://energize.mattrossman.com/post/day-15/</guid>
       <description>Today we got to hold our first real team meeting. Frank and Ajay joined me at the library, and I spent time explaining some of the work I had done and sharing the basics of how to use Pandas. For now I&amp;rsquo;m suggesting they spend time setting up Anaconda and Pandas and get a feel for how to use DataFrame and Series objects.
 In the meantime I&amp;rsquo;ll continue working with probability distribution functions.</description>
     </item>
     
     <item>
       <title>Day 14 - Summary</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-14/</link>
+      <link>https://energize.mattrossman.com/post/day-14/</link>
       <pubDate>Fri, 23 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-14/</guid>
+      <guid>https://energize.mattrossman.com/post/day-14/</guid>
       <description>Blog Guide A good chunk of today was spent writing a guide on how to host your own blog just like the one you&amp;rsquo;re reading. Feel free to comment on it if there&amp;rsquo;s areas that need clarification. There&amp;rsquo;s also a link to it on the &amp;ldquo;About&amp;rdquo; page so you can find the guide later.
 Now I&amp;rsquo;d like to summarize the main ideas of my first couple of weeks of work.</description>
     </item>
     
     <item>
       <title>Day 13</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-13/</link>
+      <link>https://energize.mattrossman.com/post/day-13/</link>
       <pubDate>Thu, 22 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-13/</guid>
+      <guid>https://energize.mattrossman.com/post/day-13/</guid>
       <description>I&amp;rsquo;m going to hold off on pattern detection right now. I spent some time thinking about it today and it would be a pretty extensive problem, and I don&amp;rsquo;t have solid sample data to even test it on.
 Instead I&amp;rsquo;ll play around with one of Anil&amp;rsquo;s suggestions which focuses on percentages of data count in a certain value region.
 Percentage bounds Pandas has a quantile() function that returns the data value at a given percentile.</description>
@@ -507,10 +507,10 @@ Percentage bounds Pandas has a quantile() function that returns the data value a
     
     <item>
       <title>Day 12</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-12/</link>
+      <link>https://energize.mattrossman.com/post/day-12/</link>
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-12/</guid>
+      <guid>https://energize.mattrossman.com/post/day-12/</guid>
       <description>While I wait on the temeprature data report, I&amp;rsquo;ll transition back to the night data. Before I was just looking at distributions, now I want to see the plots and look for any patterns.
 As a reminder, I&amp;rsquo;m saying &amp;lsquo;night&amp;rsquo; data lies between 11:00PM and 4:00AM
 Downsampling the Night Data The plots thusfar have been pretty cluttered because I&amp;rsquo;m looking at every timestamp entry from every day of the sample region.</description>
@@ -518,30 +518,30 @@ Downsampling the Night Data The plots thusfar have been pretty cluttered because
     
     <item>
       <title>Day 11</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-11/</link>
+      <link>https://energize.mattrossman.com/post/day-11/</link>
       <pubDate>Tue, 20 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-11/</guid>
+      <guid>https://energize.mattrossman.com/post/day-11/</guid>
       <description>To start off, I&amp;rsquo;m enabling comments on the blog. Even though the site is static, it can connect to Disqus for third-party comment handling. This theme even has Disqus built in so it should be a simple matter of changing some lines in the config file.
 Centering the data It irks me is how I can&amp;rsquo;t center my rolling window when I use a time offset. One workaround (I think I mentioned this yesterday) is reindexing my data at higher detail.</description>
     </item>
     
     <item>
       <title>Day 10</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-10/</link>
+      <link>https://energize.mattrossman.com/post/day-10/</link>
       <pubDate>Mon, 19 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-10/</guid>
+      <guid>https://energize.mattrossman.com/post/day-10/</guid>
       <description>The pandas rolling object has a few built in commands that I have already made use of, like .median(). But for broader scenarios, you can use the .apply() function to, as the name suggests, apply your own function across the windows.
 The function must accept a Numpy array (I wish it was just a Series instead) and return a single number. For the time being I made a temporary function to handle Numpy median absolute deviations.</description>
     </item>
     
     <item>
       <title>Day 9</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-9/</link>
+      <link>https://energize.mattrossman.com/post/day-9/</link>
       <pubDate>Fri, 16 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-9/</guid>
+      <guid>https://energize.mattrossman.com/post/day-9/</guid>
       <description>In Day 4&amp;rsquo;s post I talked about median absolute deviations and their relationship to estimate population standard deviation. It&amp;rsquo;s a start, but its not a great way to detect anomalies. It&amp;rsquo;s a bit too static.
 To illustrate this, here&amp;rsquo;s a plot of the Main power entries from yesterday&amp;rsquo;s filter. I ran the calculations of median, MAD and $\hat{\sigma}$.
   The black line is at the sample median, and the red line is $3\hat{\sigma}$ above that.</description>
@@ -549,79 +549,79 @@ To illustrate this, here&amp;rsquo;s a plot of the Main power entries from yeste
     
     <item>
       <title>Day 8</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-8/</link>
+      <link>https://energize.mattrossman.com/post/day-8/</link>
       <pubDate>Thu, 15 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-8/</guid>
+      <guid>https://energize.mattrossman.com/post/day-8/</guid>
       <description>I printed the 2016-17 Andover District Calendar and got to work entering the data. Ultimately I organized it into two calendars, one for days with no school entirely (which I inputted as &amp;lsquo;all-day&amp;rsquo; events) and one for half days (to ensure sufficient overlap I entered the events starting from 10:50AM when school gets out and ran until 11:59PM at night).
 I exported these .ics files, then imported them into python with my .</description>
     </item>
     
     <item>
       <title>Day 7</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-7/</link>
+      <link>https://energize.mattrossman.com/post/day-7/</link>
       <pubDate>Wed, 14 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-7/</guid>
+      <guid>https://energize.mattrossman.com/post/day-7/</guid>
       <description>For institutions with very complex schedules, the basic filtering I created yesterday probably won&amp;rsquo;t suffice. Instead, it may be nicer to let the user set their desired schedules in a graphical environment and use that as a time filter in the application.
 Rather than making my own graphical solution, I&amp;rsquo;ll let the user do so in their environment of choice and simply import that data in the popular .ical format, which consists of .</description>
     </item>
     
     <item>
       <title>Day 6</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-6/</link>
+      <link>https://energize.mattrossman.com/post/day-6/</link>
       <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-6/</guid>
+      <guid>https://energize.mattrossman.com/post/day-6/</guid>
       <description>Today I&amp;rsquo;ll be implementing the time_filter function that I outlined yesterday. Since then, I made some slight adjustments to the signature that you can see in the final version below.
 Packing and Unpacking First thing I had to look up was how to handle optional parameters. It seems that you can use an asterisk * before an argument to get a Tuple of optional positional parameters, while a double asterisk ** is for a Dictionary of optional keyword parameters.</description>
     </item>
     
     <item>
       <title>Day 5</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-5/</link>
+      <link>https://energize.mattrossman.com/post/day-5/</link>
       <pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-5/</guid>
+      <guid>https://energize.mattrossman.com/post/day-5/</guid>
       <description>Daytime usage I haven&amp;rsquo;t really addressed the daytime power usage yet. To be consistent with the EnergizeApps parser, I&amp;rsquo;ll define &amp;lsquo;day&amp;rsquo; as 5AM - 8PM (inclusive, exclusive). Likewise going forward I should define &amp;lsquo;night&amp;rsquo; as 11PM - 4AM.
 I will not only want to look at the overall daytime usage, but isolate the weekday and weekend usage since I&amp;rsquo;d expect the building to be unoccupied on weekends. Once again I get to leverage the handy DatetimeIndex structure which holds a weekday component.</description>
     </item>
     
     <item>
       <title>Day 4</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-4/</link>
+      <link>https://energize.mattrossman.com/post/day-4/</link>
       <pubDate>Fri, 09 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-4/</guid>
+      <guid>https://energize.mattrossman.com/post/day-4/</guid>
       <description>I did some searching about median absolute deviation in pandas and found this post. The devoper mentioned that they were considering adding a center parameter to the built in Pandas.Series.mad() function, but advocates against using the function altogether and instead just implementing median absolute deviation manually like this:
 abs(x - x.median()).median()  In my case, I&amp;rsquo;ll be using x_right - x.median() since I&amp;rsquo;m only looking at the upper values.</description>
     </item>
     
     <item>
       <title>Day 3</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-3/</link>
+      <link>https://energize.mattrossman.com/post/day-3/</link>
       <pubDate>Thu, 08 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-3/</guid>
+      <guid>https://energize.mattrossman.com/post/day-3/</guid>
       <description>Quick blog update Just wanted to share, I was playing around with Hugo today and learned about shortcodes. I was looking for a better way to handle images. Previously I would have to type ![[alt](/path/to/img)](/path/to/img) to have self-linking images. Instead, I made a shortcode that just needs the path once to create the linked image. Furthermore, I was manually typing the image paths, which were organized as /month/day/file.png. Now the shortcode reads the post&amp;rsquo;s date and inserts the month and day straight into the path, so all I need are file names.</description>
     </item>
     
     <item>
       <title>Day 2</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-2/</link>
+      <link>https://energize.mattrossman.com/post/day-2/</link>
       <pubDate>Wed, 07 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-2/</guid>
+      <guid>https://energize.mattrossman.com/post/day-2/</guid>
       <description>Now that the blog is running relatively smoothly I&amp;rsquo;m able to focus on the actual problem at hand. I started by installing the latest release of Anaconda, which I then used to install the pandas library.
 Pandas in a Nutshell The pandas library is centered around DataFrame structures and their child Series structures. A dataframe functions like an excel spreadsheed, with various columns of data matched by each row&amp;rsquo;s index.</description>
     </item>
     
     <item>
       <title>Day 1</title>
-      <link>https://mattrossman.github.io/energize-andover-blog/post/day-1/</link>
+      <link>https://energize.mattrossman.com/post/day-1/</link>
       <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://mattrossman.github.io/energize-andover-blog/post/day-1/</guid>
+      <guid>https://energize.mattrossman.com/post/day-1/</guid>
       <description>Today marks the start of my work on the Energize Andover project. I met with Anil at the library and went over the main goals of my team&amp;rsquo;s project.
 Basically, given an arbitrary data set of timestamped energy measures, we want to be able to perform various analytics and use those to identify key areas where there is potential for energy savings. How we will accomplish that is to be decided, though I was given some places to start.</description>
     </item>
