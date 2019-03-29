@@ -1,5 +1,5 @@
 # Site settings
-baseURL = "https://energize.mattrossman.com"
+baseURL = "https://energize.mattrossman.com/"
 relativeurls = false
 # HTML Language Code Reference, such as en, zh-cn
 languageCode = "en"
