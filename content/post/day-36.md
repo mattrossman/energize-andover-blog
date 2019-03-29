@@ -4,6 +4,7 @@ date: 2017-07-26
 title: Day 36
 description: Fixing yesterday's normalization misuse
 weight: 10
+featured: true
 ---
 
 ## Normalization strikes again
