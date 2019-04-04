@@ -1,7 +1,7 @@
 $(document).ready(function() {
     let btnFeaturedPosts = $("#btn-featured");
     let hashFeatured = "#featured";
-    let hashAll = "#all";
+    let hashAll = "";
 
     // toggles showing only featured posts or all posts
     function toggleFeatured(state = null) {
@@ -18,7 +18,6 @@ $(document).ready(function() {
 
     function parseHash(hash) {
         if (hash == hashFeatured) { toggleFeatured(true); }
-        else if (hash == hashAll) { toggleFeatured(false); }
     }
 
     function setUrlHash(hash) {
